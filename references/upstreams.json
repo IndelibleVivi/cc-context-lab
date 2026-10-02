@@ -1,0 +1,132 @@
+{
+  "checked_on": "2026-10-03",
+  "repositories": [
+    {
+      "repo": "kagamiurayama/claude-code-roof-mod",
+      "branch": "main",
+      "revision": "888dceb88631186dfcf01d69b088bedec9c1009a",
+      "commit_date": "2026-10-02T20:17:35+08:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/kagamiurayama/claude-code-roof-mod",
+      "role": "Mods 示例、探针与 fragments 生成器",
+      "examined_paths": [
+        "README.md",
+        "roof-mod/hooks/register.js",
+        "roof-mod/hooks/fragments.js",
+        "probe-mod/hooks/register.js",
+        "tools/gen_fragments.py"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "README 声明 2.1.287+，作者 Linux x64 观察",
+      "offline_verification": {
+        "fixture": "experiments/roof-boundaries.mjs",
+        "checked_on": "2026-10-03",
+        "node_version": "26.7.0",
+        "result": "F02/F03/F04 reproduced as handler-level defects; no CC runtime compatibility claim"
+      }
+    },
+    {
+      "repo": "skrabe/lobotomized-claude-code",
+      "branch": "main",
+      "revision": "053d8703592ab7211fdf2374006d108e42f6decc",
+      "commit_date": "2026-10-01T19:05:57+02:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/skrabe/lobotomized-claude-code",
+      "role": "作者选择的 prompt/reminder overrides",
+      "examined_paths": [
+        "README.md",
+        "system-reminders/task-list-reminder.md",
+        "system-reminders/hook-additional-context.md",
+        "system-reminders/nested-memory.md",
+        "system-reminders/mcp-per-server-router.md"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "README 对照版本 2.1.280；不等于全部目标版本兼容"
+    },
+    {
+      "repo": "skrabe/tweakcc-fixed",
+      "branch": "main",
+      "revision": "f3cf2d9978e209cea1383a0262fa5fc7089aea50",
+      "commit_date": "2026-10-01T19:10:51+02:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/skrabe/tweakcc-fixed",
+      "role": "binary patch fork 与逐类型 reminder overrides",
+      "examined_paths": [
+        "README.md",
+        "src/systemReminderSync.ts",
+        "src/patches/systemReminderOverrides.ts",
+        "src/patches/index.ts"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "README badge 2.0.98 至 2.1.286；未实机验证"
+    },
+    {
+      "repo": "Piebald-AI/tweakcc",
+      "branch": "main",
+      "revision": "d839e046ff8036763ddaea42197e9dc88be65b33",
+      "commit_date": "2026-09-30T13:12:34-06:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/Piebald-AI/tweakcc",
+      "role": "通用 prompt patch 与 native unpack/repack",
+      "examined_paths": [
+        "README.md",
+        "src/patches/index.ts",
+        "src/patches/systemPrompts.ts"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "具体 prompt data 与非 prompt patch 支持分别核对"
+    },
+    {
+      "repo": "rossignol6712/claude-code-custom-prompt",
+      "branch": "main",
+      "revision": "cc05da770f0a9480b38cff56cc3ab88623bd3453",
+      "commit_date": "2026-07-20T18:58:41+09:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/rossignol6712/claude-code-custom-prompt",
+      "role": "主提示 wrapper 与版本绑定 patch 方法",
+      "examined_paths": [
+        "README.md",
+        "examples/scripts/cc-wrapper.sh"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "README 验证版本 2.1.207"
+    },
+    {
+      "repo": "Piebald-AI/claude-code-system-prompts",
+      "branch": "main",
+      "revision": "e6184590031d8d194074130b5e3eef7b4bbd2055",
+      "commit_date": "2026-10-01T19:31:13-06:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/Piebald-AI/claude-code-system-prompts",
+      "role": "静态 prompt 目录与历史变更入口",
+      "examined_paths": [
+        "README.md"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "README 当前列至 2.1.287；仅读范围说明与目录，未逐份提示深读"
+    },
+    {
+      "repo": "badlogic/cchistory",
+      "branch": "main",
+      "revision": "cdf2f25b54bcec005acd37fc191594607d66694f",
+      "commit_date": "2025-10-30T22:21:46+01:00",
+      "retrieved_on": "2026-10-03",
+      "url": "https://github.com/badlogic/cchistory",
+      "role": "执行真实模型请求的 prompt/tool trace 比较器",
+      "examined_paths": [
+        "README.md",
+        "src/index.ts",
+        "src/core/content-extractor.ts"
+      ],
+      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "runtime_verified": false,
+      "version_claim": "本轮无当前 CC 兼容性证据；代码 snapshot 2025-10-30"
+    }
+  ]
+}

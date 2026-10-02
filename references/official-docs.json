@@ -1,0 +1,52 @@
+{
+  "checked_on": "2026-10-03",
+  "evidence_level": "official_documentation",
+  "runtime_verified": false,
+  "sources": [
+    {
+      "url": "https://code.claude.com/docs/en/cli-reference",
+      "retrieval_url": "https://code.claude.com/docs/en/cli-reference.md",
+      "coverage": "替换/追加、snapshot、普通/fork subagent 与动态分界"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/env-vars",
+      "retrieval_url": "https://code.claude.com/docs/en/env-vars.md",
+      "coverage": "六个 context 来源开关"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts",
+      "retrieval_url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts.md",
+      "coverage": "system 以外的提醒、工具描述、观察限制"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins/mods/reference",
+      "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/reference.md",
+      "coverage": "prompt/tool/skill/session 事件与 build 类型 authority"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins/mods/test",
+      "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/test.md",
+      "coverage": "离线 test kit 的无模型/stub 合同"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins/mods/troubleshoot",
+      "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/troubleshoot.md",
+      "coverage": "加载、远程关闭、handler 跳过"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/headless",
+      "retrieval_url": "https://code.claude.com/docs/en/headless.md",
+      "coverage": "bare mode 的认证、发现与执行差异"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/monitoring-usage",
+      "retrieval_url": "https://code.claude.com/docs/en/monitoring-usage.md",
+      "coverage": "raw request file mode、project settings 与隐私边界"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/changelog",
+      "retrieval_url": "https://code.claude.com/docs/en/changelog.md",
+      "coverage": "仅核对 2.1.287 Mods 与相邻版本相关变更，不声称全文审阅"
+    }
+  ]
+}

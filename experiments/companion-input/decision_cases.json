@@ -1,0 +1,284 @@
+{
+  "suite_id": "typed_heartbeat_decision_v1",
+  "task_kind": "heartbeat_activity",
+  "disclaimer": "SCRIPTED_REPLAY — synthetic answers supplied by this fixture. NOT a model evaluation, NOT real Claude Code behaviour, no HTTP/credentials/model call. Every narrative is invented; no real private chat is copied.",
+  "option_set": ["remain_quiet", "internal_activity", "prepare_contact", "revisit_later", "insufficient_context"],
+  "cases": [
+    {
+      "id": "chat_active_turn_ended_independent_remain_quiet",
+      "narrative": "Synthetic: a human conversation is still ongoing, but the previous model turn has already ended. At 00:30:00 the independent session gets an opportunity while chat_active is true and turn_busy is false. Inviting contact now would be intrusive.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_independent", "history": "same"},
+      "candidate": "fixed-6",
+      "answer": {"synthetic": true, "status": "ok", "option": "remain_quiet", "confidence": 0.8},
+      "consume_time_s": 1800,
+      "consume_overrides": [],
+      "rule_baseline": "contact_if_human_message_else_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": false, "status": "ok", "acceptable_options": ["remain_quiet"], "discard_reasons": []},
+      "notes": "turn_busy=false but chat_active=true; the right posture is quiet, not a ping."
+    },
+    {
+      "id": "independent_internal_activity",
+      "narrative": "Synthetic: a quiet independent opportunity at 00:20:00 where only internal reflection is warranted. Nothing is written to the main conversation.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_independent", "history": "same"},
+      "candidate": "fixed-4",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 1200,
+      "consume_overrides": [],
+      "rule_baseline": "internal_if_ambient_fresh_else_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": true, "status": "ok", "acceptable_options": ["internal_activity"], "discard_reasons": [], "injection_boundary": "independent_session_only"},
+      "notes": "independent target must not inject into main; internal activity stays in its own session."
+    },
+    {
+      "id": "coalesced_burst_single_task",
+      "narrative": "Synthetic: five fixed-interval candidates coalesce into one wake at the end of a chat. The decision is a single task, not five, and the constituent provenance is preserved.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "burst-2100",
+      "answer": {"synthetic": true, "status": "ok", "option": "remain_quiet"},
+      "consume_time_s": 2100,
+      "consume_overrides": [],
+      "rule_baseline": "always_remain_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": false, "status": "ok", "acceptable_options": ["remain_quiet"], "discard_reasons": [], "coalesced": true, "coalesced_count": 5},
+      "notes": "one task for the coalesced burst; constituents kept for audit."
+    },
+    {
+      "id": "quiet_does_not_mean_contact",
+      "narrative": "Synthetic: a long quiet window after an idle observation. Quiet is not a request for contact.",
+      "selection": {"fixture": "quiet_and_fresh_session.json", "policy": "P5_idle_window", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "idle-observation-1800",
+      "answer": {"synthetic": true, "status": "ok", "option": "remain_quiet", "confidence": 0.7},
+      "consume_time_s": 1800,
+      "consume_overrides": [],
+      "rule_baseline": "always_remain_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": false, "status": "ok", "acceptable_options": ["remain_quiet"], "discard_reasons": []},
+      "notes": "idle window is an observation, not evidence of a need to reach out."
+    },
+    {
+      "id": "explicit_revisit_later",
+      "narrative": "Synthetic: a self-scheduled reflection point. The appropriate answer is to recommend re-evaluating later, with no automatic timer.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P4_self_scheduled_one_shots", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "sw_reflect",
+      "answer": {"synthetic": true, "status": "ok", "option": "revisit_later"},
+      "consume_time_s": 2200,
+      "consume_overrides": [],
+      "rule_baseline": "always_remain_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": false, "status": "ok", "acceptable_options": ["revisit_later"], "discard_reasons": [], "schedules_timer": false},
+      "notes": "revisit_later is a recommendation only; it does not schedule anything."
+    },
+    {
+      "id": "fresh_env_prepare_contact_draft",
+      "narrative": "Synthetic: fresh environment (rain stopped) plus a corrected preference. Preparing a contact DRAFT for later human review is acceptable; nothing is sent.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {
+        "synthetic": true, "status": "ok", "option": "prepare_contact", "confidence": 0.62,
+        "probabilities": {"remain_quiet": 0.05, "internal_activity": 0.1, "prepare_contact": 0.7, "revisit_later": 0.1, "insufficient_context": 0.05}
+      },
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "internal_if_ambient_fresh_else_quiet",
+      "expect": {"blocked": false, "gate_result": "released", "released": true, "status": "ok", "acceptable_options": ["prepare_contact"], "discard_reasons": [], "external_delivery": false, "produces_draft_proposal": true, "confidence_retained": true, "probabilities_retained": true},
+      "notes": "valid complete probabilities + confidence; selected option is a maximum."
+    },
+    {
+      "id": "stale_env_revision_discard",
+      "narrative": "Synthetic: between observation and consumption the fresh environment went stale (ambient expired). The bound state revision no longer matches, so the answer is discarded.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2500,
+      "consume_overrides": [
+        {"id": "amb_expire_env2_now", "type": "ambient_expire", "t": 2450, "target": "amb_env_2"}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["state_revision_changed"]},
+      "notes": "start 2400 < expiry 2450 <= consume 2500: a genuine late change, not backfilled to the start."
+    },
+    {
+      "id": "new_environment_arrives_late_discard",
+      "narrative": "Synthetic: a newer ambient observation arrives between the observed start (00:40:00) and consumption (00:43:20). The dependency signature changed, so the earlier answer is discarded.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2600,
+      "consume_overrides": [
+        {"id": "amb_new_late", "type": "ambient", "t": 2500, "observed_at": 2500, "expires_at": 4000, "text": "Weather update (synthetic): fog rolling in, 15C."}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["state_revision_changed"]},
+      "notes": "start 2400 < new ambient 2500 <= consume 2600."
+    },
+    {
+      "id": "memory_correction_revision_discard",
+      "narrative": "Synthetic: a newer memory correction supersedes the note the answer was based on. The revision changed, so the answer is only recorded as discarded.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2500,
+      "consume_overrides": [
+        {"id": "mem_corr_3", "type": "memory", "t": 2450, "corrects": "mem_corr_2", "text": "CORRECTION (synthetic): current preference is now flat white."}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["state_revision_changed"]},
+      "notes": "corrections are a state change, not a scoring of the answer."
+    },
+    {
+      "id": "cancel_before_consume_discard",
+      "narrative": "Synthetic: the self-wake plan is cancelled after the task was prepared but before the answer is consumed. The candidate no longer starts, so the answer is discarded rather than executed.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P4_self_scheduled_one_shots", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "sw_afternoon",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2400,
+      "consume_overrides": [
+        {"id": "cancel_afternoon", "type": "cancel", "t": 2300, "target": "sw_afternoon", "reason": "synthetic cancel before consume"}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["wake_not_reproduced_or_now_blocked"]},
+      "notes": "cancellation is re-derived from the canonical engine, not asserted."
+    },
+    {
+      "id": "late_answer_chat_resumed_discard",
+      "narrative": "Synthetic: the human resumes chatting after the task was prepared. A late answer arrives while chat_active is true for a main-thread wake; it is discarded.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2600,
+      "consume_overrides": [
+        {"id": "chat_late", "type": "chat_interval", "t": 2450, "end": 2900, "note": "synthetic: human resumed chatting"}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["chat_active_at_consume"]},
+      "notes": "active-main gate: never release an autonomous activity into an active human chat."
+    },
+    {
+      "id": "target_busy_discard",
+      "narrative": "Synthetic: the execution target is busy at consumption time (a separate turn started). The answer is discarded.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2500,
+      "consume_overrides": [
+        {"id": "busy_late", "type": "busy_interval", "t": 2450, "end": 2550, "session": "main", "note": "synthetic: target turn busy"}
+      ],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["execution_target_busy_at_consume"]},
+      "notes": "busy at the target blocks release even though the answer itself is fine."
+    },
+    {
+      "id": "run_ended_discard",
+      "narrative": "Synthetic: the run ended before consumption. A wake that would have started earlier is discarded because the run is over.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-9",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 3010,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["run_ended_before_consume"]},
+      "notes": "no wake may start at or after run_end."
+    },
+    {
+      "id": "answer_before_start_discard",
+      "narrative": "Synthetic: an answer arrives before the observed start; it cannot be a valid consumption for that task.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "ok", "option": "internal_activity"},
+      "consume_time_s": 2300,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "discarded", "released": null, "status": null, "acceptable_options": null, "discard_reasons": ["answer_before_actual_start"]},
+      "notes": "temporal validity check comes first."
+    },
+    {
+      "id": "unknown_status_not_a_choice",
+      "narrative": "Synthetic: the answer status is unknown. It is kept as unknown, never rewritten into a business option.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "unknown", "note": "synthetic: no answer produced"},
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "unknown", "acceptable_options": null, "discard_reasons": []},
+      "notes": "unknown stays unknown."
+    },
+    {
+      "id": "refusal_does_not_smuggle_option",
+      "narrative": "Synthetic: a refusal that also carries an option. The option is recorded but NOT promoted to a choice.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "refusal", "option": "internal_activity", "note": "synthetic refusal carrying a tempting option"},
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "refusal", "acceptable_options": null, "discard_reasons": [], "option_is_none": true},
+      "notes": "refusal is not remain_quiet and not insufficient_context."
+    },
+    {
+      "id": "transport_error",
+      "narrative": "Synthetic: the replay transport errored. It is recorded as an error, not as quiet.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {"synthetic": true, "status": "error", "error_kind": "transport_error"},
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "error", "acceptable_options": null, "discard_reasons": [], "error_kind": "transport_error"},
+      "notes": "error is distinct from refusal and from a business option."
+    },
+    {
+      "id": "invalid_probabilities_sum",
+      "narrative": "Synthetic: a nominally ok answer with complete probabilities that do not sum to 1. It becomes an error; nothing is released.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {
+        "synthetic": true, "status": "ok", "option": "internal_activity",
+        "probabilities": {"remain_quiet": 0.2, "internal_activity": 0.4, "prepare_contact": 0.5, "revisit_later": 0.2, "insufficient_context": 0.1}
+      },
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "error", "acceptable_options": null, "discard_reasons": [], "error_kind": "invalid_probabilities", "option_is_none": true},
+      "notes": "structural probability check; no correctness scoring."
+    },
+    {
+      "id": "invalid_probabilities_extra_key",
+      "narrative": "Synthetic: an ok answer whose probabilities include an extra option key. Rejected as an error.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {
+        "synthetic": true, "status": "ok", "option": "internal_activity",
+        "probabilities": {"remain_quiet": 0.1, "internal_activity": 0.4, "prepare_contact": 0.2, "revisit_later": 0.2, "insufficient_context": 0.1, "send_now": 0.0}
+      },
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "error", "acceptable_options": null, "discard_reasons": [], "error_kind": "invalid_probabilities", "option_is_none": true},
+      "notes": "extra keys are rejected, not merged."
+    },
+    {
+      "id": "selected_option_not_max",
+      "narrative": "Synthetic: probabilities validate but the selected option is not a maximum. Rejected as an error.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_defer", "history": "same"},
+      "candidate": "fixed-8",
+      "answer": {
+        "synthetic": true, "status": "ok", "option": "remain_quiet",
+        "probabilities": {"remain_quiet": 0.1, "internal_activity": 0.15, "prepare_contact": 0.5, "revisit_later": 0.15, "insufficient_context": 0.1}
+      },
+      "consume_time_s": 2400,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": false, "gate_result": "not_released_non_ok_answer", "released": false, "status": "error", "acceptable_options": null, "discard_reasons": [], "error_kind": "invalid_probabilities", "option_is_none": true},
+      "notes": "the selected option must be one of the maxima."
+    },
+    {
+      "id": "blocked_candidate_produces_no_task",
+      "narrative": "Synthetic: with main_skip placement, the candidate that lands inside an active chat is skipped by the canonical engine. It must produce no decision task, only an audit entry.",
+      "selection": {"fixture": "common_scenario.json", "policy": "P1_fixed_interval", "placement": "PL_main_skip", "history": "same"},
+      "candidate": "fixed-6",
+      "answer": null,
+      "consume_time_s": null,
+      "consume_overrides": [],
+      "rule_baseline": "none",
+      "expect": {"blocked": true, "blocked_reason": "skipped_during_chat_active", "no_task_for_candidate": true},
+      "notes": "the canonical placement gate owns admission; the decision layer never re-sends a blocked candidate."
+    }
+  ]
+}

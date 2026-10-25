@@ -1,0 +1,756 @@
+{
+  "title": "Context Atlas",
+  "intro": "从来源到此刻，从共同聊天到自己的时间，再到可复查的配置变更。一个连接研究证据、情境回放与 DevOps 准备的本地视图。",
+  "stages": [
+    {
+      "id": "sources",
+      "label": "来源与当下"
+    },
+    {
+      "id": "assembly",
+      "label": "本轮装配"
+    },
+    {
+      "id": "lifecycle",
+      "label": "会话与延续"
+    },
+    {
+      "id": "delivery",
+      "label": "活动与交付"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "core",
+      "stage": "assembly",
+      "title": "Core 与默认指导",
+      "summary": "决定 system 的来源、顺序与哪些 engine sections 被选择；与 persona 正文分开维护。",
+      "owner": "Lab 研究规则；原 runtime renderer 拥有实际配置。",
+      "interfaces": [
+        "prompt.section",
+        "prompt.compose",
+        "CLI system prompt"
+      ],
+      "operating_questions": [
+        "哪部分是可替换模板，哪部分承载必须保留的运行事实？",
+        "shared/session 边界与 resume 保存的旧 system 怎样处理？"
+      ],
+      "evidence": [
+        {
+          "level": "目标本地 composition",
+          "claim": "2.1.289 print/lean 分支观察到 lab:core 位于 shared/session 边界；默认选中零个 engine section。",
+          "source": "references/target-runtime-2.1.289.json",
+          "label": "target-runtime-2.1.289.json"
+        },
+        {
+          "level": "官方 offline",
+          "claim": "strict validator 与 3 项官方 tests 通过；不是完整提示剥离。",
+          "source": "references/context-profile-compatibility.json",
+          "label": "context-profile-compatibility.json"
+        }
+      ],
+      "limits": [
+        "只有一次受控本地 composition；真实 HTTP request 和其它模型分支未验。"
+      ],
+      "check_ids": [
+        "profile-node",
+        "profile-runner",
+        "official-offline",
+        "local-probe",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "tools",
+      "stage": "assembly",
+      "title": "工具说明与 schema",
+      "summary": "工具描述可以改变，参数 schema、执行能力与权限分别核对。",
+      "owner": "CC 与工具 provider 拥有 schema；candidate 只改所选 engine/core 描述。",
+      "interfaces": [
+        "tool.describe",
+        "tool provider/schema"
+      ],
+      "operating_questions": [
+        "同名 foreign provider 工具是否保留？",
+        "改描述后，工具是否仍可正确调用？"
+      ],
+      "evidence": [
+        {
+          "level": "合成 / 官方 offline",
+          "claim": "candidate 对 engine/core Bash description 做有限改写；同名 foreign provider 保留。",
+          "source": "experiments/context-profile/README.md",
+          "label": "README.md"
+        }
+      ],
+      "limits": [
+        "无真实模型工具选择或调用行为证据。"
+      ],
+      "check_ids": [
+        "profile-node",
+        "official-offline",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "files",
+      "stage": "sources",
+      "title": "文件、skills 与 MCP",
+      "summary": "开场加载与后续按需加载有不同入口；关闭默认来源可能也关闭自己的资料。",
+      "owner": "各文件/skill/MCP 的原 owner；Lab 记录进入路径。",
+      "interfaces": [
+        "prompt.context",
+        "skill.prompt",
+        "CLAUDE.md loaders",
+        "MCP instructions"
+      ],
+      "operating_questions": [
+        "初始与 nested 加载是否都覆盖？",
+        "skills 发现清单、实际正文和工具结果分别进入哪里？"
+      ],
+      "evidence": [
+        {
+          "level": "公开 source / 目标 types",
+          "claim": "初始 instructionFiles 与 nested loader 不能合并推断。",
+          "source": "docs/mods-migration.md",
+          "label": "mods-migration.md"
+        }
+      ],
+      "limits": [
+        "当前 profile 未注册 context/skill 事件，不能声称已控制所有来源。"
+      ],
+      "check_ids": [
+        "upstream-refs",
+        "local-probe",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "ambient",
+      "stage": "sources",
+      "title": "当下与环境",
+      "summary": "时间、天气、粗粒度位置和 present state 按观察时间与有效期进入本轮。",
+      "owner": "环境 producer / state 项目拥有事实；Lab 研究选择与包装。",
+      "interfaces": [
+        "SessionStart",
+        "UserPromptSubmit",
+        "prompt.submit context",
+        "producer snapshot"
+      ],
+      "operating_questions": [
+        "已经过期与尚未观察到的事实能否退出 current blocks？",
+        "保留记录和此刻有效视图是否分别表达？"
+      ],
+      "evidence": [
+        {
+          "level": "离线规则",
+          "claim": "输入包在 actual start 重选天气/位置；旧块可保留历史但不声称仍是当下。",
+          "source": "experiments/companion-input/README.md",
+          "label": "README.md"
+        },
+        {
+          "level": "公开 source",
+          "claim": "Dylan 在唤醒时包装可选天气；不是原生 CC hook。",
+          "source": "docs/companion-source-dossiers.md",
+          "label": "companion-source-dossiers.md"
+        }
+      ],
+      "limits": [
+        "没有调用真实天气/location 服务或读取 live state。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "recall",
+      "stage": "sources",
+      "title": "自动记忆召回",
+      "summary": "研究主模型主动调用工具之前，已经被供给的记忆正文、来源与较新纠正。",
+      "owner": "Memory 系统拥有存储/检索/revision；Lab 拥有交付研究。",
+      "interfaces": [
+        "UserPromptSubmit additionalContext",
+        "SessionStart context",
+        "recall adapter"
+      ],
+      "operating_questions": [
+        "是召回正文、用户可见 hint，还是提示模型自己去查？",
+        "被纠正的记忆是否连同旧 recall 正文退出当前选择？"
+      ],
+      "evidence": [
+        {
+          "level": "公开 source",
+          "claim": "Hindsight 的模型前 recall 与 memsearch 的用户可见 systemMessage 提示有不同受众。",
+          "source": "docs/companion-source-dossiers.md",
+          "label": "companion-source-dossiers.md"
+        },
+        {
+          "level": "离线规则",
+          "claim": "较新纠正排除旧 current recall，保留此前实际见过的历史。",
+          "source": "experiments/companion-input/README.md",
+          "label": "README.md"
+        }
+      ],
+      "limits": [
+        "未运行真实 recall backend；相关性与自然使用质量未验。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "hooks",
+      "stage": "assembly",
+      "title": "Hooks 与 reminders",
+      "summary": "按 origin 和生命周期区别 engine 指导、自有 context 与嵌入的外部原文。",
+      "owner": "producer 拥有正文；renderer/mod 拥有明确选择的转换。",
+      "interfaces": [
+        "additionalContext",
+        "prompt.attachment",
+        "PromptSubmitInput.context"
+      ],
+      "operating_questions": [
+        "整类清理是否同时删掉自己的续窗或环境入口？",
+        "长正文文件化后，模型是否实际取得完整内容？"
+      ],
+      "evidence": [
+        {
+          "level": "源码与原函数 fixture",
+          "claim": "41 份 reminder 映射到 35 registry + 6 per-server 文件；placeholder 能力与作者使用分开。",
+          "source": "docs/reminder-overrides.md",
+          "label": "reminder-overrides.md"
+        },
+        {
+          "level": "目标 types",
+          "claim": "attachment.detail 仅声明三类 plan-mode 结构，不能外推全部 reminders。",
+          "source": "docs/target-runtime.md",
+          "label": "target-runtime.md"
+        }
+      ],
+      "limits": [
+        "按相同字符串或 engine origin 不能授予整段原文改写权。"
+      ],
+      "check_ids": [
+        "upstream-refs",
+        "reminder-fixture",
+        "local-probe",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "channel",
+      "stage": "sources",
+      "title": "Channel / bridge 输入",
+      "summary": "原话、来源、时间、附件与 reply target 分别保留；UI 显示不等于模型输入。",
+      "owner": "channel/bridge owner 拥有身份与路由；runtime 决定接入。",
+      "interfaces": [
+        "MCP channel",
+        "producer prefix/suffix",
+        "inbound envelope"
+      ],
+      "operating_questions": [
+        "哪段是人类原话，哪段是机器包装？",
+        "是否已有处理/交付证据，还是仅收到或读取消费？"
+      ],
+      "evidence": [
+        {
+          "level": "官方文档 / source",
+          "claim": "官方 channel 推送到运行 session；社区 inbox/relay 是另一种路径。",
+          "source": "docs/heartbeat-and-channels.md",
+          "label": "heartbeat-and-channels.md"
+        },
+        {
+          "level": "离线规则",
+          "claim": "人类原文与 wrapper 分开；独立 session 只读明确选中的已到达快照。",
+          "source": "experiments/companion-input/README.md",
+          "label": "README.md"
+        }
+      ],
+      "limits": [
+        "未连接任何真实 channel；账号/路由/权限 relay 未验。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "actual-request",
+        "delivery-observation"
+      ]
+    },
+    {
+      "id": "history",
+      "stage": "lifecycle",
+      "title": "历史、保留与退出",
+      "summary": "当前 request、进程内历史、磁盘 transcript、archive 与远端消息是不同对象。",
+      "owner": "原 runtime 拥有历史与恢复；Lab 的 synthetic archive 不接管它们。",
+      "interfaces": [
+        "request projection",
+        "transcript pruning",
+        "history replay"
+      ],
+      "operating_questions": [
+        "本轮省略是否真的减少下一次实际输入？",
+        "清理是否误伤混合数组、来源链或恢复信息？"
+      ],
+      "evidence": [
+        {
+          "level": "原函数合成复现",
+          "claim": "阅后即焚教程复现 8 项观察，包括混合载荷损失与写后异常不回滚。",
+          "source": "docs/context-retention.md",
+          "label": "context-retention.md"
+        },
+        {
+          "level": "离线规则",
+          "claim": "same ledger 与 fresh carryover 可比较；source archive 不自动进入模型。",
+          "source": "experiments/companion-input/README.md",
+          "label": "README.md"
+        }
+      ],
+      "limits": [
+        "改磁盘对活跃进程与下一次 HTTP request 的影响未验。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "retention-observation",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "compact",
+      "stage": "lifecycle",
+      "title": "Compact 与 resume",
+      "summary": "压缩写作、整组 messages 替换、重载和旧 system snapshot 分别判断。",
+      "owner": "CC 生命周期与原 writer/controller；Lab 维护候选合同。",
+      "interfaces": [
+        "session.compact",
+        "PreCompact / PostCompact",
+        "SessionStart compact",
+        "resume"
+      ],
+      "operating_questions": [
+        "摘要保留哪些事实与未完动作，哪些由开场重新加载？",
+        "新设置是否叠加保存的旧 system 或历史提醒？"
+      ],
+      "evidence": [
+        {
+          "level": "官方文档 / types",
+          "claim": "session.compact 支持 instructions/messages 与直接返回组；classic hooks 的控制边界不同。",
+          "source": "docs/compact-control.md",
+          "label": "compact-control.md"
+        }
+      ],
+      "limits": [
+        "没有自有 writer 的真实 compact/resume 请求与语义比较。"
+      ],
+      "check_ids": [
+        "local-probe",
+        "continuity-cases",
+        "actual-request"
+      ]
+    },
+    {
+      "id": "forge",
+      "stage": "lifecycle",
+      "title": "Forge / Swap 与交接",
+      "summary": "按真实操作区分换 provider session、重放、handoff 复用和数据库回滚。",
+      "owner": "原 continuity controller、adapter、renderer 与恢复流程。",
+      "interfaces": [
+        "handoff artifact",
+        "SessionStart mount",
+        "controller transition"
+      ],
+      "operating_questions": [
+        "旧窗何时停止，新窗实际拿到什么，失败怎样恢复？",
+        "摘要继承是否被误当成新的确认或授权？"
+      ],
+      "evidence": [
+        {
+          "level": "源码 / 合成研究",
+          "claim": "公开 Carryover 的选择/截断已有反例；自有 controller 职责留原项目。",
+          "source": "docs/forge-upstreams.md",
+          "label": "forge-upstreams.md"
+        },
+        {
+          "level": "候选写作合同",
+          "claim": "八组 continuity 语料与 handoff/curation 草案已建立，尚无模型语义成绩。",
+          "source": "experiments/handoff-policy.md",
+          "label": "handoff-policy.md"
+        }
+      ],
+      "limits": [
+        "不能从 source-complete 推断目标 CLI 工具池、交付或自然连续性已通过。"
+      ],
+      "check_ids": [
+        "continuity-cases",
+        "actual-request",
+        "runtime-handoff"
+      ]
+    },
+    {
+      "id": "wake",
+      "stage": "delivery",
+      "title": "自主轮次与心跳",
+      "summary": "触发者、执行 session、历史方式与对外联系分别决定。",
+      "owner": "原 scheduler/runtime owner；Lab 比较显式规则。",
+      "interfaces": [
+        "timer / scheduled task",
+        "Stop continuation",
+        "external runner",
+        "self-wake plan"
+      ],
+      "operating_questions": [
+        "此刻是 turn_busy，还是整段 chat_active？",
+        "从外部触发后究竟进入主聊天还是独立 session？",
+        "内部结果如何保留，取消后的计划会不会复活？"
+      ],
+      "evidence": [
+        {
+          "level": "离线规则",
+          "claim": "三种 placement、两种 history、六类 trigger 可复放；不会推断真实聊天状态。",
+          "source": "experiments/companion-input/README.md",
+          "label": "README.md"
+        },
+        {
+          "level": "文档与 source",
+          "claim": "CC idle、OpenClaw busy guards 与 Dylan 用户消息静默阈值语义不同。",
+          "source": "docs/heartbeat-patterns.md",
+          "label": "heartbeat-patterns.md"
+        }
+      ],
+      "limits": [
+        "无真实 scheduler、并发、重启或模型自然自主行为验收。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "actual-request",
+        "delivery-observation"
+      ]
+    },
+    {
+      "id": "delivery",
+      "stage": "delivery",
+      "title": "交付、反馈与恢复",
+      "summary": "内部想法、待发送动作、外部发送结果与历史清理分别记账。",
+      "owner": "原 channel/runtime controller 与 operator runbook。",
+      "interfaces": [
+        "reply tool",
+        "outbox / relay",
+        "delivery receipt",
+        "candidate selector / rollback"
+      ],
+      "operating_questions": [
+        "unknown 是否被错误记成 sent？",
+        "再次唤醒/重试是否重复外部动作？",
+        "恢复配置后，进行中的计划和未处理事件由谁承接？"
+      ],
+      "evidence": [
+        {
+          "level": "源码 / 离线规则",
+          "claim": "一次 gateway POST 尝试不是持久化保证；合成 unknown outcome 不算发送成功。",
+          "source": "docs/companion-source-dossiers.md",
+          "label": "companion-source-dossiers.md"
+        },
+        {
+          "level": "职责合同",
+          "claim": "runtime repo 保留 selector、candidate、activation 与 rollback authority。",
+          "source": "docs/runtime-integration.md",
+          "label": "runtime-integration.md"
+        }
+      ],
+      "limits": [
+        "没有生产 selector、外部 delivery 或 rollback 实测。"
+      ],
+      "check_ids": [
+        "companion-lab",
+        "delivery-observation",
+        "runtime-handoff"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "to": "hooks",
+      "label": "指导与动态补充",
+      "from": "core"
+    },
+    {
+      "to": "hooks",
+      "label": "工具事实与结果",
+      "from": "tools"
+    },
+    {
+      "to": "hooks",
+      "label": "加载与注入",
+      "from": "files"
+    },
+    {
+      "to": "hooks",
+      "label": "新鲜快照",
+      "from": "ambient"
+    },
+    {
+      "to": "hooks",
+      "label": "自动供给",
+      "from": "recall"
+    },
+    {
+      "to": "hooks",
+      "label": "原话与包装",
+      "from": "channel"
+    },
+    {
+      "to": "history",
+      "label": "实际进入后保留",
+      "from": "hooks"
+    },
+    {
+      "to": "compact",
+      "label": "压缩与重载",
+      "from": "history"
+    },
+    {
+      "to": "forge",
+      "label": "选择与交接",
+      "from": "history"
+    },
+    {
+      "to": "core",
+      "label": "新旧 system 核对",
+      "from": "compact"
+    },
+    {
+      "to": "hooks",
+      "label": "换窗重载",
+      "from": "forge"
+    },
+    {
+      "to": "hooks",
+      "label": "准入后取当下",
+      "from": "wake"
+    },
+    {
+      "to": "wake",
+      "label": "延续自己的前情",
+      "from": "history"
+    },
+    {
+      "to": "delivery",
+      "label": "内部结果或待交付动作",
+      "from": "wake"
+    },
+    {
+      "to": "delivery",
+      "label": "明确 reply target",
+      "from": "channel"
+    },
+    {
+      "to": "history",
+      "label": "有据的结果与恢复",
+      "from": "delivery"
+    }
+  ],
+  "checks": [
+    {
+      "id": "upstream-refs",
+      "title": "查询公开上游 refs",
+      "scope": "只读网络",
+      "command": "python3 scripts/check_upstreams.py",
+      "description": "0 未变 / 1 有更新 / 2 查询不全；不更新 pin 或安装。",
+      "source": "docs/maintenance.md",
+      "category": "read_only_network"
+    },
+    {
+      "id": "profile-node",
+      "title": "Candidate 逻辑回归",
+      "scope": "离线",
+      "command": "node --test experiments/context-profile/tests/register.test.js",
+      "description": "合成输入验证所选 section/tool 规则，不能代替官方 loader。",
+      "source": "experiments/context-profile/README.md",
+      "category": "offline"
+    },
+    {
+      "id": "profile-runner",
+      "title": "升级检查器回归",
+      "scope": "离线",
+      "command": "python3 scripts/test_check_context_profile.py",
+      "description": "验证返回语义、隔离环境及旧 types 排除，不调用真实 provider。",
+      "source": "docs/maintenance.md",
+      "category": "offline"
+    },
+    {
+      "id": "official-offline",
+      "title": "指定可信 CC 的官方离线检查",
+      "scope": "离线 / 执行已审阅 binary",
+      "command": "python3 scripts/check_context_profile.py --claude <trusted-claude-executable>",
+      "description": "strict validation + 非空官方 test kit；目标版本以实跑报告为准。",
+      "source": "docs/maintenance.md",
+      "category": "offline"
+    },
+    {
+      "id": "local-probe",
+      "title": "目标 types / composition",
+      "scope": "本地命令会话，需本轮启动授权",
+      "command": "python3 scripts/probe_context_runtime.py --claude <trusted-claude-executable>",
+      "description": "独立 config + 合成 key + 本机拒绝端点；不是实际 HTTP request 或模型行为。不能自动运行。",
+      "source": "docs/target-runtime.md",
+      "category": "local_probe"
+    },
+    {
+      "id": "companion-lab",
+      "title": "自主活动与输入包对照",
+      "scope": "离线",
+      "command": "python3 experiments/companion-input/run_lab.py --check",
+      "description": "显式 fixture 的规则验证；不启动 CC，不启用心跳。",
+      "source": "experiments/companion-input/README.md",
+      "category": "offline"
+    },
+    {
+      "id": "reminder-fixture",
+      "title": "Reminder placeholder 原函数对照",
+      "scope": "离线 / 需已读 source cache",
+      "command": "node experiments/reminder-placeholders.mjs <reviewed-tweakcc-fixed-checkout>",
+      "description": "只用匹配文档 pin 的已读上游；不运行安装或 apply driver。",
+      "source": "docs/reminder-overrides.md",
+      "category": "offline"
+    },
+    {
+      "id": "retention-observation",
+      "title": "保留层级与下一次请求",
+      "scope": "真实 runtime 证据待授权",
+      "command": "",
+      "description": "对照目标前后 transcript 与下一次 request；不要用文件清理成功代替进程内观察。",
+      "source": "docs/context-retention.md",
+      "category": "runtime_missing"
+    },
+    {
+      "id": "continuity-cases",
+      "title": "续窗语义语料",
+      "scope": "模型实验待授权",
+      "command": "",
+      "description": "使用八组 continuity cases 及 handoff policy；没有既成模型分数或自动执行入口。",
+      "source": "experiments/continuity-cases.json",
+      "category": "runtime_missing"
+    },
+    {
+      "id": "actual-request",
+      "title": "实际 request 与自然使用",
+      "scope": "模型实验待授权",
+      "command": "",
+      "description": "记录目标 build、入口、profile、实际送达的 system/tools/messages 与行为；原始私人材料留 Git 外。",
+      "source": "docs/runtime-integration.md",
+      "category": "runtime_missing"
+    },
+    {
+      "id": "delivery-observation",
+      "title": "外部交付与重复处理",
+      "scope": "外部通路待授权",
+      "command": "",
+      "description": "由原 channel owner 用合成事件核收取、处理、发送和确认；unknown 不能补成 success。",
+      "source": "docs/heartbeat-and-channels.md",
+      "category": "runtime_missing"
+    },
+    {
+      "id": "runtime-handoff",
+      "title": "交给原 runtime 的变更与恢复",
+      "scope": "原 runtime repo / 生产另行授权",
+      "command": "",
+      "description": "在原 renderer 准备 candidate，核 selector/activation/rollback；本研究库不复制 live settings。",
+      "source": "docs/runtime-integration.md",
+      "category": "runtime_missing"
+    }
+  ],
+  "intents": [
+    {
+      "id": "upgrade",
+      "label": "CC 版本升级",
+      "capability_ids": [
+        "core",
+        "tools",
+        "files",
+        "hooks",
+        "compact",
+        "wake"
+      ]
+    },
+    {
+      "id": "input",
+      "label": "Hooks 与输入调整",
+      "capability_ids": [
+        "ambient",
+        "recall",
+        "channel",
+        "hooks",
+        "history"
+      ]
+    },
+    {
+      "id": "continuity",
+      "label": "Session 生命周期",
+      "capability_ids": [
+        "history",
+        "compact",
+        "forge",
+        "core"
+      ]
+    },
+    {
+      "id": "autonomy",
+      "label": "自主活动与 channel",
+      "capability_ids": [
+        "wake",
+        "channel",
+        "ambient",
+        "recall",
+        "delivery"
+      ]
+    }
+  ],
+  "workflow": [
+    {
+      "title": "定位版本与来源",
+      "body": "选择目标 build、已读上游 revision、入口和要改的行为。",
+      "owner": "Lab / operator"
+    },
+    {
+      "title": "形成行为差异",
+      "body": "把来源、生命周期、来源原文与预期变化写清，比较受影响的输入。",
+      "owner": "Lab"
+    },
+    {
+      "title": "分层取证",
+      "body": "分别取得 source、合成、官方 offline、目标 composition、实际 request 与行为证据。",
+      "owner": "Lab + 原 runtime owner"
+    },
+    {
+      "title": "准备 candidate",
+      "body": "回原 runtime canonical renderer 生成候选，列明切换和恢复时要保留的事件/历史。",
+      "owner": "原 runtime repo"
+    },
+    {
+      "title": "授权后接入与观察",
+      "body": "按原 runbook 安装/选中/激活，观察实际交付与恢复；不从 tests 自动跳到部署。",
+      "owner": "Operator + 原 runtime owner"
+    }
+  ],
+  "official_sources": [
+    {
+      "title": "Claude Code Mods",
+      "url": "https://code.claude.com/docs/en/plugins/mods/create"
+    },
+    {
+      "title": "Scheduled tasks",
+      "url": "https://code.claude.com/docs/en/scheduled-tasks"
+    },
+    {
+      "title": "Hooks reference",
+      "url": "https://code.claude.com/docs/en/hooks"
+    },
+    {
+      "title": "Channels",
+      "url": "https://code.claude.com/docs/en/channels"
+    },
+    {
+      "title": "OpenClaw heartbeat",
+      "url": "https://docs.openclaw.ai/gateway/heartbeat"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "harness-context-capture/1",
+  "capture_id": "synthetic-anthropic-a",
+  "evidence": {
+    "kind": "synthetic_fixture",
+    "observed_at": null
+  },
+  "runtime": {
+    "harness": "synthetic-harness",
+    "version": "synthetic",
+    "entrypoint": "synthetic-fixture",
+    "mode": "offline",
+    "candidate": "synthetic-anthropic-a",
+    "session_path": null
+  },
+  "wire_format": "anthropic-messages",
+  "body": {
+    "model": "MODEL_PLACEHOLDER",
+    "max_tokens": 1024,
+    "system": [
+      {
+        "type": "text",
+        "text": "  Synthetic instructions.\nPreserve line two.\n",
+        "cache_control": {
+          "type": "ephemeral",
+          "ttl": "5m"
+        }
+      }
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Original text\n\n  spacing stays.\n"
+          },
+          {
+            "type": "image",
+            "source": {
+              "type": "base64",
+              "media_type": "image/png",
+              "data": "SYNTHETIC_BASE64_PLACEHOLDER"
+            }
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "synthetic-tool-1",
+            "name": "inspect_fixture",
+            "input": {
+              "record": "A"
+            }
+          }
+        ]
+      },
+      {
+        "role": "system",
+        "content": "Synthetic midstream system item retained as supplied."
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "synthetic-tool-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "Earlier tool output\n  keep indentation."
+              },
+              {
+                "type": "image",
+                "source": {
+                  "type": "base64",
+                  "media_type": "image/png",
+                  "data": "SYNTHETIC_TOOL_IMAGE"
+                }
+              }
+            ],
+            "is_error": false
+          }
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "name": "inspect_fixture",
+        "description": "Read a synthetic record.\nDo not rewrite output.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "record": {
+              "type": "string",
+              "enum": [
+                "A",
+                "B"
+              ]
+            }
+          },
+          "required": [
+            "record"
+          ],
+          "additionalProperties": false
+        },
+        "cache_control": {
+          "type": "ephemeral"
+        }
+      }
+    ],
+    "future_parameter": {
+      "unknown_policy": [
+        "retain",
+        "order"
+      ],
+      "enabled": true
+    }
+  }
+}

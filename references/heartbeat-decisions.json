@@ -1,0 +1,71 @@
+{
+  "topic": "typed decisions for companion heartbeat activity",
+  "observed_on": "2026-10-13",
+  "status": "offline_task_and_scripted_replay",
+  "model_evaluation": "NOT_RUN",
+  "live_integration": false,
+  "local_verification": {
+    "observed_on": "2026-10-13",
+    "companion_checks_passed": 71,
+    "native_request_checks_passed": 4,
+    "scripted_cases": 21,
+    "expectation_violations": 0,
+    "unique_tasks": 8,
+    "native_request_bodies_per_profile": 8,
+    "request_profiles": ["clef-flash", "openai-decisions"],
+    "request_status": "PREPARED_NOT_SENT",
+    "provider_response_adapter": "NOT_IMPLEMENTED"
+  },
+  "sources": [
+    {
+      "id": "decisions-lab-method",
+      "kind": "existing_project_source",
+      "project": "Decisions Lab",
+      "revision": "e6e2446c7a04b8984cd21b0d87ab481329f3367d",
+      "read": ["AGENTS.md", "README.md", "docs/current-state.md", "docs/integration.md", "docs/method.md", "decision_lab/routes.py: selected request/normalization and DecisionsProfile sections", "research/2026-10-08/openai_decisions_record.json"],
+      "coverage_limit": "The large historical report was searched for relevant Clef/API claims, not read in full. No sibling repository changes, inference or collector runs.",
+      "adopted": ["Finite task definition and acceptable answer sets", "Baseline comparison", "Separate unknown, refusal and errors", "Provider-native confidence is not a shared correctness scale"],
+      "not_reused_as_code": "Current route profiles hardcode next-action task options and normalization. They are not heartbeat adapters."
+    },
+    {
+      "id": "clef-flash-workers-ai",
+      "kind": "official_documentation",
+      "url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+      "retrieved_on": "2026-10-13",
+      "revision": null,
+      "read": "Model description, usage examples, input/answer parameter descriptions; collapsed raw schemas not inspected",
+      "claims": ["Input uses model, state and a questions map; choice criteria maps option IDs to descriptions", "Long state may be truncated to fit the input limit", "Answers are keyed by question ID"],
+      "evidence_level": "documented_contract_not_account_or_runtime_verification"
+    },
+    {
+      "id": "clef-flash-model-card",
+      "kind": "official_model_card",
+      "url": "https://huggingface.co/Cloudflare/clef-flash",
+      "retrieved_on": "2026-10-13",
+      "revision": null,
+      "read": "Authored model description and record encoding usage example; not generic Hugging Face generated chat-completion widgets",
+      "claims": ["Typed state/schema decision model with a joint schema head", "Per-question probabilities over supplied options, not free-form response generation"],
+      "evidence_level": "author_documentation_not_local_inference"
+    },
+    {
+      "id": "openai-decisions",
+      "kind": "official_documentation",
+      "url": "https://developers.openai.com/api/docs/guides/decisions",
+      "retrieved_on": "2026-10-13",
+      "revision": null,
+      "read": "Availability/endpoint, choice request/response/refusal examples, score interpretation, multiple questions, answer interpretation",
+      "claims": ["Dedicated /v1/decisions endpoint with input and named questions array", "Choice uses supplied values and descriptions; answers contain probabilities and separate confidence", "Refusal is distinct from a choice", "Independent questions may be batched; dependent decisions should use separate requests", "Score is a probability-weighted mean of ordered level indices"],
+      "evidence_level": "documented_contract_not_account_or_runtime_verification"
+    }
+  ],
+  "task_contract": {
+    "question_id": "heartbeat_activity",
+    "options": ["remain_quiet", "internal_activity", "prepare_contact", "revisit_later", "insufficient_context"],
+    "placement_owner": "experiments/companion-input/run_session.py",
+    "decision_effect": "shadow annotation only; does not recompute future ledger",
+    "actual_delivery": false,
+    "confidence_threshold": null,
+    "production_default_selected": false
+  },
+  "remaining_evidence": ["Real provider answers for synthetic heartbeat cases", "Task-specific semantic quality against baseline and held-out acceptable sets", "Actual latency/usage and context truncation", "Runtime chat-active observation, race-free admission and cancellation", "Effects on subsequent history and natural interaction"]
+}

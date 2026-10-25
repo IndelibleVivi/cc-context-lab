@@ -1,0 +1,111 @@
+{
+  "schema": "harness-context-capture/1",
+  "capture_id": "synthetic-responses-a",
+  "evidence": {
+    "kind": "synthetic_fixture",
+    "observed_at": null
+  },
+  "runtime": {
+    "harness": "synthetic-harness",
+    "version": "synthetic",
+    "entrypoint": "synthetic-fixture",
+    "mode": "offline",
+    "candidate": "synthetic-responses-a",
+    "session_path": null
+  },
+  "wire_format": "openai-responses",
+  "body": {
+    "model": "MODEL_PLACEHOLDER",
+    "instructions": [
+      {
+        "type": "input_text",
+        "text": "Synthetic array instructions.\n  Preserve spaces.",
+        "cache_control": {
+          "type": "synthetic-metadata"
+        }
+      }
+    ],
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "Original request\n\nsecond paragraph."
+          },
+          {
+            "type": "input_image",
+            "image_url": "data:image/png;base64,SYNTHETIC_IMAGE_PLACEHOLDER",
+            "detail": "low"
+          }
+        ]
+      },
+      {
+        "type": "function_call",
+        "call_id": "synthetic-call",
+        "name": "inspect_fixture",
+        "arguments": "{\"record\":\"A\"}"
+      },
+      {
+        "type": "function_call_output",
+        "call_id": "synthetic-call",
+        "output": [
+          {
+            "type": "input_text",
+            "text": "Raw tool output\n  untouched."
+          }
+        ]
+      },
+      {
+        "type": "reasoning",
+        "id": "synthetic-reasoning",
+        "summary": [
+          {
+            "type": "summary_text",
+            "text": "Synthetic summary only."
+          }
+        ]
+      },
+      {
+        "type": "future_context_item",
+        "payload": {
+          "items": [
+            1,
+            2
+          ],
+          "text": "Unknown future item retained."
+        }
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "name": "inspect_fixture",
+        "description": "Inspect synthetic record.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "record": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "record"
+          ],
+          "additionalProperties": false
+        },
+        "strict": true
+      }
+    ],
+    "future_parameter": {
+      "nested": {
+        "cache": "retain"
+      },
+      "flags": [
+        true,
+        false
+      ]
+    },
+    "store": false
+  }
+}

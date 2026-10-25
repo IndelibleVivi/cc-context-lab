@@ -1,0 +1,1353 @@
+{
+  "checked_on": "2026-10-03",
+  "scope": "system-reminders/*.md 的 overrides 意图与 tweakcc-fixed 实际 apply 路径对照（source-only）",
+  "runtime_verified": false,
+  "sources": {
+    "overrides": {
+      "repo": "skrabe/lobotomized-claude-code",
+      "revision": "053d8703592ab7211fdf2374006d108e42f6decc",
+      "commit_date": "2026-10-01T19:05:57+02:00",
+      "dir": "system-reminders/",
+      "file_count": 41
+    },
+    "apply": {
+      "repo": "skrabe/tweakcc-fixed",
+      "revision": "f3cf2d9978e209cea1383a0262fa5fc7089aea50",
+      "commit_date": "2026-10-01T19:10:51+02:00",
+      "paths": [
+        "src/systemReminderSync.ts",
+        "src/patches/systemReminderOverrides.ts",
+        "src/systemPromptSync.ts",
+        "src/utils.ts（escapeNonAscii，供 fixture P05 使用）"
+      ]
+    },
+    "offline_fixture": {
+      "file": "experiments/reminder-placeholders.mjs",
+      "runner": "node experiments/reminder-placeholders.mjs <tweakcc-fixed-checkout>",
+      "method": "stripTypeScriptTypes + runInNewContext 在内存中执行纯 apply 函数与合成 bundle 形状；不导入上游模块、不跑文件系统 apply driver、不装 CC、不发模型请求",
+      "observed_on": "2026-10-03",
+      "node_version": "26.7.0",
+      "result": "P01-P05 全部 PASS",
+      "covers": [
+        "P01 agent-listing removed",
+        "P02 mcp-instructions removed_names",
+        "P03 local-command-caveat tag_name",
+        "P04 budget-usd 货币前缀单符号",
+        "P05 字面 Unicode/反引号/反斜线/插值保留 + 未知占位符拒绝"
+      ]
+    }
+  },
+  "mechanism": {
+    "frontmatter": "HTML-comment block（delimiters <!-- / -->），字段 name/description/ccVersion/placeholders/shadows；system-reminders 的 parser 只读取 name/description/ccVersion/placeholders，不读取 shadows（shadows 由 systemPromptSync.loadShadowSet 单独扫描）。",
+    "empty_semantics": "body.trim()==='' → isSuppressed=true；apply 收到 isSuppressed=true 时大多改写成 `key:(p)=>[]` 或等价短路。运行时挂载点是 ~/.tweakcc/system-prompts 与 ~/.tweakcc/system-reminders（config.ts SYSTEM_PROMPTS_DIR/SYSTEM_REMINDERS_DIR）。",
+    "placeholder_whitelist": "substitutePlaceholders 用正则 /\\{\\{\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\}\\}/g 扫描——花括号内的名字两侧允许可选空白（\\s*）；只对不在 whitelistMap 的名字记 error（未知 token 直接拒绝，result=''）。随后 `body.split(tokenRe)` 切分、对非 token 段做转义（反斜线→\\\\、反引号→\\`、`${`→`\\${`，最后 escapeNonAscii），token 段直接取 whitelistMap[名字] 原样拼回，再 rejoin。已由 experiments/reminder-placeholders.mjs 的 P05 验证。",
+    "shadows_union": "loadShadowSet 并集：(1) system-prompts/*.md 与 system-reminders/*.md 的 frontmatter shadows；(2) REMINDER_REGISTRY 各 injection.shadows 硬编码数组。两者都没有校验被声明的 id 是否真实存在于 prompt catalog。",
+    "id_identification": "apply 使用 registry key、minified code shape 与部分硬编码英文锚点；例如 findCaseBody 在候选 case 头后 2048 字符窗口内检索 anchorEnglish，skills-listing 的正则也含英文前缀。不是完全不依赖 prose 的定位。"
+  },
+  "counts": {
+    "reminder_md_files": 41,
+    "registry_entries": 35,
+    "content_apply_entries": 34,
+    "marker_apply_entries": 1,
+    "per_server_files": 6,
+    "suppressed_empty_bodies": 5,
+    "entries_with_hardcoded_injection_shadows": 5,
+    "note": "41 文件 = 34 内容 apply（含 mcp-instructions）+ 1 marker（mcp-per-server-router）+ 6 个 per-server mcp 文件（claude-browser/magic/openaiDeveloperDocs/sequential-thinking/supabase 有正文，kindly-web-search 空）；35 registry = 34 内容 + 1 marker。所有 registry 条目都有对应文件（registry_entries_without_matching_file 为空）。",
+    "files_with_frontmatter_shadows": 16,
+    "distinct_frontmatter_shadow_targets": 18
+  },
+  "reminders": [
+    {
+      "file": "system-reminders/agent-listing.md",
+      "id": "agent-listing",
+      "registry_const": "AGENT_LISTING_INJECTION",
+      "apply_anchor": "findCaseBody('agent_listing_delta', 'Available agent types for the Agent tool:')，随后 discoverWrappers/discoverDeltaParam",
+      "apply_lines": "systemReminderOverrides.ts:521-555",
+      "key_shape": "case \"agent_listing_delta\"",
+      "declared_placeholders": [
+        "listing",
+        "removed"
+      ],
+      "used_placeholders": [
+        "listing"
+      ],
+      "unused_declared": [
+        "removed"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return [];（suppress）",
+      "dynamic_expressions_available": [
+        "${H.addedLines.join(`\\n`)}（名为 listing，正文使用）",
+        "${H.removedTypes.map((K)=>`- ${K}`).join(`\\n`)}（名为 removed，可接线，正文未使用）"
+      ],
+      "notes": "空正文会连 session-start 的 agent 列表一起吞掉；正文只保留 ‘Available agent types’ 表头 + {{listing}}。移除类型（removedTypes）由 apply 的通用 ${H. 前缀改写接线，未被 checked-in body 使用。",
+      "dynamic_fact_caveats": [
+        "registry 声明 removed: '${H.removedTypes.map((K)=>`- ${K}`).join(`\\n`)}'，apply 的 bodyForBuild=`body.replace(/\\$\\{H\\./g, ...)`（L546）会把它统一改写到实际 delta 参数，因此 {{removed}} 是**可用**的；lobotomized 正文未使用它，只是作者只保留 added 列表。"
+      ]
+    },
+    {
+      "file": "system-reminders/agent-mention.md",
+      "id": "agent-mention",
+      "registry_const": "AGENT_MENTION_INJECTION",
+      "apply_anchor": "findAndReplace 正则 /agent_mention:\\(([$\\w]+)\\)=>.../",
+      "apply_lines": "systemReminderOverrides.ts:1323-1351",
+      "key_shape": "key agent_mention",
+      "declared_placeholders": [
+        "agent_type"
+      ],
+      "used_placeholders": [
+        "agent_type"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "agent_mention:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.agentType}"
+      ],
+      "notes": "该文件 headers 有 shadows: system-reminder-agent-mention（catalog 在 2.1.286 仍存在）。与此类同，多处 shadows 声明的都是仍存在的官方 named prompt，作用是让 named-prompt pass 不再迭代，效果主要体现在文件级合并/自动重建流程。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/auto-mode-exit.md",
+      "id": "auto-mode-exit",
+      "registry_const": "AUTO_MODE_EXIT_INJECTION",
+      "apply_anchor": "newShape / 旧 flat 形态两条 findAndReplace，2.1.221+ 有 bashFirst/steerOnly 两臂",
+      "apply_lines": "systemReminderOverrides.ts:1244-1290",
+      "key_shape": "key auto_mode_exit",
+      "declared_placeholders": [],
+      "used_placeholders": [],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "auto_mode_exit:(e)=>[]",
+      "dynamic_expressions_available": [
+        "bashFirst / steerOnly 分支变量",
+        "非 steerOnly 分支被替换成 override body + `${t}"
+      ],
+      "notes": "有 shadows: system-prompt-exited-auto-mode（catalog 仍存在）。",
+      "dynamic_fact_caveats": [
+        "2.1.221+ 形态下 steerOnly 分支（`## Exited Auto Mode` 的 terse 版本）不被 override，正文只替换非 steerOnly 分支。",
+        "bashFirst 的 `${t}` 后缀以变量拼接方式保留，因此模型仍会看到 bash-first nudge；但 override 正文（‘resume normal interactive mode’）会同时出现在两条非 steerOnly 输出路径。"
+      ]
+    },
+    {
+      "file": "system-reminders/budget-usd.md",
+      "id": "budget-usd",
+      "registry_const": "BUDGET_USD_INJECTION",
+      "apply_anchor": "findAndReplace /budget_usd:\\(([$\\w]+)\\)=>.../",
+      "apply_lines": "systemReminderOverrides.ts:1478-1506",
+      "key_shape": "key budget_usd",
+      "declared_placeholders": [
+        "used",
+        "total",
+        "remaining"
+      ],
+      "used_placeholders": [
+        "used",
+        "total",
+        "remaining"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "budget_usd:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.used}",
+        "${H.total}",
+        "${H.remaining}（正文写作 ${{x}}，端到端解析为 $ + ${H.x}）"
+      ],
+      "notes": "正文使用 `${{used}}` 书写。substitutePlaceholders 的 token 正则匹配 `{{used}}` 子串，已知名字不产生 error，token 段替换为 `${H.used}`；其前导字面 `$` 属相邻普通段且该段不含 `${`，故原样保留，得到 `$${H.used}`。apply 的 `replace(/\\$\\{H\\.used\\}/g,'${e.used}')` 命中其中的 `${H.used}` 子串，产出 `$${e.used}`。在 JS 模板字面量中 `$${e.used}` 求值为 `$`+`${e.used}`=`$5`，因此在 2.1.286 语义下最终文本正确（`$5/$10; $5 remaining`）。此形态经忠实移植合成验证，非缺陷；记录它是为避免把 `${{x}}` 误判为未替换。shadows: system-reminder-usd-budget（catalog 仍存在）。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/claudemd-context.md",
+      "id": "claudemd-context",
+      "registry_const": "CLAUDEMD_INJECTION",
+      "apply_anchor": "wrapper 形态正则：空 context 早退 + builder 调用 + isMeta:!0 + `,...msgs]` spread",
+      "apply_lines": "systemReminderOverrides.ts:361-425",
+      "key_shape": "wrapper function，非 registry key 形态",
+      "declared_placeholders": [
+        "context_blocks"
+      ],
+      "used_placeholders": [
+        "context_blocks"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "function ...(msgs,ctx){return msgs;}（完全短路）",
+      "dynamic_expressions_available": [
+        "${Object.entries(_).map(([q,K])=>`# ${q}\\n${K}`).join(`\\n`)}（wrapper 内 _ 会被改名为实际 ctx 参数）"
+      ],
+      "notes": "正文里的 `Object.entries(_)` 会被替换为 `Object.entries(${ctxParam})`，因此该 token 形态并非普通 placeholder；CC 2.1.261 起 prefix/suffix 被 hoist 成模块常量，apply 靠 shape 而非 prose。shadows: system-reminder-question-context / -relevance。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/compact-file-reference.md",
+      "id": "compact-file-reference",
+      "registry_const": "COMPACT_FILE_REF_INJECTION",
+      "apply_anchor": "applySimpleEntry(content,'compact_file_reference',[propSlot(filename), toolNameSlot(oO.name)])",
+      "apply_lines": "systemReminderOverrides.ts:956-981",
+      "key_shape": "key compact_file_reference",
+      "declared_placeholders": [
+        "filename",
+        "read_tool_name"
+      ],
+      "used_placeholders": [
+        "filename",
+        "read_tool_name"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "compact_file_reference:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.filename}",
+        "Read 工具名（toolNameSlot 动态从模板恢复，2.1.239 起改形态）"
+      ],
+      "notes": "Read 工具名从 module scope 插值，CC 2.1.239 在 `${oO.name}` 与裸 `${Cs}` 之间切换；toolNameSlot 两种都接受。shadows: system-reminder-compact-file-reference。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/date-change.md",
+      "id": "date-change",
+      "registry_const": "DATE_CHANGE_INJECTION",
+      "apply_anchor": "applySimpleEntry(content,'date_change',[propSlot(newDate)])",
+      "apply_lines": "systemReminderOverrides.ts:710-731",
+      "key_shape": "key date_change",
+      "declared_placeholders": [
+        "new_date"
+      ],
+      "used_placeholders": [
+        "new_date"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "date_change:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.newDate}"
+      ],
+      "notes": "CC 2.1.234 重写过该 reminder 文案，apply 按 key+shape 匹配。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/edited-text-file.md",
+      "id": "edited-text-file",
+      "registry_const": "EDITED_TEXT_FILE_INJECTION",
+      "apply_anchor": "方法1：hoisted prefix 正则（2.1.234+）；方法2：<=2.1.233 双分支内联正则",
+      "apply_lines": "systemReminderOverrides.ts:1015-1112",
+      "key_shape": "key edited_text_file",
+      "declared_placeholders": [
+        "filename",
+        "snippet"
+      ],
+      "used_placeholders": [
+        "filename",
+        "snippet"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "edited_text_file:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.filename}",
+        "${H.snippet}",
+        "hoisted prefix 常量"
+      ],
+      "notes": "injection.shadows 含 4 个 id：2.1.234 的新名 system-reminder-edited-file-changed-since-read、-edited-file-diff-omitted-snippet-budget，与两个旧名 -file-modification-detected-budget-exceeded、-file-modified-externally。两个新名在 2.1.286 catalog 中存在；两个旧名不在——旧名是**向后兼容别名**，源码注释（L1032-1037）说这 4 条一起列出是为覆盖重命名前后的两套 id。注释真正警告的是：若*新名*将来再次漂移（named-prompt pass 会迭代已被 splice 的区域），stale id 不是惰性的；仅“旧名不在 catalog”本身不构成当前 bug。本文件 frontmatter 另有两条旧名 shadow。",
+      "dynamic_fact_caveats": [
+        "作者正文 ‘{{filename}} changed externally — don't revert unless asked’ 把非空 snippet 分支的 phrasing 合并成单模板，因此 snippet 为空的分支（原本只报 ‘diff omitted budget’）也被替换为带 ‘{{snippet}}’ 的同一模板。"
+      ]
+    },
+    {
+      "file": "system-reminders/hook-additional-context.md",
+      "id": "hook-additional-context",
+      "registry_const": "HOOK_ADDITIONAL_CONTEXT_INJECTION",
+      "apply_anchor": "findAndReplace 正则，正文间为真实换行",
+      "apply_lines": "systemReminderOverrides.ts:733-763",
+      "key_shape": "key hook_additional_context",
+      "declared_placeholders": [
+        "hook_name",
+        "hook_content"
+      ],
+      "used_placeholders": [
+        "hook_name",
+        "hook_content"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "hook_additional_context:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.hookName}",
+        "${H.content.join(`\\n`)}"
+      ],
+      "notes": "空正文会静默 hook 返回的 additional context；正文本身保留 hook 原文。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/hook-blocking-error.md",
+      "id": "hook-blocking-error",
+      "registry_const": "HOOK_BLOCKING_ERROR_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:765-800",
+      "key_shape": "key hook_blocking_error",
+      "declared_placeholders": [
+        "hook_name",
+        "command",
+        "error"
+      ],
+      "used_placeholders": [
+        "hook_name",
+        "command",
+        "error"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "hook_blocking_error:(H)=>[]（suppression 被 registry description 标为 DANGEROUS）",
+      "dynamic_expressions_available": [
+        "${H.hookName}",
+        "${H.blockingError.command}",
+        "${H.blockingError.blockingError}"
+      ],
+      "notes": "空正文 = hook 阻塞原因对模型不可见。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/hook-stopped-continuation.md",
+      "id": "hook-stopped-continuation",
+      "registry_const": "HOOK_STOPPED_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:802-828",
+      "key_shape": "key hook_stopped_continuation",
+      "declared_placeholders": [
+        "hook_name",
+        "message"
+      ],
+      "used_placeholders": [
+        "hook_name",
+        "message"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "hook_stopped_continuation:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.hookName}",
+        "${H.message}"
+      ],
+      "notes": "空正文 = stop reason 对模型隐藏。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/local-command-caveat.md",
+      "id": "local-command-caveat",
+      "registry_const": "LOCAL_CMD_CAVEAT_INJECTION",
+      "apply_anchor": "先按 `=\"local-command-caveat\"` 定位 tag 变量，再正则替换 `X({content:`<${TAG}>…</${TAG}>`,isMeta:!0})`",
+      "apply_lines": "systemReminderOverrides.ts:917-954",
+      "key_shape": "tag 变量绑定值 local-command-caveat",
+      "declared_placeholders": [
+        "tag_name"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "tag_name"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "X({content:\"\",isMeta:!0})（发出空 content，而不是 []）",
+      "dynamic_expressions_available": [
+        "tag 变量本身（用于包裹输出的 tag 名，由 CC 保留）"
+      ],
+      "notes": "tag_name 由 apply 显式接线（L948）；正文未使用。空正文 = 发 content:\"\"，被标 security-relevant。",
+      "dynamic_fact_caveats": [
+        "registry 声明 tag_name: '${Gq_}'；apply 在 L948 显式 `body.replace(/\\$\\{Gq_\\}/g, '${'+tagVar+'}')`，故 {{tag_name}} 会展开为发现到的 tag 变量。lobotomized 正文不含该 token，因此未使用——作者省略，非 apply 缺陷。",
+        "正文固定为英文说明；CC 仍会用同一 tag 包裹命令输出，override 只替换说明文字。"
+      ]
+    },
+    {
+      "file": "system-reminders/mcp-claude-browser.md",
+      "id": "mcp-claude-browser",
+      "registry_const": null,
+      "apply_anchor": "由 MCP_PER_SERVER_ROUTER_INJECTION 生成的 __tweakccMcpOverride 在运行时读取；每-server 文件本身无独立 registry 条目",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796（router）；文件由 ensureReminderOverrideFile 在 applySystemReminderOverrides 里按 discoverMcpServerNames 结果创建（1868-1906）",
+      "key_shape": "mcp-<server-name>.md 命名约定",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [
+        "server_instructions"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "drop 该 server 的整块（__tweakccMcpOverride 返回 null，router 不 set）",
+      "dynamic_expressions_available": [
+        "{{server_instructions}} → server 的 pristine instructions"
+      ],
+      "notes": "本文件正文即 {{server_instructions}}，等价于 pristine。是否出现在 ~/.tweakcc/system-reminders 取决于 discoverMcpServerNames 是否发现了同名 server；未发现时该 overrides 包里的文件不会被同步/使用。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/mcp-instructions.md",
+      "id": "mcp-instructions",
+      "registry_const": "MCP_INSTRUCTIONS_INJECTION",
+      "apply_anchor": "findCaseBody('mcp_instructions_delta','# MCP Server Instructions') + 动态 wrapper/param",
+      "apply_lines": "systemReminderOverrides.ts:480-519",
+      "key_shape": "case mcp_instructions_delta",
+      "declared_placeholders": [
+        "added_blocks",
+        "removed_names"
+      ],
+      "used_placeholders": [
+        "added_blocks"
+      ],
+      "unused_declared": [
+        "removed_names"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return [];",
+      "dynamic_expressions_available": [
+        "${addedBlocks.join(`\\n\\n`)}"
+      ],
+      "notes": "整块 MCP 表头；per-server 剪裁在 mcp-<name>.md。正文未使用 removed_names（作者省略，非能力缺失）。",
+      "dynamic_fact_caveats": [
+        "registry 声明 removed_names: '${H.removedNames.join(`\\n`)}'；apply 的 bodyForBuild 把 ${H. 前缀统一改参（L510），故 {{removed_names}} **可用**，只是正文未使用。",
+        "guard 仅在 addedBlocks 和 removedNames 两者都为空时返回 []。只有 removedNames 时仍发消息，但本包正文只含 added_blocks，所以移除名称没有被呈现；P02 证明改用 removed_names 可呈现该事实。"
+      ]
+    },
+    {
+      "file": "system-reminders/mcp-kindly-web-search.md",
+      "id": "mcp-kindly-web-search",
+      "registry_const": null,
+      "apply_anchor": "同 mcp-claude-browser（per-server 文件）",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796,1889-1906",
+      "key_shape": "mcp-<server-name>.md",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "server_instructions"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "空正文 → drop 该 server 的 block（本文件正文为空）",
+      "dynamic_expressions_available": [],
+      "notes": "空 body 的 per-server 文件；意图为移除 kindly-web-search 的 instructions block。是否生效取决于本机是否发现同名 server。",
+      "dynamic_fact_caveats": [
+        "正文为空是本套里唯一的 per-server suppression 例外；文件 headers 的 description 仍写 ‘{{server_instructions}} expands …’，但空正文让该占位符无实际作用。"
+      ]
+    },
+    {
+      "file": "system-reminders/mcp-magic.md",
+      "id": "mcp-magic",
+      "registry_const": null,
+      "apply_anchor": "同 per-server",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796",
+      "key_shape": "mcp-<server-name>.md",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [
+        "server_instructions"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "drop 该 server block",
+      "dynamic_expressions_available": [
+        "{{server_instructions}}"
+      ],
+      "notes": "正文即 pristine 指令，等价未改写。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/mcp-openaiDeveloperDocs.md",
+      "id": "mcp-openaiDeveloperDocs",
+      "registry_const": null,
+      "apply_anchor": "同 per-server",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796",
+      "key_shape": "mcp-<server-name>.md",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [
+        "server_instructions"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "drop 该 server block",
+      "dynamic_expressions_available": [
+        "{{server_instructions}}"
+      ],
+      "notes": "文件名大小写混合（openaiDeveloperDocs）；discoverMcpServerNames 按 server 名生成，大小写需与 config 一致才能匹配。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/mcp-per-server-router.md",
+      "id": "mcp-per-server-router",
+      "registry_const": "MCP_PER_SERVER_ROUTER_INJECTION",
+      "apply_anchor": "匹配 `for(let J of Z)if(J.instructions)MAP.set(J.name,`## ${J.name}\\n${J.instructions}`)…;` 的 run，注入 __tweakccMcpOverride",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796",
+      "key_shape": "MCP instruction assembly loop",
+      "declared_placeholders": [],
+      "used_placeholders": [],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "本文件空 → apply 提前 return（不注入 router），server 使用 pristine instructions",
+      "dynamic_expressions_available": [
+        "运行时注入的 __tweakccMcpOverride 读取 ~/.tweakcc/system-reminders/mcp-<name>.md，按 HTML 注释后正文解析，空 body 返回 null（drop），否则替换 {{server_instructions}}"
+      ],
+      "notes": "本文件正文是 marker（任意内容启用）。CC 2.1.238 给 assembly loop 追加第二个 set（baseline 追踪）；apply 用 run-of-sets 匹配并把 extraRebound 每个 set 的 instructions 一并改写，避免 baseline 与展示不一致导致每次会话重复 announce。",
+      "dynamic_fact_caveats": [
+        "空 marker = 关闭 per-server 路由（回归 pristine），不是删除 MCP instructions；这是本套唯一‘空=关闭功能而非静默删除’的语义，不能外推。"
+      ]
+    },
+    {
+      "file": "system-reminders/mcp-sequential-thinking.md",
+      "id": "mcp-sequential-thinking",
+      "registry_const": null,
+      "apply_anchor": "同 per-server",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796",
+      "key_shape": "mcp-<server-name>.md",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [
+        "server_instructions"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "drop 该 server block",
+      "dynamic_expressions_available": [
+        "{{server_instructions}}"
+      ],
+      "notes": "正文即 pristine 指令。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/mcp-supabase.md",
+      "id": "mcp-supabase",
+      "registry_const": null,
+      "apply_anchor": "同 per-server",
+      "apply_lines": "systemReminderOverrides.ts:1730-1796",
+      "key_shape": "mcp-<server-name>.md",
+      "declared_placeholders": [
+        "server_instructions"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "server_instructions"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "drop 该 server block",
+      "dynamic_expressions_available": [],
+      "notes": "正文为作者自定义的 Supabase 使用策略（read-only + CLI migrations）。",
+      "dynamic_fact_caveats": [
+        "正文完全替换 server 的 pristine instructions，且未使用 {{server_instructions}}，因此 server 自身提供的 instructions 不再出现；这是唯一有明显行为改写（不只是剪裁）的 per-server 文件。"
+      ]
+    },
+    {
+      "file": "system-reminders/memory-update.md",
+      "id": "memory-update",
+      "registry_const": "MEMORY_UPDATE_INJECTION",
+      "apply_anchor": "findCaseBody('memory_update','updated your memory directory') + 动态 wrapper/param/sourceMap",
+      "apply_lines": "systemReminderOverrides.ts:1353-1397",
+      "key_shape": "case memory_update",
+      "declared_placeholders": [
+        "source",
+        "summary",
+        "paths",
+        "in_context_paths"
+      ],
+      "used_placeholders": [
+        "source",
+        "summary",
+        "paths",
+        "in_context_paths"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return [];",
+      "dynamic_expressions_available": [
+        "${YT3[H.source]}（source-label map，Mac YT3 / linux-arm64 Xj3 动态发现）",
+        "${H.summary}",
+        "${H.paths.join(\", \")}",
+        "${H.inContextPaths.join(\", \")}"
+      ],
+      "notes": "injection.shadows 硬编码 system-reminder-memory-update-loaded-copy-stale（stale-copy sentence 属于 body）。正文压缩了 stale 提示，但保留 in_context_paths 事实。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/nested-memory.md",
+      "id": "nested-memory",
+      "registry_const": "NESTED_MEMORY_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:1292-1321",
+      "key_shape": "key nested_memory",
+      "declared_placeholders": [
+        "memory_path",
+        "memory_content"
+      ],
+      "used_placeholders": [
+        "memory_path",
+        "memory_content"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "nested_memory:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.content.path}",
+        "${H.content.content}"
+      ],
+      "notes": "正文保留 path 与 content。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/opened-file-in-ide.md",
+      "id": "opened-file-in-ide",
+      "registry_const": "OPENED_FILE_INJECTION",
+      "apply_anchor": "applySimpleEntry(content,'opened_file_in_ide',[propSlot(filename)])",
+      "apply_lines": "systemReminderOverrides.ts:1168-1187",
+      "key_shape": "key opened_file_in_ide",
+      "declared_placeholders": [
+        "filename"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "filename"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "opened_file_in_ide:(H)=>[]（正文为空，实际就是 suppress）",
+      "dynamic_expressions_available": [
+        "${H.filename}"
+      ],
+      "notes": "空 body 的 suppression 文件。shadows: system-reminder-file-opened-in-ide（catalog 仍存在）。",
+      "dynamic_fact_caveats": [
+        "整条 IDE opened-file 通知被静默；模型不会知道用户打开了哪个文件。declared placeholder 未使用。"
+      ]
+    },
+    {
+      "file": "system-reminders/output-style-banner.md",
+      "id": "output-style-banner",
+      "registry_const": "OUTPUT_STYLE_INJECTION",
+      "apply_anchor": "先匹配 /output_style:\\(([$\\w]+)\\)=>/ 保留 guards，再替换 return 模板",
+      "apply_lines": "systemReminderOverrides.ts:557-659",
+      "key_shape": "key output_style",
+      "declared_placeholders": [
+        "style_name",
+        "turn_reminder"
+      ],
+      "used_placeholders": [
+        "style_name",
+        "turn_reminder"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "output_style:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${_.name} → 动态发现（2.1.237 前是 ${t.name}，2.1.238+ 是 ${pze(e.style)}）",
+        "${H.turnReminder??\"Remember to follow…\"}"
+      ],
+      "notes": "guards（2.1.238 的 type/emptiness 检查、256 字上限、控制字符清 sanitizer）被完整保留；override 只拥有 content 模板。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/output-token-usage.md",
+      "id": "output-token-usage",
+      "registry_const": "OUTPUT_TOKEN_USAGE_INJECTION",
+      "apply_anchor": "findAndReplace 正则（含 literal — 与 \\xB7 escape）",
+      "apply_lines": "systemReminderOverrides.ts:1798-1828",
+      "key_shape": "key output_token_usage",
+      "declared_placeholders": [
+        "turn",
+        "session"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "turn",
+        "session"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "output_token_usage:(H)=>[]（正文为空，实际 suppress）",
+      "dynamic_expressions_available": [
+        "${_}（turn）",
+        "${gK(H.session)}",
+        "budget 分支 ${gK(H.turn)} / ${gK(H.budget)}"
+      ],
+      "notes": "空 body 的 suppression 文件。",
+      "dynamic_fact_caveats": [
+        "整条 output-token telemetry 被静默；declared placeholders 未使用。"
+      ]
+    },
+    {
+      "file": "system-reminders/pdf-reference.md",
+      "id": "pdf-reference",
+      "registry_const": "PDF_REF_INJECTION",
+      "apply_anchor": "applySimpleEntry(content,'pdf_reference',[propSlot(filename/pageCount/fileSize), toolNameSlot(uq)])；支持 matchComposedEntry 的 2.1.273 双分支 ternary",
+      "apply_lines": "systemReminderOverrides.ts:983-1013",
+      "key_shape": "key pdf_reference",
+      "declared_placeholders": [
+        "filename",
+        "page_count",
+        "file_size",
+        "read_tool"
+      ],
+      "used_placeholders": [
+        "filename",
+        "page_count",
+        "file_size",
+        "read_tool"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "pdf_reference:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.filename}",
+        "${H.pageCount}",
+        "${l7(H.fileSize)}（wrapper 调用）",
+        "${uq}（Read 工具裸绑定名，动态发现）"
+      ],
+      "notes": "2.1.273 把 content 改成双分支 ternary + 字符串拼接，matchComposedEntry 会整段折叠为单模板。shadows: system-reminder-large-pdf-read-guidance。",
+      "dynamic_fact_caveats": [
+        "正文只保留 filename/pageCount/fileSize 事实与读法提示；原厂 ‘MUST use pages / Do NOT call without pages / 最多 20 页’ 被压缩为一句。"
+      ]
+    },
+    {
+      "file": "system-reminders/plan-file-reference.md",
+      "id": "plan-file-reference",
+      "registry_const": "PLAN_FILE_REF_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:1189-1216",
+      "key_shape": "key plan_file_reference",
+      "declared_placeholders": [
+        "plan_file_path",
+        "plan_content"
+      ],
+      "used_placeholders": [
+        "plan_file_path",
+        "plan_content"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "plan_file_reference:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${H.planFilePath}",
+        "${H.planContent}"
+      ],
+      "notes": "shadows: system-reminder-plan-file-reference。",
+      "dynamic_fact_caveats": [
+        "原厂 ‘If this plan is relevant … continue working on it.’ 条件式指引被删；正文只给 path 与 content。"
+      ]
+    },
+    {
+      "file": "system-reminders/plan-mode-exit.md",
+      "id": "plan-mode-exit",
+      "registry_const": "PLAN_MODE_EXIT_INJECTION",
+      "apply_anchor": "findAndReplace 正则；保留 `let suffix=planExists?…` 分支",
+      "apply_lines": "systemReminderOverrides.ts:1218-1242",
+      "key_shape": "key plan_mode_exit",
+      "declared_placeholders": [
+        "plan_suffix"
+      ],
+      "used_placeholders": [
+        "plan_suffix"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "plan_mode_exit:(H)=>[]",
+      "dynamic_expressions_available": [
+        "${_}（planSuffix）",
+        "planExists 时 `${H.planFilePath}` 后缀"
+      ],
+      "notes": "shadows: system-reminder-exited-plan-mode。",
+      "dynamic_fact_caveats": [
+        "正文 ‘Plan mode exited; edits allowed.’ 与 planExists 时的 plan file 位置后缀拼接；移除 plan mode 的完整说明（原厂 ‘You can now make edits…’）。"
+      ]
+    },
+    {
+      "file": "system-reminders/selected-lines-in-ide.md",
+      "id": "selected-lines-in-ide",
+      "registry_const": "SELECTED_LINES_INJECTION",
+      "apply_anchor": "先判 simpleEntryPattern('selected_lines_in_ide')，命中走 applySimpleEntry；否则回退 <=2.1.185 的 2000 字截断形态",
+      "apply_lines": "systemReminderOverrides.ts:1114-1166",
+      "key_shape": "key selected_lines_in_ide",
+      "declared_placeholders": [
+        "line_start",
+        "line_end",
+        "filename",
+        "selected_text"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "line_start",
+        "line_end",
+        "filename",
+        "selected_text"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "selected_lines_in_ide:(H)=>[]（正文为空，实际 suppress）",
+      "dynamic_expressions_available": [
+        "${H.lineStart}",
+        "${H.lineEnd}",
+        "${H.filename}",
+        "选中文本（Method1 为内联调用 / Method2 为局部变量 q）"
+      ],
+      "notes": "空 body 的 suppression 文件。shadows: system-reminder-lines-selected-in-ide（catalog 仍存在）。",
+      "dynamic_fact_caveats": [
+        "整条 IDE 选区通知被静默；模型不会知道用户选了哪些行、哪段文字。declared placeholders 未使用。"
+      ]
+    },
+    {
+      "file": "system-reminders/skills-listing.md",
+      "id": "skills-listing",
+      "registry_const": "SKILLS_INJECTION",
+      "apply_anchor": "正则 /skill_listing:(\\(([$\\w]+)\\)=>...)/；空 body 有两条 idempotent 形态识别",
+      "apply_lines": "systemReminderOverrides.ts:427-478",
+      "key_shape": "key skill_listing",
+      "declared_placeholders": [
+        "skill_content"
+      ],
+      "used_placeholders": [
+        "skill_content"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "skill_listing:(H)=>{return [];}",
+      "dynamic_expressions_available": [
+        "${H.content}"
+      ],
+      "notes": "正文保留 ‘The following skills are available…’ 表头与 skill 列表。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/stop-hook-session-goal.md",
+      "id": "stop-hook-session-goal",
+      "registry_const": "STOP_HOOK_GOAL_INJECTION",
+      "apply_anchor": "findAndReplace 正则，从 ‘A session-scoped Stop hook…’ 匹配到 goal early.`",
+      "apply_lines": "systemReminderOverrides.ts:1704-1728",
+      "key_shape": "`FN=(H)=>`…`` 赋值函数",
+      "declared_placeholders": [
+        "condition"
+      ],
+      "used_placeholders": [
+        "condition"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "FN=(H)=>\"\"（发出空字符串）",
+      "dynamic_expressions_available": [
+        "${H}（condition 值）"
+      ],
+      "notes": "shadows: system-reminder-session-stop-hook-active（catalog 存在）。空 body 仍保留 condition 的内部使用，模型看不到 goal 说明。",
+      "dynamic_fact_caveats": [
+        "正文大大加长了反-作弊文本（不得隐藏 failing-test 名/错误串以满足条件）；condition 值仍被引用。"
+      ]
+    },
+    {
+      "file": "system-reminders/task-list-reminder.md",
+      "id": "task-list-reminder",
+      "registry_const": "TASK_LIST_REMINDER_INJECTION",
+      "apply_anchor": "findCaseBody('task_reminder','Here are the existing tasks') + discoverFeatureGuard + discoverDeltaParam",
+      "apply_lines": "systemReminderOverrides.ts:1508-1557",
+      "key_shape": "case task_reminder",
+      "declared_placeholders": [
+        "tasks"
+      ],
+      "used_placeholders": [
+        "tasks"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return [];",
+      "dynamic_expressions_available": [
+        "q = H.content.map((O)=>`#${O.id}. [${O.status}] ${O.subject}`).join(`\\n`)",
+        "feature-gate guard（原样复用，不与 override 语义耦合）"
+      ],
+      "notes": "injection.shadows 硬编码 system-reminder-task-tools-reminder（catalog 存在，会被 named-prompt pass 跳过）。正文里的 ${q} 不是 substitutePlaceholders 替换，而是 apply 直接 emit 的局部变量名。",
+      "dynamic_fact_caveats": [
+        "作者正文只有 Tasks 加 {{tasks}}，省略 task-tools 长提醒；substitutePlaceholders 把 {{tasks}} 转成 ${q}，apply 生成 let q=<delta>.content.map(...)，由运行任务事实填充。"
+      ]
+    },
+    {
+      "file": "system-reminders/task-notification-framing.md",
+      "id": "task-notification-framing",
+      "registry_const": "TASK_NOTIFICATION_FRAMING_INJECTION",
+      "apply_anchor": "lazyVarShape 正则（2.1.205+ hoisted var）或 <=2.1.204 inline/case 形态",
+      "apply_lines": "systemReminderOverrides.ts:1559-1633",
+      "key_shape": "case \"task-notification\" / framing var",
+      "declared_placeholders": [
+        "content"
+      ],
+      "used_placeholders": [
+        "content"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "空 framing 变量（`hJn=``），qUr 只输出 message 本体",
+      "dynamic_expressions_available": [
+        "framing var（仅 prefix，不需要 content 槽）",
+        "<=2.1.204 形态的 ${H}"
+      ],
+      "notes": "injection.shadows 硬编码 system-reminder-background-task-event-not-user-input。",
+      "dynamic_fact_caveats": [
+        "apply 会把 `{{content}}` 从 body 中整体删掉（`body.replace(/\\$\\{H\\}/g,'')`），因为 message 由外部 qUr 追加；因此正文里 {{content}} 之后若有文字会跑到 message 之前。"
+      ]
+    },
+    {
+      "file": "system-reminders/thinking-reminder.md",
+      "id": "thinking-reminder",
+      "registry_const": "THINKING_REMINDER_INJECTION",
+      "apply_anchor": "findAndReplace 正则 /thinking_reminder:\\(\\)=>\\[/",
+      "apply_lines": "systemReminderOverrides.ts:661-685",
+      "key_shape": "key thinking_reminder",
+      "declared_placeholders": [],
+      "used_placeholders": [],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "thinking_reminder:()=>[]",
+      "dynamic_expressions_available": [
+        "原厂 content 包在局部函数调用 (lw) 内，override 直接替换整个模板"
+      ],
+      "notes": "无占位符；正文与 registry default 相同措辞但作者做了 register 调整。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/token-usage.md",
+      "id": "token-usage",
+      "registry_const": "TOKEN_USAGE_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:1448-1476",
+      "key_shape": "key token_usage",
+      "declared_placeholders": [
+        "used",
+        "total",
+        "remaining"
+      ],
+      "used_placeholders": [],
+      "unused_declared": [
+        "used",
+        "total",
+        "remaining"
+      ],
+      "unsupported_placeholder": [],
+      "empty_behavior": "token_usage:(H)=>[]（正文为空，实际 suppress）",
+      "dynamic_expressions_available": [
+        "${H.used}",
+        "${H.total}",
+        "${H.remaining}"
+      ],
+      "notes": "空 body 的 suppression 文件。shadows: system-reminder-token-usage（catalog 仍存在）。",
+      "dynamic_fact_caveats": [
+        "整条 token telemetry 被静默；declared placeholders 未使用。"
+      ]
+    },
+    {
+      "file": "system-reminders/tool-called.md",
+      "id": "tool-called",
+      "registry_const": "TOOL_CALLED_INJECTION",
+      "apply_anchor": "findAndReplace 正则",
+      "apply_lines": "systemReminderOverrides.ts:830-858",
+      "key_shape": "function (p1,p2){return J({content:`Called the ${p1} tool…`})}",
+      "declared_placeholders": [
+        "tool_name",
+        "tool_input"
+      ],
+      "used_placeholders": [
+        "tool_name",
+        "tool_input"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "发出 content:\"\"（非 []）；registry 注释指出下游 LW 会 strip 空 content",
+      "dynamic_expressions_available": [
+        "${H}（tool name）",
+        "${SH(_)}（tool input 序列化）"
+      ],
+      "notes": "正文保留 preamble 格式。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/tool-error.md",
+      "id": "tool-error",
+      "registry_const": "TOOL_ERROR_INJECTION",
+      "apply_anchor": "findAndReplace 匹配 tool-result 的 catch 分支",
+      "apply_lines": "systemReminderOverrides.ts:889-915",
+      "key_shape": "catch{return J({content:`Result of calling the ${H.name} tool: Error`})}",
+      "declared_placeholders": [
+        "tool_name"
+      ],
+      "used_placeholders": [
+        "tool_name"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "catch{return J({content:\"\",isMeta:!0})}",
+      "dynamic_expressions_available": [
+        "${H.name}"
+      ],
+      "notes": "tool-error 与 tool-result 的 catch 分支是同一段代码；两个 registry 条目会先后作用于同一 region，需注意顺序（REGISTRY 顺序 TOOL_RESULT 先于 TOOL_ERROR）。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/tool-result.md",
+      "id": "tool-result",
+      "registry_const": "TOOL_RESULT_INJECTION",
+      "apply_anchor": "findAndReplace 正则（含 catch 分支）",
+      "apply_lines": "systemReminderOverrides.ts:860-887",
+      "key_shape": "return J({content:`Result of calling the ${H.name} tool:\\n${K}`})catch{…}",
+      "declared_placeholders": [
+        "tool_name",
+        "result"
+      ],
+      "used_placeholders": [
+        "tool_name",
+        "result"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "strip wrapper：`return J({content:`${K}`,isMeta:!0})}catch{return J({content:\"\",isMeta:!0})}`",
+      "dynamic_expressions_available": [
+        "${H.name}",
+        "${K}（结果本体）"
+      ],
+      "notes": "空正文合约不是全静默，而是保留结果、去掉 ‘Result of calling…’ 包装行。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/ultrathink-effort.md",
+      "id": "ultrathink-effort",
+      "registry_const": "ULTRATHINK_INJECTION",
+      "apply_anchor": "findAndReplace 正则 /ultrathink_effort:\\(\\)=>/",
+      "apply_lines": "systemReminderOverrides.ts:687-708",
+      "key_shape": "key ultrathink_effort",
+      "declared_placeholders": [],
+      "used_placeholders": [],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "ultrathink_effort:()=>[]（关键词触发空）",
+      "dynamic_expressions_available": [],
+      "notes": "无占位符；命中正则由 CC 侧决定。",
+      "dynamic_fact_caveats": []
+    },
+    {
+      "file": "system-reminders/user-sent-new-message.md",
+      "id": "user-sent-new-message",
+      "registry_const": "USER_NEW_MSG_INJECTION",
+      "apply_anchor": "2.1.286 fnShape（hoisted 函数，human case 与 plugin asUser 共用）或旧 `case…:return` 形态",
+      "apply_lines": "systemReminderOverrides.ts:1635-1702",
+      "key_shape": "function NAME(msg){return`${INTRO}${msg}\\n\\n…`} / case 前缀",
+      "declared_placeholders": [
+        "message"
+      ],
+      "used_placeholders": [
+        "message"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return`${msg}`（只输出 message 本体）",
+      "dynamic_expressions_available": [
+        "${H}（mid-turn message 文本）",
+        "case 前缀（auto-continuation/human/void 0/default）"
+      ],
+      "notes": "injection.shadows 硬编码 system-reminder-mid-turn-user-message-surfacing。",
+      "dynamic_fact_caveats": [
+        "作者正文用旧的 imperative 风格 ‘After finishing your current task, address this message.’，替代 2.1.205 起 CC 用的解释性 framing；但 2.1.286 hoist 后 apply patch 的是共享函数，human case 与 plugin asUser 路径会同时受影响。"
+      ]
+    },
+    {
+      "file": "system-reminders/verify-plan-reminder.md",
+      "id": "verify-plan-reminder",
+      "registry_const": "VERIFY_PLAN_INJECTION",
+      "apply_anchor": "findCaseBody('verify_plan_reminder','You have completed implementing the plan')；2.1.187 起空则 no-op",
+      "apply_lines": "systemReminderOverrides.ts:1399-1446",
+      "key_shape": "case verify_plan_reminder",
+      "declared_placeholders": [
+        "plan_verifier_tool"
+      ],
+      "used_placeholders": [
+        "plan_verifier_tool"
+      ],
+      "unused_declared": [],
+      "unsupported_placeholder": [],
+      "empty_behavior": "return [];",
+      "dynamic_expressions_available": [
+        "${J7}（plan-verifier 工具变量，Mac J7 / linux-arm64 J_ 动态发现）"
+      ],
+      "notes": "injection.shadows: system-reminder-verify-plan-reminder。空正文本意为 no automatic verification nudge。",
+      "dynamic_fact_caveats": [
+        "**归属**：follows patch 作者在 systemReminderOverrides.ts L1416-1421 的源码注释（“CC 2.1.187 gutted the verify-plan reminder… survives only as a type label”），非本仓库亲自核验的 CC 版本事实。apply 在 anchor 文本不存在时返回 content（no-op），仅在 anchor 仍在但 shape 漂移时报错；据此该 override 对作者所述 >=2.1.187 的 build 可能为 dead 配置，但版本边界未由本仓库实测。",
+        "作者正文里 `Please call the \"\" tool directly` 引号内为空（应为工具名）——这是对已 checkout 正文的直接观察，不是 runtime 结论。"
+      ]
+    }
+  ],
+  "uncovered_files": [
+    {
+      "file": "system-reminders/mcp-claude-browser.md, mcp-kindly-web-search.md, mcp-magic.md, mcp-openaiDeveloperDocs.md, mcp-sequential-thinking.md, mcp-supabase.md",
+      "reason": "per-server 文件，须本机 discoverMcpServerNames 命中同名 server 才会被 ensureReminderOverrideFile 创建/同步；registry 无独立条目，只由 mcp-per-server-router 在运行时读取。source-only 无法确认本机 server 名。"
+    },
+    {
+      "file": "system-reminders/mcp-per-server-router.md",
+      "reason": "registry 条目存在（MCP_PER_SERVER_ROUTER_INJECTION），但 apply 是 marker 语义（空=关闭路由），非内容替换；运行时行为依赖 mcp-<name>.md 存在，故不计入逐内容 apply 覆盖。"
+    }
+  ],
+  "registry_entries_without_matching_file": [],
+  "synthetic_shadows_not_in_registry_apply": [
+    {
+      "id": "system-prompt-exited-auto-mode",
+      "source": "frontmatter",
+      "declared_by": [
+        "auto-mode-exit.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-prompt-local-command-caveat",
+      "source": "frontmatter",
+      "declared_by": [
+        "local-command-caveat.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-agent-mention",
+      "source": "frontmatter",
+      "declared_by": [
+        "agent-mention.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-compact-file-reference",
+      "source": "frontmatter",
+      "declared_by": [
+        "compact-file-reference.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-exited-plan-mode",
+      "source": "frontmatter",
+      "declared_by": [
+        "plan-mode-exit.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-file-modification-detected-budget-exceeded",
+      "source": "frontmatter",
+      "declared_by": [
+        "edited-text-file.md"
+      ],
+      "in_catalog_2_1_286": false,
+      "classification": "backward-compat alias (2.1.234 前旧名)"
+    },
+    {
+      "id": "system-reminder-file-modified-externally",
+      "source": "frontmatter",
+      "declared_by": [
+        "edited-text-file.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-file-opened-in-ide",
+      "source": "frontmatter",
+      "declared_by": [
+        "opened-file-in-ide.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-large-pdf-read-guidance",
+      "source": "frontmatter",
+      "declared_by": [
+        "pdf-reference.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-lines-selected-in-ide",
+      "source": "frontmatter",
+      "declared_by": [
+        "selected-lines-in-ide.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-plan-file-reference",
+      "source": "frontmatter",
+      "declared_by": [
+        "plan-file-reference.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-question-context",
+      "source": "frontmatter",
+      "declared_by": [
+        "claudemd-context.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-question-context-relevance",
+      "source": "frontmatter",
+      "declared_by": [
+        "claudemd-context.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-session-stop-hook-active",
+      "source": "frontmatter",
+      "declared_by": [
+        "stop-hook-session-goal.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-task-tools-reminder",
+      "source": "frontmatter",
+      "declared_by": [
+        "task-list-reminder.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-token-usage",
+      "source": "frontmatter",
+      "declared_by": [
+        "token-usage.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-usd-budget",
+      "source": "frontmatter",
+      "declared_by": [
+        "budget-usd.md"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-verify-plan-reminder",
+      "source": "frontmatter",
+      "declared_by": [
+        "verify-plan-reminder.md"
+      ],
+      "in_catalog_2_1_286": false,
+      "classification": "removed/absent (patch 作者注释所述 2.1.187 起)"
+    },
+    {
+      "id": "system-reminder-edited-file-changed-since-read",
+      "source": "injection.shadows",
+      "declared_by": [
+        "edited-text-file"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-edited-file-diff-omitted-snippet-budget",
+      "source": "injection.shadows",
+      "declared_by": [
+        "edited-text-file"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-file-modification-detected-budget-exceeded",
+      "source": "injection.shadows",
+      "declared_by": [
+        "edited-text-file"
+      ],
+      "in_catalog_2_1_286": false,
+      "classification": "backward-compat alias (2.1.234 前旧名)"
+    },
+    {
+      "id": "system-reminder-file-modified-externally",
+      "source": "injection.shadows",
+      "declared_by": [
+        "edited-text-file"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-memory-update-loaded-copy-stale",
+      "source": "injection.shadows",
+      "declared_by": [
+        "memory-update"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-task-tools-reminder",
+      "source": "injection.shadows",
+      "declared_by": [
+        "task-list-reminder"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-background-task-event-not-user-input",
+      "source": "injection.shadows",
+      "declared_by": [
+        "task-notification-framing"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    },
+    {
+      "id": "system-reminder-mid-turn-user-message-surfacing",
+      "source": "injection.shadows",
+      "declared_by": [
+        "user-sent-new-message"
+      ],
+      "in_catalog_2_1_286": true,
+      "classification": "active official named prompt id"
+    }
+  ],
+  "apply_wide_caveats": [
+    "applySystemReminderOverrides 的最终 result：next===working 时 applied=false 但 skipped=false（state 依 isSuppressed/是否等于 defaultBody.trim() 定），**不代表原样放行已归类为 skipped**；skipped=true 只在 override 文件缺失（ensure 之后仍读不到）时出现。",
+    "mcp per-server 路由在 empty body 时 __tweakccMcpOverride 返回 null → drop 该 server 整块，这与其他 reminder 的空=[] 静默语义不同；marker 文件空=关闭路由（回 pristine）。",
+    "applySimpleEntry 的 idempotency：若已匹配 `key:(P)=>[]` 则视为已 suppress 直接返回；否则 anchor 失配会 console.error 并返回 null（记为 failed:true）。",
+    "findCaseBody 用 2048 字符窗口 + 括号平衡扫描（并以 anchorEnglish 消歧）；候选定位或括号匹配失败时返回 null 并记为 failed；这不能保证所有 code-shape 漂移都不会误匹配。",
+    "declared vs used 的差异（agent-listing.removed / mcp-instructions.removed_names / local-command-caveat.tag_name / token-usage 3 字段 / selected-lines 4 字段 / opened-file filename / output-token turn+session）说明 frontmatter placeholders 是作者意图清单，正文未使用的名字属作者省略，**不等于 apply 不支持**（三条经 experiments/reminder-placeholders.mjs 的 P01/P02/P03 证伪了“未接线”说法）。",
+    "substitutePlaceholders 只拒绝未知占位符；已知占位符在 token 段替换为 whitelistMap 表达式。`${{x}}` 的端到端结果由 P04 验证为正确的单一货币符号——不要判定为缺陷。",
+    "runtime_verified=false：本轮没有安装 tweakcc-fixed、没有运行 --apply、没有在真实 CC 上触发任何 reminder；fixture 只在内存里执行了若干纯 apply 函数与合成 bundle 形状。"
+  ],
+  "frontmatter_shadow_summary": {
+    "files_with_frontmatter_shadows": 16,
+    "distinct_frontmatter_targets": 18,
+    "frontmatter_targets_absent_from_2_1_286_catalog": [
+      "system-reminder-file-modification-detected-budget-exceeded",
+      "system-reminder-verify-plan-reminder"
+    ],
+    "injection_hardcoded_shadow_entries": [
+      "edited-text-file",
+      "memory-update",
+      "task-list-reminder",
+      "task-notification-framing",
+      "user-sent-new-message"
+    ],
+    "note": "frontmatter shadows 多指向仍存在的官方 named prompt，作用是让 named-prompt pass 跳过这些 id；loadShadowSet 不校验存在性。两个 absent 目标（-file-modification-detected-budget-exceeded、-verify-plan-reminder）属**旧名/向后兼容别名**或已被移除的 prompt，单凭其缺失不构成当前 bug；真正需关注的是 registry 硬编码里*新名*的漂移。"
+  },
+  "field_semantics": {
+    "used_placeholders": "该 overrides 文件正文（checked-in body）实际出现的 {{...}} token；空正文则为空数组。",
+    "declared_placeholders": "文件 frontmatter 声明的 placeholders 列表。",
+    "unused_declared": "声明了但未出现在该文件正文中的名字——是作者正文的省略，不代表 apply 不支持。",
+    "dynamic_fact_caveats": "该 reminder 涉及的动态事实/分支的相对取舍说明（body-relative）：哪些事实在正文里被压缩、改写、保留或受 apply 结构影响。既记 dropped 也记 preserved，不暗示能力缺失。",
+    "unsupported_placeholder": "经离线 fixture 或源码确认确实无法解析/替换的形态；本轮为空或仅记真实缺陷。"
+  }
+}

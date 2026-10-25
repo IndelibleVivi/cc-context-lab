@@ -1,0 +1,72 @@
+{
+  "checked_on": "2026-10-05",
+  "timezone": "Asia/Singapore",
+  "candidate": "experiments/context-profile",
+  "candidate_manifest_version": "0.0.0-uninstalled",
+  "status": "local_source_candidate",
+  "checks": [
+    {
+      "executable_version": "2.1.289",
+      "artifact": "@anthropic-ai/claude-code-darwin-arm64@2.1.289",
+      "artifact_metadata_url": "https://registry.npmjs.org/@anthropic-ai/claude-code-darwin-arm64/2.1.289",
+      "acquisition": "官方 package 解包到本地忽略的 cache；未执行安装脚本或注册全局安装",
+      "entrypoint": "scripts/check_context_profile.py",
+      "offline_status": "passed",
+      "validation": {
+        "command": "plugin validate <candidate> --strict --json",
+        "exit_code": 0,
+        "success": true,
+        "errors": 0,
+        "warnings": 0,
+        "recognized_hooks": [
+          "prompt.section",
+          "tool.describe",
+          "prompt.compose"
+        ],
+        "api_calls": []
+      },
+      "test_kit": {
+        "command": "plugin test <candidate>",
+        "file": "experiments/context-profile/tests/official.test.ts",
+        "exit_code": 0,
+        "passed": 3,
+        "failed": 0,
+        "files": 1,
+        "engine_answers": "explicit synthetic stubs",
+        "verified": [
+          "官方 test kit 加载同一 register(on)，追加 session core 且保留其他 sections",
+          "只改 engine/core Bash description，同名 foreign provider 保留",
+          "未选中与未知 section 中的来源正文保留"
+        ]
+      },
+      "target_types": "not_generated",
+      "request_behavior": "not_tested",
+      "model_behavior": "not_tested",
+      "production_installation": "not_performed",
+      "regression_found": "早先 register = createRegister() 的 factory 导出被官方分析器拒绝；改为直接 export function register(on)，退役 factory 入口后 strict validation 与 tests 通过。"
+    }
+  ],
+  "local_regressions": {
+    "node_command": "node --test experiments/context-profile/tests/register.test.js",
+    "node_version": "26.7.0",
+    "node_passed": 14,
+    "runner_command": "python3 scripts/test_check_context_profile.py",
+    "runner_unittest_methods": 2,
+    "runner_scenarios": 11,
+    "runner_scope": "10种synthetic CLI结果分支，加缺失executable；退出语义、环境隔离、旧types排除与source保留"
+  },
+  "types_reference": {
+    "repo": "anthropics/claude-code",
+    "revision": "2bfb629dfaff0c8318047a4beb93cf1dc5b58b18",
+    "declared_version": "2.1.277",
+    "status": "public_source_reference_only"
+  },
+  "limits": [
+    "仅验证列出的binary与candidate；不保证未来CC版本或其他平台兼容。",
+    "不是OS sandbox；采用独立config与白名单env，执行已审阅module；未做网络抓包。",
+    "官方test kit未生成.claude-plugin/types；存在新声明也须另行阅读，不能仅按文件存在判兼容。",
+    "本文件的offline tests不验证真实engine默认section映射、attachment/detail、compact、resume、subagent或模型语义；后续一次本地composition观察另记录。",
+    "原始命令输出、可执行文件与每次candidate副本留在Git外；本文件仅记录可复用结果。"
+  ],
+  "later_runtime_observation": "target-runtime-2.1.289.json：独立本地命令会话生成目标types，并观察candidate进入真实composition；本文件checks仍记录offline命令本身的结果。"
+}

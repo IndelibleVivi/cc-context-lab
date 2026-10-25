@@ -1,0 +1,277 @@
+{
+  "topic": "agent heartbeat / scheduled wake / external channel 的 context 生命周期",
+  "checked_on": "2026-10-05",
+  "timezone": "Asia/Singapore",
+  "evidence_level": "official_documentation_and_official_generated_types",
+  "runtime_verified": false,
+  "deliverable": "docs/heartbeat-and-channels.md",
+  "revision_note": "Five full official pages plus selected Channels reference sections, and generated 2.1.289 declarations; supersedes network-blocked draft.",
+  "fetched_sources": [
+    {
+      "id": "cc-scheduled-tasks",
+      "url": "https://code.claude.com/docs/en/scheduled-tasks",
+      "title": "Run prompts on a schedule",
+      "kind": "official_documentation",
+      "retrieved_on": "2026-10-05",
+      "read": "full",
+      "key_claims": [
+        "three scheduling options compared: Cloud routines / Desktop scheduled tasks / /loop",
+        "/loop is a bundled prompt-based skill; interval+prompt fixed cron, prompt-only self-paced (1min-1h), interval-only or bare uses built-in maintenance prompt or loop.md",
+        "seconds rounded up to minute; 7m/90m rounded to nearest clean cron step and reported",
+        "loop.md at .claude/loop.md (project precedence) or ~/.claude/loop.md; truncated beyond 25000 bytes; edits take effect next iteration",
+        "stop self-paced loop with Esc (clears pending wakeup) or ScheduleWakeup stop:true; if an iteration neither reschedules nor stops, one fallback wakeup ~20 min later; fixed-interval loops run until cancelled or 7 days",
+        "scheduler checks every second and enqueues at low priority; a scheduled prompt fires between turns, waits until the current turn ends if Claude is busy",
+        "no catch-up for missed fires: fires once when idle, not once per missed interval",
+        "jitter: recurring up to 30 min late (or half the interval for sub-hourly); one-shot on the hour/half-hour up to 90 s early; offset derived from task ID",
+        "recurring tasks auto-expire 7 days after creation; they fire one final time then delete themselves",
+        "all times interpreted in local timezone",
+        "cron: standard 5-field, wildcards/steps/ranges/lists; no L/W/?/MON/JAN; DOM+DOW constrained uses vixie-cron OR semantics",
+        "CLAUDE_CODE_DISABLE_CRON=1 disables the scheduler entirely",
+        "session-scoped; --resume/--continue restores unexpired CronCreate tasks except expired recurring and past one-shot; self-paced /loop is NOT restored; background Bash and monitor tasks never restored",
+        "durable path stores task in project .claude/scheduled_tasks.json; symlinked .claude or that file returns an error; saved task runs only in the project folder where created, listing elsewhere but not running",
+        "8-character task ID; max 50 scheduled tasks per session",
+        "tools: CronCreate, CronList, CronDelete"
+      ],
+      "placement_recheck": {
+        "checked_on": "2026-10-05",
+        "read": "limitations and busy/idle scheduling sections rechecked",
+        "claim": "Documented runtime idle/busy does not establish a conversation-level chat_active detector. Our lab treats these as separate explicit inputs."
+      }
+    },
+    {
+      "id": "cc-channels",
+      "url": "https://code.claude.com/docs/en/channels",
+      "title": "Push events into a running session with channels",
+      "kind": "official_documentation",
+      "retrieved_on": "2026-10-05",
+      "read": "full",
+      "key_claims": [
+        "channel = an MCP server that pushes events into a running session; can be two-way (Claude replies back through the same channel)",
+        "events arrive only while the session is open; run CC in a background process or persistent terminal for always-on",
+        "research preview; needs claude.ai or Console API key auth; unavailable on Bedrock, Google Cloud Agent Platform, Microsoft Foundry; Team/Enterprise must enable",
+        "--channels and --dangerously-load-development-channels do not appear in claude --help during preview but work",
+        "install as plugin (telegram/discord/imessage/fakechat@claude-plugins-official); creds saved to ~/.claude/channels/<name>/.env; channel plugins require Bun",
+        "terminal shows an inbound channel line; the model receives a <channel source=\"plugin:...\"> event using the scoped server name",
+        "terminal shows the tool call and a confirmation (e.g. 'sent'); the actual reply appears on the other platform, not in the terminal",
+        "permission prompt while away pauses the session; channel servers declaring the permission relay capability can forward prompts for remote approve/deny",
+        "each approved channel plugin maintains a sender allowlist; others are silently dropped",
+        "being in .mcp.json is not enough; a server must also be named in --channels",
+        "the allowlist also gates permission relay: anyone who can reply through the channel can approve or deny tool use",
+        "channelsEnabled master switch; allowedChannelPlugins replaces the Anthropic allowlist; empty array blocks allowlist plugins but --dangerously-load-development-channels can still bypass for local testing; leave channelsEnabled unset to block channels entirely including the dev flag",
+        "claude.ai Team/Enterprise blocked until Owner enables; Console API key allowed by default unless the organization deploys managed settings (then explicit enablement required); Pro/Max without an org skip these checks",
+        "a plugin not on the allowlist starts normally but the channel does not register, with a startup notice",
+        "on the v2 MCP client runtime, a channel server negotiating protocol revision 2026-07-28 does not register"
+      ]
+    },
+    {
+      "id": "openclaw-heartbeat",
+      "url": "https://docs.openclaw.ai/gateway/heartbeat",
+      "title": "Heartbeat",
+      "kind": "official_documentation",
+      "retrieved_on": "2026-10-05",
+      "read": "full",
+      "key_claims": [
+        "heartbeat is a system-owned automation running periodic agent turns in the main session",
+        "cadence owned by the Automations scheduler; one system-owned automation job per heartbeat-enabled agent, visible in 'openclaw cron list --all' as 'Heartbeat (agent-id)'; config is desired-state input, persisted monitor schedule owns the tick and runner cooldown",
+        "default interval 30m, 1h when Anthropic OAuth/token auth resolved, only while heartbeat.every unset; 0m disables recurring cadence",
+        "scheduled heartbeats require automations; cron.enabled=false or OPENCLAW_SKIP_CRON=1 logs a startup warning and skips scheduled heartbeats; no separate heartbeat fallback timer",
+        "targeted event wakes remain; rate limits 30-second minimum between event turns and a flood guard after five starts within 60 seconds",
+        "default prompt sent verbatim as the scheduled user message; no heartbeat-specific system-prompt section",
+        "scheduled heartbeats defer while main queue/automation work is active or queued, any reply/embedded run for the same agent is active, or the target session has active or queued work; an event-free plain monitor poll not yet preparing is recorded as skipped and waits for the next persisted cadence tick; wakes carrying queued events/scheduled tasks still retry; sibling agents do not pause each other",
+        "'Jobs due together can coalesce into one heartbeat turn.'",
+        "response contract: reply NO_REPLY when nothing needs attention; heartbeat_respond notify:false (silent) or notify:true + notificationText (alert); structured tool response takes precedence over text fallback",
+        "a meaningful notify:false result is remembered as bounded internal context for the next user turn; no_change acknowledgments and confirmed visible notifications are not stored that way",
+        "legacy HEARTBEAT_OK accepted at start or end of a reply, dropped when remaining content <=300 chars; not special in the middle",
+        "visibility flags showOk/showAlerts/useIndicator (per-account -> per-channel -> defaults); if all three false the run is skipped up front (no model call), reason=alerts-disabled",
+        "heartbeat-only replies do not keep the session alive; idle expiry uses lastInteractionAt, daily expiry uses sessionStartedAt",
+        "if a channel readiness check blocks an alert, non-delivery is recorded and the heartbeat retries after a one-minute grace period without consuming its cadence slot; the retry re-runs the heartbeat, it does not replay the exact alert; once a send enters the durable delivery queue that queue owns transport retries",
+        "empty scratch (only blank lines, comments, headings, fence markers, empty checklist stubs) skips the run, reason=empty-heartbeat-file",
+        "isolatedSession:true runs each heartbeat in a fresh session with no prior conversation history; lightContext:true skips workspace bootstrap files; monitor scratch injected either way",
+        "heartbeat target: owner (default, operator DM, never a group), last, an explicit channel, or none; without a resolvable owner DM ambient polls skip reason=no-route",
+        "migration: openclaw doctor --fix creates/updates monitor rows from agents.*.heartbeat and imports workspace HEARTBEAT.md into monitor scratch; runtime reads database scratch only"
+      ],
+      "not_written_because_not_stated": [
+        "exact retry/backoff internals beyond the one-minute grace and durable queue ownership",
+        "response shapes of any tool beyond heartbeat_respond's notify/notificationText/scratch"
+      ],
+      "placement_recheck": {
+        "checked_on": "2026-10-05",
+        "read": "field notes, busy guards, session/target routing rechecked",
+        "claim": "session/isolatedSession select execution context; target/to select delivery. Isolated context does not itself bypass documented busy guards or prove concurrent execution during active main chat."
+      }
+    },
+    {
+      "id": "openclaw-cron-jobs",
+      "url": "https://docs.openclaw.ai/automation/cron-jobs",
+      "title": "Automations",
+      "kind": "official_documentation",
+      "retrieved_on": "2026-10-05",
+      "read": "full (index page only)",
+      "key_claims": [
+        "automations are OpenClaw's built-in scheduler; it persists jobs, wakes the agent at the right time, and can deliver output to a chat channel, a webhook, or nowhere",
+        "manage with 'openclaw automations'; 'openclaw cron' remains an alias",
+        "supports one-shot reminders, recurring intervals and cron expressions, and inbound webhook triggers",
+        "CLI: automations create/get/show/list/runs; quickstart one-shot reminder with --session main --system-event --wake now --delete-after-run",
+        "this page is an index: run lifecycle, schedules, payloads, delivery, managing-jobs, webhooks, gmail are child pages"
+      ],
+      "coverage_limit": "child pages (cron-jobs/how-it-works, schedules, payloads, delivery, managing-jobs, webhooks, gmail) NOT fetched; their details were not written"
+    },
+    {
+      "id": "openclaw-cron-vs-heartbeat",
+      "url": "https://docs.openclaw.ai/automation/cron-vs-heartbeat",
+      "title": "Automation",
+      "kind": "official_documentation",
+      "retrieved_on": "2026-10-05",
+      "read": "full",
+      "key_claims": [
+        "decision table: automations vs heartbeat monitor automation",
+        "automations: one-shot/interval/cron; isolated/current/named/main session; channel/webhook/silent; explicit reports/reminders/recurring work",
+        "heartbeat: scheduler-owned interval default 30min; main session (optionally isolated); owner-routed alerts or silent; ambient monitoring and event follow-up",
+        "both use the same Automations scheduler",
+        "empty scratch skips as empty-heartbeat-file; scheduled monitor turns defer while the main queue or automation work is busy, another run for the same agent is active, or the target session has active or queued work",
+        "inferred commitments removed in v2026.8.1; the openclaw commitments CLI is gone; create an explicit automation instead"
+      ]
+    },
+    {
+      "id": "cc-channels-reference",
+      "url": "https://code.claude.com/docs/en/channels-reference",
+      "retrieved_on": "2026-10-05",
+      "read": "selected sections: capabilities, notification format, reply tools, permission relay fields; not full examples",
+      "key_claims": [
+        "notifications/claude/channel content is tagged body, meta supplies attributes",
+        "transport write has no processed ack; busy notifications may be delivered together next turn",
+        "reply uses a server-provided MCP tool; capability and sender authentication gate permission relay"
+      ]
+    }
+  ],
+  "target_build_generated_types": {
+    "build": "2.1.289",
+    "evidence_level": "official_generated_declarations_from_synthetic_local_session",
+    "real_model_calls": false,
+    "runtime_verified": false,
+    "files": [
+      "claude-code/index.d.ts",
+      "claude-code-tools/index.d.ts"
+    ],
+    "first_line": "// Written by Claude Code 2.1.289.",
+    "symbols_checked": [
+      "UserPromptSubmitHookInput.source (closed set, includes loop_wakeup / schedule_wakeup / poll_event)",
+      "Stop/SubagentStop background_tasks? and session_crons?",
+      "SessionCronSummary (id/schedule/recurring/prompt)",
+      "CronCreate / CronDelete / CronList tool inputs and results",
+      "ScheduleWakeup tool input and result",
+      "PromptOrigin.kind (includes channel with server)",
+      "PromptAttachmentOrigin",
+      "SessionReceiveInput / SessionReceiveOrigin"
+    ],
+    "calibration_findings": [
+      "UserPromptSubmitHookInput.source, Stop session_crons/background_tasks, SessionCronSummary, CronCreate, ScheduleWakeup, PromptOrigin: consistent with the public 2.1.277 declarations",
+      "SessionReceiveOrigin: CHANGED. 2.1.289 no longer lists a 'channel' kind; 'peer'/'coordinator' are split into variants carrying plugin?, teammate, isVerified, and a new agent-team mailbox origin exists. Do not copy the old SessionReceiveOrigin channel kind.",
+      "CronCreate.durable type comment says default in-memory; current docs promise eligible CronCreate task restoration on resume without that qualification. Do not infer only durable tasks can resume; actual branch behavior untested.",
+      "UserPromptSubmit.source is optional during rollout; system includes peer/channel. Missing source is not proof of a human author."
+    ],
+    "caveat": "Generated in a real local command session; no scheduler/channel/real-model execution.",
+    "evidence_record": "target-runtime-2.1.289.json"
+  },
+  "not_fetched": [
+    "https://code.claude.com/docs/en/goal",
+    "https://code.claude.com/docs/en/mcp",
+    "https://docs.openclaw.ai/automation/cron-jobs/how-it-works",
+    "https://docs.openclaw.ai/automation/cron-jobs/schedules",
+    "https://docs.openclaw.ai/automation/cron-jobs/payloads",
+    "https://docs.openclaw.ai/automation/cron-jobs/delivery",
+    "https://docs.openclaw.ai/automation/cron-jobs/managing-jobs",
+    "https://docs.openclaw.ai/automation/cron-jobs/webhooks",
+    "https://docs.openclaw.ai/automation/cron-jobs/gmail",
+    "https://docs.openclaw.ai/automation/hooks",
+    "https://docs.openclaw.ai/automation/standing-orders"
+  ],
+  "previously_cached_official_docs_used_for_cross_reference": [
+    "https://code.claude.com/docs/en/hooks (session_crons / background_tasks / UserPromptSubmit triggers / Notification idle_prompt / asyncRewake)",
+    "https://code.claude.com/docs/en/cli-reference (--channels, --dangerously-load-development-channels)",
+    "https://code.claude.com/docs/en/env-vars (CLAUDE_CODE_DISABLE_CRON, MESSAGING_SOCKET/TOKEN, STOP_HOOK_BLOCK_CAP, USER_DIALOG_TIMEOUT_MS)",
+    "https://code.claude.com/docs/en/plugins/mods/api (session.receive / session.send)",
+    "https://code.claude.com/docs/en/plugins/mods/reference",
+    "https://code.claude.com/docs/en/commands (/loop, /schedule)",
+    "https://code.claude.com/docs/en/skills (bundled skills are prompt-based)",
+    "https://code.claude.com/docs/en/changelog (selected entries only; not a full audit)"
+  ],
+  "mechanism_taxonomy": [
+    {
+      "layer": "process_liveness_heartbeat",
+      "classifier": "n/a",
+      "example": "tool heartbeats to SDK hosts",
+      "notes": "liveness only; no model call implied"
+    },
+    {
+      "layer": "scheduled_tick",
+      "classifier": "scheduled-trigger / schedule_wakeup",
+      "example": "CronCreate job",
+      "notes": "enqueued at low priority; fires between turns"
+    },
+    {
+      "layer": "agent_self_wake_turn",
+      "classifier": "loop_wakeup",
+      "example": "ScheduleWakeup fires, /loop re-enters skill",
+      "notes": "turn exists; completion and delivery not implied"
+    },
+    {
+      "layer": "message_arrival_wake",
+      "classifier": "peer / peer-send-message / channel / task-notification",
+      "example": "cross-session message, MCP channel notification",
+      "notes": "goes through inbound controls; may be held/refused"
+    },
+    {
+      "layer": "external_delivery",
+      "classifier": "n/a",
+      "example": "channel reply, permission relay, owner alert",
+      "notes": "delivery failure can trigger re-run (not exact replay)"
+    }
+  ],
+  "openclaw_comparison": {
+    "status": "done",
+    "sessions": {
+      "heartbeat": "main session by default; optionally isolated",
+      "automations": "isolated, current, named, or main session"
+    },
+    "quiet_noop": {
+      "heartbeat": "reply NO_REPLY; heartbeat_respond notify:false; legacy HEARTBEAT_OK suppressed at start/end; visibility flags can skip the whole run (no model call)",
+      "automations": "can deliver output to a chat channel, a webhook, or nowhere"
+    },
+    "busy_coalescing_missed_wake": {
+      "heartbeat": "defer while main/automation queue or same-agent run or target session is busy; event-free unprepared poll recorded as skipped and waits for next cadence tick; 'jobs due together can coalesce into one heartbeat turn'; sibling agents do not pause each other",
+      "automations": "not written (in unfetched child pages)"
+    },
+    "restart_persistence": {
+      "heartbeat": "gateway maintains a system-owned monitor row, written at startup and config reload; doctor --fix can materialize missing/stale rows",
+      "automations": "scheduler persists jobs; one-shot supports --delete-after-run"
+    },
+    "delivery_target": {
+      "heartbeat": "owner (default operator DM, never a group), last, explicit channel, or none; no-route skip when no owner DM",
+      "automations": "channel, webhook, or nowhere"
+    },
+    "retry": {
+      "heartbeat": "blocked alert -> record non-delivery, retry after one-minute grace without consuming cadence slot (re-runs heartbeat, not exact replay); durable delivery queue owns transport retries",
+      "automations": "not written (in unfetched child pages)"
+    }
+  },
+  "synthetic_experiments_design_only": {
+    "executed": false,
+    "cases": [
+      "busy defer + no catch-up (single fire after turn ends)",
+      "repeated no-op tick coalescing",
+      "origin disambiguation across user / loop_wakeup / schedule_wakeup / system",
+      "delivery-unknown (queued + isDelivered:false) and OpenClaw-style blocked-alert one-minute re-run",
+      "closed (CronDelete) not back-inferred to never-created",
+      "seven-day expiry: final fire then self-delete"
+    ],
+    "rejection_conditions": [
+      "counting tick, model call, delivery as one",
+      "treating channel/peer injection as the user",
+      "treating an empty array as absence of mechanism",
+      "using transcript growth as delivery evidence",
+      "treating unfetched OpenClaw child pages as confirmed defaults"
+    ]
+  },
+  "verification_scope": "Official documents and selected target-generated declarations. Scheduler/channel runtime not exercised. A separate local slash-command composition probe generated the types without a real model call; no install/VPS/publishing."
+}

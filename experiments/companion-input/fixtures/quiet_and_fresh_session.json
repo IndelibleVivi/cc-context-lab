@@ -1,0 +1,247 @@
+{
+  "scenario_id": "quiet_and_fresh_session_v1",
+  "title": "Quiet stretch, chat_active gap, and fresh-session boundary scenario",
+  "description": "Same synthetic clock convention (seconds after start). Focused on a quiet period, a chat_active gap where turn_busy is false, and the same/fresh history difference. Invented data only.",
+  "assumptions": "turn_busy (busy_interval) and chat_active (chat_interval) are separate supplied facts; chat_interval extends past the turn so autonomous opportunities during the gap target the placement rule, not a finished response.",
+  "shared": {
+    "main_session": "main-quiet",
+    "independent_session": "indep-quiet",
+    "idle_definition": "observed_runtime/user activity only as fixture-defined"
+  },
+  "policies": [
+    {
+      "id": "P1_fixed_interval",
+      "kind": "fixed_interval",
+      "label": "fixed interval",
+      "interval_seconds": 300,
+      "assumptions": "Fixed opportunities every 300 seconds, starting at zero; placement controls execution."
+    },
+    {
+      "id": "P2_jittered_interval",
+      "kind": "jittered_interval",
+      "label": "explicitly seeded/listed jittered interval",
+      "interval_seconds": 300,
+      "jitter_offsets_seconds": [
+        120,
+        -90,
+        45,
+        -30
+      ],
+      "assumptions": "Every 300 seconds plus the listed repeating offset array; not random samples."
+    },
+    {
+      "id": "P3_event_driven",
+      "kind": "event_driven",
+      "label": "event driven",
+      "events": [
+        "human_message",
+        "ambient",
+        "memory"
+      ],
+      "assumptions": "Supplied human, ambient and memory arrivals propose autonomous opportunities, independently of the ordinary human reply loop. Internal outputs do not trigger themselves."
+    },
+    {
+      "id": "P4_self_scheduled_one_shots",
+      "kind": "self_wake",
+      "label": "self-scheduled one-shots",
+      "assumptions": "Only fixture self-wake plans; consumed once."
+    },
+    {
+      "id": "P5_idle_window",
+      "kind": "idle_window",
+      "label": "idle-window trigger",
+      "idle_after_seconds": 1200,
+      "assumptions": "One opportunity after a complete quiet observation window; sampled at fixture ticks. No inference about sleep, mood, or contact need."
+    },
+    {
+      "id": "P6_hybrid",
+      "kind": "hybrid",
+      "label": "hybrid timer/event/self-wake",
+      "assumptions": "Ticks + events + self-wake as raw candidates; coalescing owned by placement.",
+      "interval_seconds": 300
+    }
+  ],
+  "placements": [
+    {
+      "id": "PL_main_skip",
+      "rule": "main_skip",
+      "target": "main",
+      "label": "main_skip",
+      "assumptions": "LAB CHOICE. Skip autonomous opportunities during chat_active."
+    },
+    {
+      "id": "PL_main_defer",
+      "rule": "main_defer",
+      "target": "main",
+      "label": "main_defer",
+      "assumptions": "LAB CHOICE. Coalesce and rebuild after chat_active ends."
+    },
+    {
+      "id": "PL_independent",
+      "rule": "independent",
+      "target": "independent",
+      "label": "independent",
+      "assumptions": "LAB CHOICE. Run in a separate autonomous session during chat_active; no main writes.",
+      "read_only_main_snapshots": [
+        "msg_first"
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "id": "observation-0",
+      "type": "tick",
+      "t": 0
+    },
+    {
+      "id": "amb_weather_q",
+      "type": "ambient",
+      "t": 120,
+      "observed_at": 120,
+      "expires_at": 900,
+      "text": "weather (synthetic): clear night, 18C"
+    },
+    {
+      "id": "msg_first",
+      "type": "human_message",
+      "t": 300,
+      "channel": "imessage",
+      "sender": "user",
+      "sender_time": 295,
+      "reply_target": "thread:self",
+      "attachment": null,
+      "body": "heading to bed soon (synthetic)"
+    },
+    {
+      "id": "observation-300",
+      "type": "tick",
+      "t": 300
+    },
+    {
+      "id": "observation-600",
+      "type": "tick",
+      "t": 600
+    },
+    {
+      "id": "observation-900",
+      "type": "tick",
+      "t": 900
+    },
+    {
+      "id": "observation-1200",
+      "type": "tick",
+      "t": 1200
+    },
+    {
+      "id": "chat_q",
+      "type": "chat_interval",
+      "t": 1260,
+      "end": 1800,
+      "note": "chat_active spans past the turn: 1500-1800 has turn_busy=false but chat_active=true"
+    },
+    {
+      "id": "busy_q",
+      "type": "busy_interval",
+      "t": 1320,
+      "end": 1500,
+      "note": "turn_busy inside the chat gap"
+    },
+    {
+      "id": "observation-1500",
+      "type": "tick",
+      "t": 1500
+    },
+    {
+      "id": "observation-1800",
+      "type": "tick",
+      "t": 1800
+    },
+    {
+      "id": "mem_q1",
+      "type": "memory",
+      "t": 2000,
+      "text": "note (synthetic): user mentioned an early meeting tomorrow"
+    },
+    {
+      "id": "observation-2100",
+      "type": "tick",
+      "t": 2100
+    },
+    {
+      "id": "observation-2400",
+      "type": "tick",
+      "t": 2400
+    },
+    {
+      "id": "internal_q1",
+      "type": "internal",
+      "t": 2600,
+      "body": "internal-only note (synthetic): remember the early meeting when waking"
+    },
+    {
+      "id": "sw_quiet",
+      "type": "self_wake",
+      "t": 2600,
+      "planned_for": 3600,
+      "reason": "fixture plan: quiet morning check-in (synthetic)",
+      "carryover": [
+        "internal_q1",
+        "msg_first"
+      ]
+    },
+    {
+      "id": "observation-2700",
+      "type": "tick",
+      "t": 2700
+    },
+    {
+      "id": "observation-3000",
+      "type": "tick",
+      "t": 3000
+    },
+    {
+      "id": "observation-3300",
+      "type": "tick",
+      "t": 3300
+    },
+    {
+      "id": "observation-3600",
+      "type": "tick",
+      "t": 3600
+    },
+    {
+      "id": "observation-3900",
+      "type": "tick",
+      "t": 3900
+    },
+    {
+      "id": "end",
+      "type": "run_end",
+      "t": 4000,
+      "note": "silent end"
+    },
+    {
+      "id": "observation-4200",
+      "type": "tick",
+      "t": 4200
+    }
+  ],
+  "outcomes": [
+    {
+      "trigger": "P6_hybrid",
+      "wake_scope": "policy",
+      "scripted_outcome": "internal_only",
+      "next_wake_plan": "none",
+      "note": "Illustrative silent/internal activity. Actual scripted result production is separately traced after each input packet."
+    },
+    {
+      "trigger": "sw_quiet",
+      "wake_scope": "wake",
+      "scripted_outcome": "silent",
+      "external_delivery": "none",
+      "next_wake_plan": "none",
+      "note": "illustrative: a wake may end silently with no outward contact"
+    }
+  ],
+  "duration_seconds": 4200
+}

@@ -1,52 +1,183 @@
 {
-  "checked_on": "2026-10-03",
+  "checked_on": "2026-10-05",
   "evidence_level": "official_documentation",
   "runtime_verified": false,
   "sources": [
     {
       "url": "https://code.claude.com/docs/en/cli-reference",
       "retrieval_url": "https://code.claude.com/docs/en/cli-reference.md",
-      "coverage": "替换/追加、snapshot、普通/fork subagent 与动态分界"
+      "coverage": "替换/追加、snapshot、普通/fork subagent 与动态分界",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/env-vars",
       "retrieval_url": "https://code.claude.com/docs/en/env-vars.md",
-      "coverage": "六个 context 来源开关"
+      "coverage": "六个 context 来源开关",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts",
       "retrieval_url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts.md",
-      "coverage": "system 以外的提醒、工具描述、观察限制"
+      "coverage": "system 以外的提醒、工具描述、观察限制",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/plugins/mods/reference",
       "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/reference.md",
-      "coverage": "prompt/tool/skill/session 事件与 build 类型 authority"
+      "coverage": "reference基线2.1.289；compact事件/API与build类型authority，其他原有prompt/tool核对为10/03",
+      "checked_on": "2026-10-05"
     },
     {
       "url": "https://code.claude.com/docs/en/plugins/mods/test",
       "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/test.md",
-      "coverage": "离线 test kit 的无模型/stub 合同"
+      "coverage": "strict validator/JSON、test kit无session/signin/network、显式engine stubs与on注册时序；已实跑范围另记compatibility record",
+      "checked_on": "2026-10-05"
     },
     {
       "url": "https://code.claude.com/docs/en/plugins/mods/troubleshoot",
       "retrieval_url": "https://code.claude.com/docs/en/plugins/mods/troubleshoot.md",
-      "coverage": "加载、远程关闭、handler 跳过"
+      "coverage": "加载、远程关闭、handler 跳过",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/headless",
       "retrieval_url": "https://code.claude.com/docs/en/headless.md",
-      "coverage": "bare mode 的认证、发现与执行差异"
+      "coverage": "bare mode 的认证、发现与执行差异",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/monitoring-usage",
       "retrieval_url": "https://code.claude.com/docs/en/monitoring-usage.md",
-      "coverage": "raw request file mode、project settings 与隐私边界"
+      "coverage": "raw request file mode、project settings 与隐私边界",
+      "checked_on": "2026-10-03"
     },
     {
       "url": "https://code.claude.com/docs/en/changelog",
       "retrieval_url": "https://code.claude.com/docs/en/changelog.md",
-      "coverage": "仅核对 2.1.287 Mods 与相邻版本相关变更，不声称全文审阅"
+      "coverage": "仅核对 2.1.287 Mods 与相邻版本相关变更，不声称全文审阅",
+      "checked_on": "2026-10-03"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/how-claude-code-works",
+      "checked_on": "2026-10-05",
+      "coverage": "context/session/fork、compact focus与Compact Instructions",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/hooks",
+      "checked_on": "2026-10-05",
+      "coverage": "PreCompact/PostCompact/SessionStart及context注入合同；10/04另核additionalContext包装与10000字符边界，非全文审阅；10/05新核matching hooks并行、historical additionalContext resume重放",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+      "checked_on": "2026-10-04",
+      "coverage": "服务端清理与缓存前缀影响；未执行 API",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+      "checked_on": "2026-10-04",
+      "coverage": "overview 中 on-demand / threshold / 自管摘要与近期原话对照；未审全部子页面",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "checked_on": "2026-10-04",
+      "coverage": "context reset 的模型相关性；作者实验报告，未复现",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/commands",
+      "retrieval_url": "https://code.claude.com/docs/en/commands.md",
+      "checked_on": "2026-10-05",
+      "coverage": "内置compact/autocompact命令条目",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/context-window",
+      "retrieval_url": "https://code.claude.com/docs/en/context-window.md",
+      "checked_on": "2026-10-05",
+      "coverage": "What survives compaction、来源重载、skill保留预算；不把页面交互demo当engine源码",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/memory",
+      "retrieval_url": "https://code.claude.com/docs/en/memory.md",
+      "checked_on": "2026-10-05",
+      "coverage": "Instructions seem lost after compact：根与nested加载区别",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/skills",
+      "retrieval_url": "https://code.claude.com/docs/en/skills.md",
+      "checked_on": "2026-10-05",
+      "coverage": "Skill content lifecycle；compact不是Skill工具调用",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/checkpointing",
+      "retrieval_url": "https://code.claude.com/docs/en/checkpointing.md",
+      "checked_on": "2026-10-05",
+      "coverage": "局部summarize与工作区文件/原历史区别；未证Mods映射",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins/mods/create",
+      "checked_on": "2026-10-05",
+      "coverage": "mod目录加载/重载自动生成.claude-plugin/types；create.md请求403后HTML成功读取，未核实/plugin-types命令",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins/mods/api",
+      "checked_on": "2026-10-05",
+      "coverage": "prompt.compose完整输入、tool.describe与prompt.section调用形状；只核candidate所需路径；10/05补读clock timers、prompt.submit、session.send、UI-only输出与reload生命周期",
+      "runtime_verified": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/channels-reference",
+      "checked_on": "2026-10-05",
+      "coverage": "选读server capabilities/instructions、notification content/meta、transport无处理ack、busy批量交付、reply tool与permission relay字段；未运行示例或审全文",
+      "runtime_verified": false
     }
-  ]
+  ],
+  "source_snapshots": [
+    {
+      "repo": "anthropics/claude-code",
+      "revision": "52c76441cae91f6891e4712306bffb057ff6fec5",
+      "retrieved_on": "2026-10-03",
+      "declared_types_version": "2.1.277",
+      "documentation_baseline": "2.1.287",
+      "runtime_verified": false,
+      "examined_paths": [
+        "mods/types/claude-code.d.ts",
+        "mods/agents-md/README.md",
+        "mods/agents-md/hooks/register.ts",
+        "mods/agents-md/hooks/index.ts",
+        "mods/agents-md/hooks/frames/nested-frame.ts",
+        "mods/agents-md/hooks/files/is-claude-file-on-walk.ts",
+        "mods/agents-md/hooks/files/is-kept-without-instructions.ts",
+        "mods/agents-md/hooks/files/with-project-files.ts"
+      ],
+      "coverage": "Types: prompt/attachment/context/compose, instructionFiles, agent offer/spawn, tool.describe and compact sections only. agents-md: README, registration and selected helpers; no runtime or official tests.",
+      "url": "https://github.com/anthropics/claude-code/tree/52c76441cae91f6891e4712306bffb057ff6fec5/mods",
+      "caveat": "Published types have no attachment.detail, despite newer reference describing a subset. Target 2.1.289 declarations were later generated and selectively read; see target-runtime-2.1.289.json."
+    },
+    {
+      "repo": "anthropics/claude-code",
+      "revision": "2bfb629dfaff0c8318047a4beb93cf1dc5b58b18",
+      "retrieved_on": "2026-10-05",
+      "declared_types_version": "2.1.277",
+      "documentation_baseline": "2.1.289",
+      "runtime_verified": false,
+      "examined_paths": [
+        "mods/types/claude-code.d.ts"
+      ],
+      "coverage": "Compact input/result/trigger/args；SessionMessage.handle；session.compact API/loop；classic PreCompact/PostCompact/SessionStart及context字段。不是types全文或新版本runtime审计。",
+      "url": "https://github.com/anthropics/claude-code/blob/2bfb629dfaff0c8318047a4beb93cf1dc5b58b18/mods/types/claude-code.d.ts",
+      "caveat": "公开types仍旧；后续已生成并补读2.1.289目标声明，见target-runtime-2.1.289.json；实际请求未取得。"
+    }
+  ],
+  "verification_scope": "本文件为官方文档/source reading；官方offline binary结果另见context-profile-compatibility.json，runtime_verified=false指真实模型会话未验证。",
+  "target_generated_declarations": "target-runtime-2.1.289.json"
 }

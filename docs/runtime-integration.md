@@ -27,3 +27,11 @@
 标记式 transcript pruner 和默认 harness 改写是相邻问题。前者可以针对自己的 `hook_additional_context` 清空旧正文并保留记录链条；它不自动移除原厂主提示，也不证明当前进程会重读磁盘。验证时同时观察文件结果和之后实际发出的 request，保留非目标消息与可恢复原件。
 
 当前不执行真实 transcript 改写。离线 fixture 足以验证选择逻辑；进程内历史行为仍需单独实验。
+
+历史教程的有界原函数复现现见 [Context retention](context-retention.md)：settings 中多个 hooks 的排列不能保证顺序；捕获写异常不等于原文件未变。同 inode / advisory lock 与 producer 串联分别解决部分问题，均不能替代活跃进程的下一次 request 验收。本轮没有把研究发现应用到任何生产 pruner。
+
+## Forge / Swap 的 source 定位
+
+已有应用若拥有 canonical ledger 与 lifecycle controller，优先核对它的完整回合选择、handoff artifact、provider adapter、SessionStart mount 和失败恢复。仅找到一个 `rebuild` 文件不足以确认 Forge：quarantine 后重建和主动续窗可能是不同入口。操作的真实语义见 [continuity and memory](continuity-and-memory.md)，不要直接沿用社区同名命令。
+
+本专题已只读核对现有自有实现并运行相关本地合成回归；机器映射、配对 working-tree 状态与详细结果留在 Git 外的既有 continuity。研究库不复制另一 repo 的 controller 或私有配置。下一次接入前仍需核对目标 CLI、writer 的实际工具池、system snapshot、hook 真实交付与普通下一轮行为；本地 receipt 只证明其记录的准备阶段。

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Context Atlas · Harness Context Engineering Lab</title>
+<link rel="icon" href="data:,">
+<!-- ATLAS_STYLE -->
+</head>
+<body>
+<a class="skip-link" href="#atlas-main">跳到主内容</a>
+
+<header class="masthead" id="atlas-masthead">
+  <div class="masthead__rule" aria-hidden="true"></div>
+  <div class="masthead__row">
+    <div class="masthead__brand">
+      <span class="masthead__kicker">Harness Context Engineering Lab · 本地研究视图</span>
+      <h1 class="masthead__title" id="atlas-title">Context Atlas</h1>
+      <p class="masthead__sub" id="atlas-intro">把 context 的来源、装配、生命周期与交付放在一起读。</p>
+    </div>
+    <div class="masthead__meta" id="atlas-meta" aria-label="数据快照信息">
+      <span class="chip chip--snapshot" id="atlas-snapshot-chip">本地快照 · 合成回放数据</span>
+      <span class="chip" id="atlas-date-chip">日期 —</span>
+    </div>
+  </div>
+  <nav class="tabbar" id="atlas-tabbar" aria-label="视图切换">
+    <div class="tabbar__tabs" role="tablist" aria-orientation="horizontal">
+      <button class="tab" role="tab" id="tab-overview" data-tab="overview"
+              aria-controls="panel-overview" aria-selected="true" tabindex="0">全景</button>
+      <button class="tab" role="tab" id="tab-replay" data-tab="replay"
+              aria-controls="panel-replay" aria-selected="false" tabindex="-1">回放</button>
+      <button class="tab" role="tab" id="tab-study" data-tab="study"
+              aria-controls="panel-study" aria-selected="false" tabindex="-1">对照研究</button>
+      <button class="tab" role="tab" id="tab-observation" data-tab="observation"
+              aria-controls="panel-observation" aria-selected="false" tabindex="-1">请求观察</button>
+      <button class="tab" role="tab" id="tab-change" data-tab="change"
+              aria-controls="panel-change" aria-selected="false" tabindex="-1">变更推演</button>
+      <button class="tab" role="tab" id="tab-sources" data-tab="sources"
+              aria-controls="panel-sources" aria-selected="false" tabindex="-1">来源</button>
+    </div>
+  </nav>
+</header>
+
+<main id="atlas-main" class="atlas-main">
+
+  <!-- ============================= 全景 ============================= -->
+  <section class="panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" data-panel="overview" tabindex="-1">
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <h2 class="panel__title">全景 · 一个 context 环节从哪来、去哪</h2>
+        <p class="panel__lede">沿 来源 → 本轮装配 → 会话延续 → 活动与交付，追踪一个环节的入口、归属、证据与影响。箭头表达研究关系。</p>
+      </div>
+      <div class="panel__controls" id="overview-controls">
+        <div class="seg" role="group" aria-label="布局">
+          <button class="seg__btn" data-ov-layout="lanes" aria-pressed="false">泳道</button>
+          <button class="seg__btn" data-ov-layout="graph" aria-pressed="true">关系图</button>
+        </div>
+      </div>
+    </div>
+    <div class="overview-grid">
+      <figure class="map" id="overview-map" data-region="overview-map" aria-label="context 关系图">
+        <figcaption class="map__cap" id="overview-caption">按阶段排列的 context 环节</figcaption>
+        <div class="map__canvas" id="overview-canvas"></div>
+        <div class="map__legend" id="overview-legend"></div>
+      </figure>
+      <aside class="inspector" id="overview-inspector" data-region="overview-inspector" aria-live="polite">
+        <div class="empty-state" id="overview-empty">
+          <p class="empty-state__title">先选一个环节</p>
+          <p>用 Tab 移到卡片上，按 Enter 或空格打开它的说明、证据与关联。</p>
+        </div>
+        <div class="inspector__body" id="overview-detail" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============================= 回放 ============================= -->
+  <section class="panel" id="panel-replay" role="tabpanel" aria-labelledby="tab-replay" data-panel="replay" tabindex="-1" hidden>
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <h2 class="panel__title">回放 · 一次自主轮次带进去什么</h2>
+        <p class="panel__lede">选择怎样触发、在哪个 session 活动、沿用哪份历史，再检查某次 wake 的完整输入。时间线区分主聊天活跃与单轮执行。以下为离线合成回放。</p>
+      </div>
+    </div>
+
+    <form class="selectors" id="replay-selectors" aria-label="回放选择器">
+      <label class="field">
+        <span class="field__label">情境</span>
+        <select id="replay-scenario" data-ctl="scenario"></select>
+      </label>
+      <label class="field">
+        <span class="field__label">触发方式</span>
+        <select id="replay-policy" data-ctl="policy"></select>
+      </label>
+      <label class="field">
+        <span class="field__label">放置方式</span>
+        <select id="replay-placement" data-ctl="placement"></select>
+      </label>
+      <label class="field">
+        <span class="field__label">历史方式</span>
+        <select id="replay-mode" data-ctl="mode">
+          <option value="same">same · 接着自己的历史</option>
+          <option value="fresh">fresh · 每轮换 session</option>
+        </select>
+      </label>
+    </form>
+
+    <p class="replay-note" id="replay-scenario-desc"></p>
+    <div class="replay-body" id="replay-body">
+      <figure class="timeline" id="replay-timeline" data-region="replay-timeline" aria-label="wake 时间线">
+        <figcaption class="map__cap">时间轴 HH:MM:SS。主聊天活跃（chat_active）与一轮仍在执行（turn_busy）是两条独立的带；圆点是实际发生的 wake，方点是跳过或被取消的候选。</figcaption>
+        <div class="timeline__lanes" id="timeline-lanes"></div>
+        <div class="timeline__axis" id="timeline-axis" aria-hidden="true"></div>
+      </figure>
+
+      <div class="replay-split">
+        <div class="replay-col">
+          <h3 class="subhead">这次发生的 wake <span class="subhead__hint">点一个看当时的输入</span></h3>
+          <ol class="wake-list" id="replay-wake-list" data-region="replay-wake-list"></ol>
+          <div class="audit" id="replay-audit" data-region="replay-audit"></div>
+        </div>
+        <div class="replay-col">
+          <h3 class="subhead">这一轮带进去什么 <span class="subhead__hint" id="replay-inspect-hint">先选一个 wake</span></h3>
+          <div class="inspector__body" id="replay-inspect" data-region="replay-inspect" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+    <div class="empty-state empty-state--wide" id="replay-empty" hidden></div>
+  </section>
+
+  <section class="panel" id="panel-study" role="tabpanel" aria-labelledby="tab-study" data-panel="study" tabindex="-1" hidden>
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <span class="study-kicker">CONTEXT STUDY / A ↔ B</span>
+        <h2 class="panel__title">同一段经历，换一种 context 条件</h2>
+        <p class="panel__lede">对照当下、旧记忆与经历怎样进入每一轮。先固定问题与来源时间线，再检查改变条件后的实际差异。</p>
+      </div>
+      <span class="chip">离线合成 · MODEL NOT RUN</span>
+    </div>
+    <div class="study-presets" id="study-presets" aria-label="研究起点"></div>
+    <div class="study-question">
+      <label class="field"><span class="field__label">研究标题</span><input id="study-title" type="text"></label>
+      <label class="field"><span class="field__label">研究问题</span><input id="study-question" type="text"></label>
+      <label class="field"><span class="field__label">需要保留什么 <span class="field__note">一行一项，声明不代表已验收</span></span><textarea id="study-preserve" rows="3"></textarea></label>
+    </div>
+    <label class="field study-scenario-field"><span class="field__label">同一份合成材料</span><select id="study-scenario"></select></label>
+    <div class="study-configs" id="study-configs"></div>
+    <p class="study-axis-note" id="study-axis-note" role="status"></p>
+    <div id="study-summaries" class="study-configs"></div>
+    <div class="study-workspace">
+      <aside class="study-source-index">
+        <h3 class="subhead">沿一个来源追踪</h3>
+        <label class="field"><span class="field__label">查找来源</span><input type="search" id="study-source-search" placeholder="ID / 类别 / 正文"></label>
+        <label class="study-filter"><input type="checkbox" id="study-changed-only"> 只看轨迹不同的来源</label>
+        <div id="study-source-list" class="study-source-list" aria-label="来源列表"></div>
+      </aside>
+      <section class="study-trace" id="study-trace" aria-live="polite" aria-label="来源 A/B 轨迹"></section>
+    </div>
+    <details class="study-opportunities">
+      <summary>机会怎样对齐 · 跳过、延后、合并与未匹配</summary>
+      <p>同一 trigger policy 按原始候选 ID 对齐；不同 policy 分列，不能把相邻时间或相同数组下标当作同一次机会。</p>
+      <div id="study-opportunity-table" class="study-table-wrap"></div>
+    </details>
+    <section class="study-export">
+      <div>
+        <h3 class="subhead">把这次研究带走、重跑或继续</h3>
+        <p>JSON 保存完整合成 fixture 和两组条件；Markdown 保留观察与未验层级。重跑使用当前版本的 canonical 引擎，结果不包含引擎源码快照。</p>
+        <code class="cmd">python3 scripts/run_context_study.py plan.json --out .cache/context-study</code>
+      </div>
+      <div class="study-export-actions">
+        <button type="button" class="btn btn--primary" id="study-plan-download">下载研究 JSON</button>
+        <button type="button" class="btn" id="study-report-download">下载对照 Markdown</button>
+        <button type="button" class="btn" id="study-to-brief">带入变更 brief →</button>
+      </div>
+      <details><summary>恢复保存的研究</summary>
+        <p>粘贴研究 JSON。页面只接受与当前投影材料一致的 snapshot；自定义或旧材料请用 CLI 重跑，或用 builder 的 <code>--study</code> 生成对应页面。导入失败会保留当前研究。</p>
+        <label class="field"><span class="field__label">研究 plan JSON</span><textarea id="study-import-text" rows="5" spellcheck="false"></textarea></label>
+        <button type="button" class="btn" id="study-import">恢复研究</button>
+      </details>
+      <p id="study-status" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
+  <section class="panel" id="panel-observation" role="tabpanel" aria-labelledby="tab-observation" data-panel="observation" tabindex="-1" hidden>
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <span class="study-kicker">REQUEST OBSERVATION / STRUCTURE &amp; EVIDENCE</span>
+        <h2 class="panel__title">这一份请求，实际带了什么</h2>
+        <p class="panel__lede">保留原始 instructions、messages、tools 与未知字段，对照不同条件下的请求结构。wire format 与 harness 身份分开记录；消息 role 不等于真实来源。</p>
+      </div>
+      <span class="chip">只读投影 · 不发送请求</span>
+    </div>
+    <div class="study-configs">
+      <label class="field"><span class="field__label">A / 观察基线</span><select id="observation-baseline"></select></label>
+      <label class="field"><span class="field__label">B / 对照请求</span><select id="observation-candidate"></select></label>
+    </div>
+    <div id="observation-identity" class="observation-identity study-configs"></div>
+    <div id="observation-summary" class="study-axis-note" role="status"></div>
+    <div id="observation-limits" class="observation-limits"></div>
+    <div class="study-workspace">
+      <aside class="study-source-index">
+        <h3 class="subhead">结构差异</h3>
+        <label class="field"><span class="field__label">查找 section</span><input type="search" id="observation-search" placeholder="pointer / kind / 原文"></label>
+        <label class="study-filter"><input type="checkbox" id="observation-changes-only" checked> 只看变化</label>
+        <div id="observation-sections" class="study-source-list" aria-label="请求 section 列表"></div>
+      </aside>
+      <section id="observation-detail" aria-label="请求 section 原值对照" aria-live="polite"></section>
+    </div>
+    <details class="observation-raw">
+      <summary>完整 request body 与其余 parameters</summary>
+      <p>这里保留导入的完整 JSON，包括无法展开的引用与未来字段；并未从服务端取回任何内容。</p>
+      <div id="observation-bodies" class="study-configs"></div>
+    </details>
+    <section class="study-export">
+      <div><h3 class="subhead">带走这份观察</h3><p>报告携带原值与导入者声明的条件；如果你投影了私人 capture，这个页面和导出文件也含私人正文，应保留在本机。</p></div>
+      <div class="study-export-actions">
+        <button type="button" class="btn btn--primary" id="observation-download-json">下载 comparison JSON</button>
+        <button type="button" class="btn" id="observation-download-markdown">下载观察 Markdown</button>
+        <button type="button" class="btn" id="observation-to-brief">带入变更 brief →</button>
+      </div>
+      <p id="observation-status" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
+  <!-- ============================= 变更推演 ============================= -->
+  <section class="panel" id="panel-change" role="tabpanel" aria-labelledby="tab-change" data-panel="change" tabindex="-1" hidden>
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <h2 class="panel__title">变更推演 · 想改之前先想清楚要验什么</h2>
+        <p class="panel__lede">从一个改动意图出发，整理涉及的环节、验证命令与交接问题，导出可以带回原 runtime 的 change brief。命令仅展示；目标版本不生成兼容性判定。</p>
+      </div>
+    </div>
+
+    <div class="baseline" id="change-baseline" data-region="change-baseline" aria-label="当前证据基线"></div>
+    <div id="study-brief-attachment" class="study-attachment" hidden></div>
+    <div id="observation-brief-attachment" class="study-attachment" hidden></div>
+
+    <div class="drill-grid">
+      <div class="drill-col">
+        <section class="pick" id="change-intents" data-region="change-intents" aria-labelledby="change-intents-h">
+          <h3 class="pick__legend" id="change-intents-h">1 · 改动意图</h3>
+          <p class="pick__note">点一个意图会替换下面的选择；之后可以再手动增减环节。</p>
+          <div class="pick__items pick__items--intents" id="change-intent-items"></div>
+        </section>
+        <section class="pick" id="change-capabilities" data-region="change-capabilities" aria-labelledby="change-caps-h">
+          <h3 class="pick__legend" id="change-caps-h">2 · 涉及的环节 <span class="pick__legend-hint" id="change-mode-hint">（当前：预设）</span></h3>
+          <div class="pick__items" id="change-capability-items"></div>
+        </section>
+      </div>
+      <div class="drill-col">
+        <h3 class="subhead">要验什么 <span class="subhead__hint" id="change-summary-hint">还没选</span></h3>
+        <div class="drill-output" id="change-output" data-region="change-output"></div>
+      </div>
+    </div>
+
+    <section class="brief" id="change-brief" data-region="change-brief">
+      <h3 class="subhead">导出 change brief</h3>
+      <div class="brief__form">
+        <label class="field">
+          <span class="field__label">brief 标题</span>
+          <input type="text" id="brief-title" value="Context change brief" spellcheck="false">
+        </label>
+        <label class="field">
+          <span class="field__label">目标版本 <span class="field__note">（你填的意图版本，不是已验证版本）</span></span>
+          <input type="text" id="brief-target-version" placeholder="例如 2.1.289" spellcheck="false">
+        </label>
+        <p class="brief__caveat">这里填的版本只当作要改的目标，不代表已经装过、验过。brief 不产生部署或兼容性结论。</p>
+        <div class="brief__actions">
+          <button type="button" class="btn btn--primary" id="brief-download" data-action="download-brief" disabled>下载 Markdown brief</button>
+          <span class="brief__status" id="brief-status" role="status" aria-live="polite">先选择要改的范围</span>
+        </div>
+      </div>
+      <pre class="brief__preview" id="brief-preview" aria-label="brief 预览"></pre>
+    </section>
+  </section>
+
+  <!-- ============================= 来源 ============================= -->
+  <section class="panel" id="panel-sources" role="tabpanel" aria-labelledby="tab-sources" data-panel="sources" tabindex="-1" hidden>
+    <div class="panel__head">
+      <div class="panel__headtext">
+        <h2 class="panel__title">来源 · 读过哪些上游，读到什么程度</h2>
+        <p class="panel__lede">这是本仓库 catalog 的只读记录：每个上游的 revision、观察日期、角色和阅读范围。新 tip 只表示“已 fetch”，不等于已读完或已兼容。这个页面不会去查上游。</p>
+      </div>
+      <div class="panel__controls">
+        <label class="search">
+          <span class="search__label">搜索</span>
+          <input type="search" id="sources-search" data-ctl="source-search"
+                 placeholder="repo / 角色 / revision" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+    </div>
+    <div class="sources-body">
+      <div class="sources-table-wrap">
+        <table class="sources-table" id="sources-table" data-region="sources-table">
+          <thead>
+            <tr>
+              <th scope="col">repo</th>
+              <th scope="col">revision / 观察日期</th>
+              <th scope="col">角色</th>
+              <th scope="col">阅读范围</th>
+              <th scope="col">runtime 验证</th>
+              <th scope="col">新 tip</th>
+            </tr>
+          </thead>
+          <tbody id="sources-tbody"></tbody>
+        </table>
+        <div class="empty-state empty-state--wide" id="sources-empty" hidden>
+          <p class="empty-state__title">没有匹配的来源</p>
+          <p>换个 repo 名、角色关键词或 revision 前缀试试；清空搜索框可看全部。</p>
+        </div>
+      </div>
+      <aside class="official" id="sources-official" data-region="sources-official">
+        <h3 class="subhead">官方参考链接</h3>
+        <ul class="official__list" id="official-list"></ul>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<footer class="atlas-foot">
+  <p>这是 private 研究库的本地离线视图：数据来自本仓库的投影快照，回放是合成 fixture 的规则输出。candidate 与 check 不代表已安装、已部署或真实模型行为；研究的 authority 在仓库文档本身。</p>
+</footer>
+
+<!-- ATLAS_DATA -->
+<!-- ATLAS_STUDY_SCRIPT -->
+<!-- ATLAS_OBSERVATION_SCRIPT -->
+<!-- ATLAS_SCRIPT -->
+</body>
+</html>

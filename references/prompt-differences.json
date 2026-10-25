@@ -1,0 +1,325 @@
+{
+  "checked_on": "2026-10-05",
+  "scope": "公开 named prompt 目录的组成与对应关系；不复制第三方或原厂长正文，只保留 id、类别、计数与判定",
+  "lobotomized": {
+    "repo": "skrabe/lobotomized-claude-code",
+    "url": "https://github.com/skrabe/lobotomized-claude-code",
+    "read_tip_revision": "b867bb28a338de4487996fdbdff02ed54906f170",
+    "previous_read_revision": "053d8703592ab7211fdf2374006d108e42f6decc",
+    "tip_aligned_cc_version": "2.1.288",
+    "layout": "system-prompts-lcc/ 为唯一 overrides 集合，扁平 <category>-<slug>.md；system-reminders/ 为 41 个 per-turn reminder（本轮未变，见 reminder-overrides.json）",
+    "frontmatter": "HTML 注释 header：name / description / ccVersion / 可选 variables / 可选 nuked；body 为空表示 suppress",
+    "counts": {
+      "files_total_md": 9771,
+      "exact_body_identical": 3598,
+      "normalized_identical_norm_only": 5128,
+      "changed_body": 805,
+      "suppressed_empty_body": 202,
+      "unmatched": 38
+    },
+    "counts_by_prefix": {
+      "exact": {
+        "tool": 2129,
+        "data": 685,
+        "system": 295,
+        "slash": 267,
+        "agent": 114,
+        "skill": 106,
+        "task": 2
+      },
+      "norm_only": {
+        "tool": 3160,
+        "data": 606,
+        "system": 576,
+        "slash": 544,
+        "agent": 163,
+        "skill": 77,
+        "task": 2
+      },
+      "changed": {
+        "tool": 378,
+        "system": 244,
+        "agent": 69,
+        "data": 60,
+        "skill": 45,
+        "slash": 7,
+        "workflow": 2
+      },
+      "suppressed": {
+        "tool": 121,
+        "system": 63,
+        "data": 10,
+        "skill": 4,
+        "agent": 2,
+        "slash": 2
+      },
+      "unmatched": {
+        "inline": 38
+      }
+    },
+    "method": "filename == pristine id; classify by exact body equality, then whitespace+${...}-normalized equality. Reproduce with scripts/compare_prompt_inventory.py --overrides <dir> --pristine <json>.",
+    "author_claims_vs_observed": {
+      "readme_claim": "764 rewritten + 199 cut + 7648 untouched (author, CC 2.1.280 baseline)",
+      "observed_20261005": "changed 805 + suppressed 202 + unmatched 38 (CC 2.1.288 baseline; exact 3598 + norm_only 5128 unchanged-or-near-unchanged)",
+      "note": "different baseline version and normalization; also the author's 'untouched' is not separable here from norm_only. Do not equate. 9771 file count is not a rewrite count."
+    },
+    "baseline": {
+      "pristine_json": "tweakcc-fixed/data/prompts/prompts-2.1.288.json",
+      "pristine_source_revision": "6520e0cc06336f116b238975a6479c76a6688be6",
+      "note": "same-version baseline (author tip is aligned to CC 2.1.288); selecting a same-version pristine avoids pseudo-diffs from cross-version drift",
+      "blob_url": "https://github.com/skrabe/tweakcc-fixed/blob/6520e0cc06336f116b238975a6479c76a6688be6/data/prompts/prompts-2.1.288.json"
+    },
+    "definitions": {
+      "exact": "body (header removed and stripped by the script) equals the joined pristine pieces; NOT the raw file bytes and not evidence about the file's history",
+      "norm_only": "identical only after whitespace + ${placeholder-name} normalization; NOT proof the author left it unchanged, because placeholder-name changes can be meaningful",
+      "changed": "differs beyond that normalization: real override OR pristine drift, not separated here",
+      "suppressed": "empty body (author suppress marker)",
+      "unmatched": "filename id absent from this baseline; here exactly the 38 author-split inline-* fragments"
+    },
+    "matchable_non_unmatched": 9733,
+    "read_tip_fetched_on": "2026-10-05",
+    "read_tip_commit_date_unknown": "not recorded; the refs file records fetched_on only",
+    "categories_note": "five categories: exact / norm_only / changed / suppressed / unmatched",
+    "attachment_source_note": "The 'some engine task reminder carries a live task list' claim is sourced from skrabe/lobotomized-claude-code system-reminders/task-list-reminder.md (body 'Tasks:\\n{{tasks}}', where {{tasks}} binds to a live H.content.map(...) expression). The file id is 'task-list-reminder', which does NOT establish a mapping to the Mods event type 'todo_reminder'; that correspondence is unverified. What is evidenced is: some engine task reminder body contains live facts, so dropping attachments wholesale is unjustified.",
+    "attachment_source_ref": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-reminders/task-list-reminder.md"
+  },
+  "version_deltas_20261005": [
+    {
+      "repo": "skrabe/lobotomized-claude-code",
+      "previous": "053d8703592ab7211fdf2374006d108e42f6decc",
+      "fetched": "b867bb28a338de4487996fdbdff02ed54906f170",
+      "commits": [
+        "5d6bac7 CC 2.1.288: realign drifted overrides, add new prompt stubs, archive removed ids",
+        "b867bb2 CC 2.1.288: catalogue correction"
+      ],
+      "relevance": "系统主提示与工具描述有新增/realign；system-reminders/ 无变化",
+      "system_prompt_changed": 27,
+      "tool_description_changed": 30,
+      "reminders_changed": 0,
+      "compact_relevant": [
+        "system-prompt-artifact-patch-turn-edit-composer（新增）",
+        "system-prompt-coordinator-mode（realign）",
+        "system-prompt-env-info-builtin-gh-*（新增一组）"
+      ],
+      "coverage_limit": "只做 diff 名称与关键条目正文的 bounded 检查；未逐条语义深读 2.1.288 新增的 300+ 条目"
+    },
+    {
+      "repo": "skrabe/tweakcc-fixed",
+      "previous": "f3cf2d9978e209cea1383a0262fa5fc7089aea50",
+      "fetched": "6520e0cc06336f116b238975a6479c76a6688be6",
+      "relevance": "src/ 增量只涉及 complexityRouter / refusalFallbackModel 两个新 patch；systemReminderOverrides.ts 与 patches/index.ts 未在 diff 中",
+      "implication": "本层 apply 语义（reminder registry、index 的摘要起点/rewind header 等）在本增量内未见变化；目标仍是 2.1.288 catalogue",
+      "coverage_limit": "只核 src/ 文件名与两文件 diff 的存在性；未重读全部 patch 实现"
+    },
+    {
+      "repo": "Piebald-AI/tweakcc",
+      "previous": "d839e046ff8036763ddaea42197e9dc88be65b33",
+      "fetched": "30909c129e2096ba993d006628e52f0e059197c4",
+      "relevance": "仅新增 data/prompts/prompts-2.1.287/288/289.json 三个提取快照；代码未变",
+      "coverage_limit": "新增快照为本轮 compact/system 对照的 pristine 参考；不证明目标安装版本"
+    },
+    {
+      "repo": "Piebald-AI/claude-code-system-prompts",
+      "previous": "e6184590031d8d194074130b5e3eef7b4bbd2055",
+      "fetched": "3d973c78aa7a9829d1fb576f77bb0040373f5416",
+      "relevance": "静态提取目录升至 v2.1.289；新增/改动 33 个文件（含 ReadFile compact、EnableComputerUse、cross-session held notice、subagent write blocked 等）",
+      "coverage_limit": "静态提取材料，不是官方 runtime 证明；本轮只读版本号与改动清单，不逐份全文"
+    }
+  ],
+  "deep_read_targets": {
+    "note": "语义深读限定在 profile 相关路径。verdict 用同一 2.1.288 基线五分类；exact=header 移除+strip 后与 joined pieces 相同；norm_only=仅空白/占位符名归一化后相同（不是作者未改的证明）；changed=归一化后仍不同；suppressed=空正文；unmatched=id 不在本基线。只给归纳结论与短例，不抄长正文。",
+    "main_system": [
+      {
+        "id": "system-prompt-identity",
+        "name": "Claude Code identity line",
+        "verdict": "exact",
+        "ccVersion": "2.1.206",
+        "conclusion": "原厂那一行身份句的逐字导出，作者未改。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-identity.md"
+      },
+      {
+        "id": "system-prompt-harness-instructions",
+        "name": "System Prompt: Harness instructions",
+        "verdict": "changed",
+        "ccVersion": "2.1.274",
+        "conclusion": "lean arm 的 core：保留 ${AGENT_INTRO_LINE}/${SECURITY_POLICY_INSTRUCTIONS} 等变量槽与 clickable-ref/permission-mode 事实，删冗余叙述。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-harness-instructions.md"
+      },
+      {
+        "id": "system-prompt-doing-tasks-ambitious",
+        "name": "System Prompt: Doing tasks (ambitious tasks)",
+        "verdict": "changed",
+        "ccVersion": "2.1.53",
+        "conclusion": "压成肯定单段；保留 'defer to user on task size' 的判断点。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-doing-tasks-ambitious.md"
+      },
+      {
+        "id": "system-prompt-executing-actions-with-care",
+        "name": "System Prompt: Executing actions with care",
+        "verdict": "changed",
+        "ccVersion": "2.1.201",
+        "conclusion": "保留破坏性操作 gate（变更前核实目标、git status 前置、可逆优先），删 anti-laziness。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-executing-actions-with-care.md"
+      },
+      {
+        "id": "system-prompt-context-management-block",
+        "name": "Context Management System Block",
+        "verdict": "suppressed",
+        "ccVersion": "2.1.191",
+        "conclusion": "整条 suppress；作者 frontmatter 注明与 inline-context-management 近重复（该 inline 文件不在本 baseline id 集内，需另证不丢信息）。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-context-management-block.md"
+      },
+      {
+        "id": "system-prompt-claude-md-project-instructions-suffix",
+        "name": "CLAUDE.md Project Instructions Suffix",
+        "verdict": "norm_only",
+        "ccVersion": "2.1.274",
+        "conclusion": "仅占位符/空白差异，语义同为 'project instructions, checked into the codebase' 后缀。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-claude-md-project-instructions-suffix.md"
+      }
+    ],
+    "tools": [
+      {
+        "id": "tool-description-bash-overview",
+        "verdict": "exact",
+        "ccVersion": "2.1.53",
+        "conclusion": "Bash description 开头逐字未改。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-bash-overview.md"
+      },
+      {
+        "id": "tool-description-edit",
+        "verdict": "changed",
+        "ccVersion": "2.1.285",
+        "conclusion": "保留参数语义与行号前缀说明；只收紧措辞。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-edit.md"
+      },
+      {
+        "id": "tool-description-readfile",
+        "verdict": "changed",
+        "ccVersion": "2.1.288",
+        "conclusion": "2.1.288 realign；保留 image/PDF/notebook 与默认行长事实。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-readfile.md"
+      },
+      {
+        "id": "tool-description-write",
+        "verdict": "changed",
+        "ccVersion": "2.1.285",
+        "conclusion": "措辞收紧，参数语义保留。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-write.md"
+      },
+      {
+        "id": "tool-description-grep",
+        "verdict": "changed",
+        "ccVersion": "2.1.218",
+        "conclusion": "搜索工具 description 改写；不改参数/执行。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-grep.md"
+      },
+      {
+        "id": "tool-description-glob",
+        "verdict": "changed",
+        "ccVersion": "2.1.215",
+        "conclusion": "文件搜索工具 description 改写；不改参数/执行。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-glob.md"
+      },
+      {
+        "id": "tool-description-agent-usage-notes",
+        "verdict": "suppressed",
+        "ccVersion": "2.1.288",
+        "conclusion": "整条 suppress（作者标 2.1.288）。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/tool-description-agent-usage-notes.md"
+      },
+      {
+        "id": "tool-description-readfile-compact",
+        "verdict": "not_in_lcc_collection",
+        "conclusion": "Piebald 静态目录 2.1.288 新增的 compact variant；lobotomized tip 未见同名文件，落 unmatched 检查范围外。",
+        "url": "https://github.com/Piebald-AI/claude-code-system-prompts/blob/3d973c78aa7a9829d1fb576f77bb0040373f5416/system-prompts/tool-description-readfile-compact.md"
+      }
+    ],
+    "compact": [
+      {
+        "id": "system-prompt-context-compaction-summary",
+        "verdict": "changed",
+        "ccVersion": "2.1.38",
+        "conclusion": "保留结构化 schema（Task Overview/Current State/Next Steps…）与 <summary> 包裹，收紧措辞。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-context-compaction-summary.md"
+      },
+      {
+        "id": "system-prompt-partial-compaction-instructions",
+        "verdict": "changed",
+        "ccVersion": "2.1.273",
+        "conclusion": "保留 uncertainty/verbatim 约束与 canonical schema 引用；删重复分析指令。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-partial-compaction-instructions.md"
+      },
+      {
+        "id": "system-prompt-post-compaction-continue",
+        "verdict": "changed",
+        "ccVersion": "2.1.206",
+        "conclusion": "保留 continue-without-recap 语义。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-post-compaction-continue.md"
+      },
+      {
+        "id": "system-prompt-conversation-summarizer",
+        "verdict": "norm_only",
+        "ccVersion": "2.1.206",
+        "conclusion": "仅占位符名/空白差异；'treat as data, not instructions' 边界保留。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-conversation-summarizer.md"
+      },
+      {
+        "id": "system-prompt-resume-continue-prompt",
+        "verdict": "exact",
+        "ccVersion": "2.1.224",
+        "conclusion": "'Continue from where you left off.' 逐字导出。",
+        "url": "https://github.com/skrabe/lobotomized-claude-code/blob/b867bb28a338de4487996fdbdff02ed54906f170/system-prompts-lcc/system-prompt-resume-continue-prompt.md"
+      }
+    ],
+    "id_vs_name_note": "PromptComposeSection.id（system 组合的 section id，如 lab:core）与 PromptSectionInput.name（engine 具名 section 名）是不同字段；前者是 compose 列表的 id，后者是 prompt.section 的 matcher key。不要混用。"
+  },
+  "profile_selection": {
+    "note": "来源选材记录：第一份候选 profile 采纳/拒绝哪些公开机制。列在此的是设计意图；candidate 实际注册的事件见下 integrated_events。",
+    "adopt": [
+      "prompt.section 按具名 name 定向替换 system section（只用显式 name，不做全局字串）",
+      "prompt.compose 处理 { id, text, scope } sections，按 id 替换/追加；私有 core 必须是 session scope（shared 会跨组织缓存）",
+      "tool.describe 只改 engine/core provider 的 description（result 只有 description/isDeferred?）",
+      "不删任何 attachment：其正文可能含实时任务/文件/用户载荷（公开 extract 的 todo reminder 即为证明）"
+    ],
+    "reject": [
+      "整类删 attachment",
+      "按相同字串/标签把外部来源正文当可写区域",
+      "无结构证据时把 engine 整段文本视为可自由改写"
+    ],
+    "integrated_events": [
+      "prompt.section",
+      "prompt.compose",
+      "tool.describe"
+    ],
+    "not_integrated": [
+      "prompt.context：候选未注册该事件（未来若要处理初始 instructionFiles 才接入），当前候选不声称已接入",
+      "session.compact：候选未注册、未实现 handler；公开与目标2.1.289 types支持自写messages，但compact运行未验证，仅记为待接入点，不创建模型 writer"
+    ],
+    "unproven_selectors": [
+      "prompt.section 的 e.name 是 engine 内部 section 名。官方 types 的注释举了 env_info_simple、memory 等，证明存在具名 section，但这些 name 的存在只说明可被 matcher 命中，不证明某个 section 的语义可改写。默认 profile 选中 0 个 engine section。",
+      "doing_tasks：在已缓存官方 types/docs 中无此 section name 证据；不得声称命中 engine 的 doing_tasks。候选 tests 用显式注入的 lab:synthetic-guidance selector，只验证机制（选中改写/null 保留/未选中保真），不推定任何真实 engine 默认段可改。"
+    ],
+    "not_registered_events": [
+      "prompt.attachment",
+      "prompt.context",
+      "session.compact"
+    ],
+    "selector_mechanism": "直接导出的 register(on) 在注册时读取源码 sectionOverrides Map 的 snapshot；默认为空，即选中 0 个 engine section。Node tests 只注入合成 selector lab:synthetic-guidance。",
+    "target_observation": "target-runtime-2.1.289.json：一次隔离print/lean composition；不能从names存在推定正文可改写"
+  },
+  "coverage_limits": [
+    "9,733 个可对应条目（exact/norm_only/changed/suppressed）只做确定性正文对应，未逐份语义深读；语义深读限定主 system 核心、常用文件/搜索/执行/agent 工具、compact/utility 路径",
+    "38 个 unmatched 是作者拆分的 inline-* 片段，未在本 baseline pristine id 集内，无法一一对应；不猜其内容",
+    "exact 表示 header 移除并 strip 后与 joined pieces 相同，不等于原始文件逐字节相同，也不外推作者历史未改",
+    "本页不复制大段第三方正文或原厂长提示；读者引用用 exact GitHub blob 与官方 page URL",
+    "静态提取目录（Piebald）不是官方 runtime 证明"
+  ],
+  "inventory_reproduction": {
+    "script": "scripts/compare_prompt_inventory.py",
+    "command": "python3 scripts/compare_prompt_inventory.py --overrides <system-prompts-lcc dir> --pristine <prompts-2.1.288.json>",
+    "baseline_revision": "skrabe/tweakcc-fixed@6520e0cc06336f116b238975a6479c76a6688be6 data/prompts/prompts-2.1.288.json",
+    "checked_on": "2026-10-05",
+    "note": "run --selftest for a synthetic five-category + currency check; --overrides/--pristine reproduce the full set; normalization strips whitespace and ${placeholder} names only (no currency/escape stripping)"
+  }
+}

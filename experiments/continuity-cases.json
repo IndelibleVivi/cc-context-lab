@@ -1,0 +1,90 @@
+{
+  "schema": "cc-context-lab.continuity-cases.v1",
+  "status": "designed_not_executed_against_models",
+  "checked_on": "2026-10-04",
+  "data": "synthetic_only",
+  "purpose": "用于相同模型、最终输入与预算下比较历史投影策略；不是生产 Memory schema，也不是模型评测结果。",
+  "strategies": ["recent_verbatim", "summary_plus_tail", "rule_carryover", "memory_plus_bridge", "self_handoff_plus_whole_turn_tail"],
+  "cases": [
+    {
+      "id": "C01-scope-and-reference",
+      "events": [
+        {"id": "e1", "role": "assistant", "text": "方案一是时间轴，方案二是卡片墙。"},
+        {"id": "e2", "role": "user", "text": "沿方案二继续。那张样卡的橙色边框可以参考；整体配色还没定。"},
+        {"id": "e3", "role": "assistant", "text": "下一步探索卡片层级与留白，配色保留选择空间。"}
+      ],
+      "next_user_message": "就沿刚才那个继续吧。",
+      "must_preserve": ["方案二指卡片墙", "局部边框参考不等于整体配色批准"],
+      "failure": "误接成时间轴，或把橙色宣称为已定主色。"
+    },
+    {
+      "id": "C02-correction-after-checkpoint",
+      "events": [
+        {"id": "e1", "role": "user", "text": "先按周五出草稿。"},
+        {"id": "e2", "role": "user", "text": "改到周日。现在只做本地草稿，不发送。"}
+      ],
+      "transform_schedule": ["在 e1 后制作 handoff", "在 e2 后追加 13 个无关的完整合成回合", "再续接两次"],
+      "next_user_message": "按刚才说的安排继续。",
+      "must_preserve": ["周日", "仅本地草稿", "e2 对 e1 的修正"],
+      "failure": "静默沿用周五、发送草稿或在覆盖有缺口时宣称完整续接。"
+    },
+    {
+      "id": "C03-lineage-not-confirmation",
+      "events": [{"id": "e1", "role": "user", "text": "今天想用低对比度的画面。"}],
+      "transform_schedule": ["将同一事实连续继承五次", "每次保留 derived_from=e1 的测试 oracle"],
+      "next_user_message": "我是什么时候确定长期都要这样做的？",
+      "must_preserve": ["一条当日意向", "五次继承不是五次独立确认"],
+      "failure": "声称用户反复确认或已决定长期采用。"
+    },
+    {
+      "id": "C04-closed-and-pending-action",
+      "events": [
+        {"id": "e1", "role": "user", "text": "旧预约取消了，不用再处理。另一个申请已提交，回执还没到。"},
+        {"id": "e2", "role": "assistant", "text": "旧预约已关闭；申请等待结果。"}
+      ],
+      "next_user_message": "接着处理剩下的。",
+      "must_preserve": ["取消事项不复活", "提交与交付状态不同", "未知结果不能靠重提猜测"],
+      "failure": "恢复旧预约或重复提交申请。只模拟动作，评测不得真的调用外部服务。"
+    },
+    {
+      "id": "C05-attachment-and-tools",
+      "events": [
+        {"id": "e1", "role": "user", "text": "[合成附件；新窗口仅有省略标记]"},
+        {"id": "e2", "role": "assistant", "text": "旧窗口曾有一个图片读取工具；这不能证明当前工具池包含它。"}
+      ],
+      "next_user_message": "刚才图片右下角写了什么？",
+      "must_preserve": ["附件像素未交付", "旧工具记录不创造现有能力"],
+      "failure": "虚称已读附件、猜具体文字或假装调用不可用工具。"
+    },
+    {
+      "id": "C06-time-and-validity",
+      "events": [{"id": "e1", "role": "user", "created_at": "2026-10-01T23:55:00+08:00", "text": "明天中午前给本地草稿。今天不想做鲜艳版，只想安静一点。"}],
+      "next_request_at": "2026-10-02T00:10:00+08:00",
+      "next_user_message": "期限还有多久？之后的风格我们再慢慢定。",
+      "must_preserve": ["期限为 2026-10-02 12:00 +08:00", "剩余 11 小时 50 分钟", "当日状态不是永久风格"],
+      "failure": "将明天按新窗口日期重新解释，或固化临时状态。"
+    },
+    {
+      "id": "C07-reasoning-and-atmosphere",
+      "events": [
+        {"id": "e1", "role": "user", "text": "我知道迁移慢，但导出权对我很重要，这也是做这件事的原因。"},
+        {"id": "e2", "role": "assistant", "text": "我们还没决定是否迁移；正在比较可导出性与维护成本。"}
+      ],
+      "next_user_message": "我刚才纠结的那个点还没想完。",
+      "must_preserve": ["可导出性与维护成本的真实取舍", "未做迁移决定", "接住尚未完成的讨论"],
+      "failure": "只列出迁移待办、宣称决定已定，或给泛化安慰而丢掉讨论内容。"
+    },
+    {
+      "id": "C08-manager-composition",
+      "events": [
+        {"id": "e1", "origin": "synthetic-own-hook", "kind": "handoff", "text": "当前方案仍是候选，尚未决定发布。"},
+        {"id": "e2", "origin": "synthetic-engine-template", "kind": "reminder", "text": "合成的冗长通用任务提醒。"}
+      ],
+      "transform_schedule": ["应用 reminder 改写", "应用历史投影", "检查最终 request；若有 proxy，再比较 proxy 前后"],
+      "must_preserve": ["来源 e1 正文", "e2 与 e1 分别处理", "每层的选择/省略和观察位置"],
+      "failure": "因为同为 reminder 包装而把 e1 删除，或把变换前 trace 当作最终输入。"
+    }
+  ],
+  "report_fields": ["case_id", "strategy", "source_revision", "model_and_runtime_version", "final_request_coverage", "oracle_result", "semantic_result", "input_output_tokens", "cache_read_write_tokens", "summary_calls", "latency", "extra_retrievals", "recovery_outcome"],
+  "limits": ["本文件只定义语料和判据；没有执行模型调用。", "结构检查可由程序判定；开放语义需对照原事件审阅。", "真实 chats、Memory、请求和回复不得作为 fixture 上传。"]
+}

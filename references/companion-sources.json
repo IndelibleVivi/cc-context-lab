@@ -1,0 +1,271 @@
+{
+  "topic": "companion context input",
+  "purpose": "sustained human-AI companion interaction: unprompted autonomous turns, automatically provided present context, passive memory recall",
+  "observed_on": "2026-10-05",
+  "timezone": "Asia/Singapore",
+  "method": "static source inspection; no installation, hook execution, model calls or weather-service calls",
+  "evidence_classes": [
+    "author_claim (README/doc text, not verified against code)",
+    "inspected_implementation (source read this run)",
+    "runtime_evidence (local execution; NONE this run)"
+  ],
+  "sources": [
+    {
+      "id": "siigari-claude-heartbeat",
+      "url": "https://github.com/Siigari/claude-heartbeat",
+      "revision": "a561806e75fdca540b180df1e541e68d50092bcf",
+      "commit_date": "2026-05-14T11:45:55Z",
+      "status": "inspected",
+      "evidence_class": "inspected_implementation",
+      "declared_cc_version": null,
+      "file_links": {
+        "README.md": "https://github.com/Siigari/claude-heartbeat/blob/a561806e75fdca540b180df1e541e68d50092bcf/README.md",
+        "hooks/heartbeat.js": "https://github.com/Siigari/claude-heartbeat/blob/a561806e75fdca540b180df1e541e68d50092bcf/hooks/heartbeat.js",
+        "supervisor.js": "https://github.com/Siigari/claude-heartbeat/blob/a561806e75fdca540b180df1e541e68d50092bcf/supervisor.js",
+        "relay/relay.js": "https://github.com/Siigari/claude-heartbeat/blob/a561806e75fdca540b180df1e541e68d50092bcf/relay/relay.js",
+        ".claude/settings.json": "https://github.com/Siigari/claude-heartbeat/blob/a561806e75fdca540b180df1e541e68d50092bcf/.claude/settings.json"
+      },
+      "files_read": [
+        "README.md",
+        "hooks/heartbeat.js",
+        "supervisor.js",
+        "relay/relay.js",
+        ".claude/settings.json"
+      ],
+      "files_not_read": [
+        "examples/cron-trigger.js",
+        "examples/webhook-receiver.js",
+        "CLAUDE.md",
+        "io/*"
+      ],
+      "mechanism": "external supervisor-driven autonomous turn",
+      "mechanism_trace": [
+        ".claude/settings.json binds Stop -> node hooks/heartbeat.js (timeout 30)",
+        "each Stop: read ONE line from io/inbox.jsonl by byte offset; if present, emit {decision:'block', reason:[time] #channel author: content} to re-inject it, advance+fsync offset, write .responded",
+        "next Stop: if .responded, FIRST checkInbox() and block(next) if a backlog line exists; only when no next line, write .restart and block IDLE_TICK",
+        "supervisor.js polls .restart every 2s, SIGTERMs claude, respawns after 2s (claude --model <m> --dangerously-skip-permissions <prompt>)",
+        "INTENDED (README/comment) result: one real message = one fresh session = clean context"
+      ],
+      "classification_correction": "NOT an implementation guarantee of one-message-one-session: when .responded exists, a backlog line is delivered and blocked in the SAME session before .restart is written; fresh-session-per-message is README/comment INTENT",
+      "idle_and_liveness": "when elapsed < MIN_INTERVAL (HEARTBEAT_INTERVAL, default 60s) the code still can sleepSecs(15) then block(IDLE_TICK); the interval is a branch threshold, NOT proof of 60s model-call spacing; watchdog kills on stale .last-tick (WATCHDOG_TIMEOUT default 300s); orphan reaper on startup",
+      "offset_semantics": "offset advance is receipt-style consumption (write-on-read); it does NOT prove the model handled the line",
+      "stop_continuation_caveat": "blocking on Stop relies on CC's Stop continuation mechanism; the current CC Stop continuation cap (see docs/heartbeat-and-channels.md) makes the old unlimited-loop compatibility UNTESTED",
+      "outbox_relay": "relay/relay.js is an optional separate bridge polling io/outbox.jsonl and sending {action:'send',channelId,content} via discord.js (also typing/files)",
+      "classification": "external supervisor-driven unprompted turn; not CC-native heartbeat or MCP channel; intended stateless delivery, but backlog can share one session; idle ticks are intended for liveness, model silence untested",
+      "author_claims_separated": "README billing claim (-p/SDK credit bucket vs subscription) is an AUTHOR CLAIM; current billing is out of scope and not endorsed",
+      "weather_location_coverage": "absent",
+      "runtime_verified": false
+    },
+    {
+      "id": "vectorize-hindsight",
+      "url": "https://github.com/vectorize-io/hindsight",
+      "revision": "f7dd3f4fd7420f7beec60c32c965e5e5cf7be066",
+      "commit_date": "2026-10-02T16:52:39Z",
+      "status": "inspected",
+      "evidence_class": "inspected_implementation",
+      "declared_cc_version": null,
+      "file_links": {
+        "README.md": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/README.md",
+        "hooks/hooks.json": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/hooks/hooks.json",
+        "scripts/recall.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/recall.py",
+        "scripts/lib/client.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/lib/client.py",
+        "scripts/lib/config.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/lib/config.py",
+        "scripts/lib/state.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/lib/state.py",
+        "scripts/lib/content.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/lib/content.py",
+        "scripts/lib/bank.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/lib/bank.py",
+        "scripts/setup_hooks.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/scripts/setup_hooks.py",
+        "tests/test_hooks.py": "https://github.com/vectorize-io/hindsight/blob/f7dd3f4fd7420f7beec60c32c965e5e5cf7be066/hindsight-integrations/claude-code/tests/test_hooks.py"
+      },
+      "files_read": [
+        "hindsight-integrations/claude-code/README.md",
+        "hindsight-integrations/claude-code/hooks/hooks.json",
+        "hindsight-integrations/claude-code/scripts/recall.py",
+        "hindsight-integrations/claude-code/scripts/lib/client.py",
+        "hindsight-integrations/claude-code/scripts/lib/config.py",
+        "hindsight-integrations/claude-code/scripts/lib/state.py",
+        "hindsight-integrations/claude-code/scripts/lib/content.py",
+        "hindsight-integrations/claude-code/scripts/lib/bank.py",
+        "hindsight-integrations/claude-code/scripts/setup_hooks.py",
+        "hindsight-integrations/claude-code/tests/test_hooks.py"
+      ],
+      "not_reviewed": "whole backend, MCP server and daemon lifecycle",
+      "passive_recall": {
+        "hook_recalls_and_delivers_before_model": true,
+        "path": "UserPromptSubmit -> scripts/recall.py; reads stdin prompt (also user_prompt), optional transcript multi-turn, calls client.recall, formats <hindsight_memories>...</hindsight_memories>, emits hookSpecificOutput.additionalContext",
+        "visibility": "content is emitted for MODEL INPUT; additionalContext is hidden from the ordinary UI but is NOT thereby absent from the on-disk transcript (see docs/context-retention.md for persistence/cleanup)"
+      },
+      "budget_timeout": {
+        "recallMaxTokens_default": 1024,
+        "recallBudget_default": "mid",
+        "recallTypes_default": [
+          "observation"
+        ],
+        "client_recall_timeout_default_seconds": 10,
+        "hooks_json_timeout_seconds": 45,
+        "readme_stated_timeout_seconds": 12,
+        "requestTimeoutSeconds_override": true,
+        "note": "45s is the hook PROCESS budget; 10s is the default single HTTP call timeout -- different layers, not inherently a conflict; README 12s is documentation drift; not runtime-aligned"
+      },
+      "duplicate_behavior": {
+        "additional_banks": "seen_banks skips a bank already recalled in recallAdditionalBanks; extra banks can make total elapsed differ from the single 10s call budget",
+        "config_defaults": "recallTypes='observation' / recallMinScores reflect INTENDED consolidated types, not tested repeated-result suppression",
+        "hook_level_dedup": "type='observation' is NOT hook-level dedup; no evidenced mechanism against re-injecting the same memory on every prompt",
+        "confidence": "inferred from config defaults + README, not tested"
+      },
+      "weather_location_coverage": "absent",
+      "runtime_verified": false
+    },
+    {
+      "id": "zilliz-memsearch",
+      "url": "https://github.com/zilliztech/memsearch",
+      "revision": "2a4652fa086fbd45e92bfd8da7781ebe1642baa7",
+      "commit_date": "2026-09-24T08:07:41Z",
+      "status": "inspected",
+      "evidence_class": "inspected_implementation",
+      "declared_cc_version": null,
+      "file_links": {
+        "plugins/claude-code/README.md": "https://github.com/zilliztech/memsearch/blob/2a4652fa086fbd45e92bfd8da7781ebe1642baa7/plugins/claude-code/README.md",
+        "plugins/claude-code/hooks/hooks.json": "https://github.com/zilliztech/memsearch/blob/2a4652fa086fbd45e92bfd8da7781ebe1642baa7/plugins/claude-code/hooks/hooks.json",
+        "plugins/claude-code/hooks/session-start.sh": "https://github.com/zilliztech/memsearch/blob/2a4652fa086fbd45e92bfd8da7781ebe1642baa7/plugins/claude-code/hooks/session-start.sh",
+        "plugins/claude-code/hooks/user-prompt-submit.sh": "https://github.com/zilliztech/memsearch/blob/2a4652fa086fbd45e92bfd8da7781ebe1642baa7/plugins/claude-code/hooks/user-prompt-submit.sh"
+      },
+      "files_read": [
+        "plugins/claude-code/README.md",
+        "plugins/claude-code/hooks/hooks.json",
+        "plugins/claude-code/hooks/session-start.sh",
+        "plugins/claude-code/hooks/user-prompt-submit.sh"
+      ],
+      "not_reviewed": [
+        "skills/memory-recall/SKILL.md",
+        "hooks/stop.sh",
+        "transcript.py",
+        "CLI"
+      ],
+      "counterexample_distinction": {
+        "session_start": "AUTOMATIC context (passive): injects recent daily-log text as additionalContext (up to 2 most recent files, up to 40 lines each, <=1800 bytes) as cold-start context; it is RECENT HISTORY, not necessarily present state; not a search",
+        "user_prompt_submit": "USER-VISIBLE HINT: emits only systemMessage when prompt>=10 chars and memsearch available; no retrieval or memory content delivery. Official hooks contract describes systemMessage as a user-facing message, not additionalContext for the model.",
+        "actual_recall": "README describes model-invoked memory-recall skill (context: fork); skill body not read"
+      },
+      "byte_cap_note": "1800 bytes is THIS script's own RECENT_MEMORY_MAX_BYTES cap; the adjoining comment about a ~2KB CC inline additionalContext truncation is an AUTHOR observation at that snapshot, NOT the current official CC limit; present live hook limits and the target build need their own evidence",
+      "classification_rule": "A user-visible capability hint is not passive retrieval or evidence of model context; SessionStart recent-log injection supplies automatic context; model-invoked skill recall is separately described by README.",
+      "author_claims_separated": "3-layer progressive disclosure / fork is an AUTHOR DESCRIPTION; only shell evidence inspected",
+      "weather_location_coverage": "absent",
+      "runtime_verified": false,
+      "official_contract": "https://code.claude.com/docs/en/hooks#json-output"
+    },
+    {
+      "id": "kagamiurayama-roof-mod",
+      "url": "https://github.com/kagamiurayama/claude-code-roof-mod",
+      "status": "inspected",
+      "evidence_class": "inspected_implementation",
+      "local_snapshot": ".cache/upstream-sources/kagamiurayama--claude-code-roof-mod/",
+      "revision": "888dceb88631186dfcf01d69b088bedec9c1009a",
+      "commit_date": "2026-10-02T20:17:35+08:00",
+      "revision_source": "references/upstreams.json",
+      "declared_cc_version": "2.1.287+ (author README; author-tested Linux x64 2026-10-02; NOT verified this run)",
+      "file_links": {
+        "README.md": "https://github.com/kagamiurayama/claude-code-roof-mod/blob/888dceb88631186dfcf01d69b088bedec9c1009a/README.md",
+        "roof-mod/hooks/register.js": "https://github.com/kagamiurayama/claude-code-roof-mod/blob/888dceb88631186dfcf01d69b088bedec9c1009a/roof-mod/hooks/register.js",
+        "probe-mod/hooks/register.js": "https://github.com/kagamiurayama/claude-code-roof-mod/blob/888dceb88631186dfcf01d69b088bedec9c1009a/probe-mod/hooks/register.js",
+        "roof-mod/hooks/fragments.js": "https://github.com/kagamiurayama/claude-code-roof-mod/blob/888dceb88631186dfcf01d69b088bedec9c1009a/roof-mod/hooks/fragments.js"
+      },
+      "files_read": [
+        "README.md",
+        "roof-mod/hooks/register.js",
+        "probe-mod/hooks/register.js",
+        "roof-mod/hooks/fragments.js",
+        "roof-mod/hooks/hooks.json",
+        "roof-mod/.claude-plugin/plugin.json"
+      ],
+      "not_redone": "prompt-stripping / reminder-override review (owned elsewhere)",
+      "classification": "TRANSFORMATION of already-supplied context (Mods prompt.attachment / prompt.context); NOT a producer of present state, NOT recall, NOT a wake",
+      "input_surface": "event exposes e.text (body) and origin.kind in {engine,hook,plugin}; no evidence of upstream request prefix/suffix; no channel adapter",
+      "engine_origin_qualifier": "origin.kind==='engine' means rendered by the engine, NOT that the body contains only Claude Code text; engine text can embed third-party originals (e.g. @-files, hook output, forwarded message text). Existing repo research (docs/current-state.md) establishes engine-generated messages may contain external originals, so roof-mod's origin filter does not imply the prose is engine-authored only.",
+      "autonomous_turn_mechanism": "none",
+      "weather_location_coverage": "absent in inspected files; recorded as missing, not substituted by a model-invoked weather tool",
+      "side_note": "gray-release switch tengu_plugin_hooks_modules gates loading of third-party hook modules, decided at process start",
+      "runtime_verified": false
+    },
+    {
+      "id": "cybersealnull-ccompanion",
+      "url": "https://github.com/CyberSealNull/CcCompanion",
+      "revision": "bbe5faac0708af34f8ff3b31ed2a4a1720c3d283",
+      "commit_date": "2026-07-23T02:45:52Z",
+      "status": "inspected_readme_level",
+      "evidence_class": "author_claim",
+      "file_links": {
+        "docs/HEARTBEAT_HOWTO.md": "https://github.com/CyberSealNull/CcCompanion/blob/bbe5faac0708af34f8ff3b31ed2a4a1720c3d283/docs/HEARTBEAT_HOWTO.md",
+        "README.md": "https://github.com/CyberSealNull/CcCompanion/blob/bbe5faac0708af34f8ff3b31ed2a4a1720c3d283/README.md"
+      },
+      "files_read": [
+        "docs/HEARTBEAT_HOWTO.md",
+        "README.md (background only)"
+      ],
+      "mechanism": "launchd StartInterval=3600 (hourly) -> ~/scripts/heartbeat.py -> independent Anthropic client API call -> illustrative fixed time/last-message prompt -> SPOKE:/SILENT: -> POST http://127.0.0.1:8795/chat/append (source:heartbeat) -> APNs push",
+      "classification": "application-level scheduled companion push; NOT CC-native heartbeat; not a periodic companion-process wake; no code executed",
+      "author_claims_separated": "real history, quiet-hours and dedupe are FURTHER SUGGESTIONS (not implemented); the fixed time/last-message prompt is ILLUSTRATIVE and does not represent the author's private production job",
+      "weather_location_coverage": "absent",
+      "runtime_verified": false
+    },
+    {
+      "id": "callie0313-dylan-heartbeat",
+      "url": "https://github.com/callie0313/dylan-heartbeat",
+      "revision": "32ec7d51c7c60f80f20d7caa4647c0a85c5a651f",
+      "commit_date": "2026-08-10T13:44:22Z",
+      "status": "inspected",
+      "evidence_class": "inspected_implementation",
+      "file_links": {
+        "README.md": "https://github.com/callie0313/dylan-heartbeat/blob/32ec7d51c7c60f80f20d7caa4647c0a85c5a651f/README.md",
+        "wake_up.js": "https://github.com/callie0313/dylan-heartbeat/blob/32ec7d51c7c60f80f20d7caa4647c0a85c5a651f/wake_up.js"
+      },
+      "files_read": [
+        "README.md",
+        "wake_up.js"
+      ],
+      "not_reviewed": [
+        "server.js full pipeline"
+      ],
+      "platform": "Kelivo client -> own Gateway (server.js) -> upstream LLM API; NOT a Claude Code plugin, NOT native CC compatible",
+      "mechanism": "wake_up.js self-schedules by DAY/NIGHT_CHECK_INTERVAL_MINUTES (10min/2h), shouldWake() by DAY/NIGHT_WAKE_AFTER_MINUTES (60/120min), reads enhanced_messages.json timeline, computes diff from last user time, builds wake prompt, POSTs TARGET_API_URL, sends Bark/ntfy push and attempts an outcome POST to the gateway; persistence unverified",
+      "weather_location": {
+        "enabled_by_default": false,
+        "flag": "WEATHER_ENABLED",
+        "provide_location": "WEATHER_LAT / WEATHER_LON (numeric) + WEATHER_LOCATION_NAME (display)",
+        "api": "Open-Meteo https://api.open-meteo.com/v1/forecast (no API key)",
+        "fields": "current temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m; daily sunrise,sunset; timezone=auto",
+        "timeout_ms": 5000,
+        "injection": "formatted ## weather block injected into wake prompt via ${weatherContext}/${weather} placeholders"
+      },
+      "prompt_packaging": {
+        "buildWakePrompt": "priority wake_prompt.txt -> WAKE_PROMPT_TEMPLATE env -> built-in default; replaces ${currentTime}/${diffMinutes}/${weatherContext}/${weather}",
+        "request_assembly": "SOURCE READING, not a runtime measurement: system = [wakePrompt, cleanSP]; user = recent-history text explicitly labeled not-live/user-did-not-message/background-autonomous-wake; POST temperature 0.8 top_p 0.95 stream false",
+        "retained_outcomes": "runWakeUp ATTEMPTS to POST eventContent to GATEWAY_URL and catches write failure -- it does NOT directly/reliably write the local timeline; after a SUCCESSFUL model response it can record sent/silent/empty/diary-only/push-failed; an upstream model error throws BEFORE this stage so NOT every failure is retained; server.js unreviewed; optional [DIARY] saved to diary/YYYY-MM-DD.md"
+      },
+      "classification": "Kelivo/gateway wake runtime; weatherContext is mechanism-fetched present context (passive), not a model-invoked weather tool; NOT native CC compatibility",
+      "weather_location_coverage": "present (this repo only)",
+      "runtime_verified": false,
+      "activity_gate_inspection": {
+        "checked_on": "2026-10-05",
+        "paths": "wake_up.js getLastUserTime/shouldWake/runWakeUp/scheduleNextCheck",
+        "claim": "Wake eligibility uses elapsed minutes from a timestamp parsed from user timeline content. These paths do not establish an explicit main-chat active/busy lock. HEARTBEAT_URL POST is runtime liveness reporting, separate from model wake execution."
+      }
+    }
+  ],
+  "summary": {
+    "sources_total": 6,
+    "sources_inspected": 5,
+    "sources_readme_level": 1,
+    "local_runtime_evidence": "none",
+    "static_inspection_only": true,
+    "weather_location_present_in": [
+      "callie0313-dylan-heartbeat"
+    ],
+    "weather_location_absent_in": [
+      "siigari-claude-heartbeat",
+      "vectorize-hindsight",
+      "zilliz-memsearch",
+      "kagamiurayama-roof-mod",
+      "cybersealnull-ccompanion"
+    ]
+  }
+}

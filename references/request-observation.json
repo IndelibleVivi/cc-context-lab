@@ -1,0 +1,33 @@
+{
+  "observed_on": "2026-10-25",
+  "timezone": "Asia/Singapore",
+  "evidence_level": "official_documentation_and_local_synthetic_checks",
+  "runtime_capture_performed": false,
+  "sources": [
+    {
+      "url": "https://platform.claude.com/docs/en/api/messages/create",
+      "coverage": "system string/blocks, messages and midstream roles, tools/input_schema and content preservation",
+      "boundary": "API document; not proof of a particular harness request or target CC build"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "coverage": "instructions, input items and native tool/function representation",
+      "boundary": "The large current API create-reference page exceeded the web reader size limit; these narrower official guides supplied the implemented structural reading scope"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/conversation-state",
+      "coverage": "previous_response_id and conversation references; server-side state is not reconstructed from one body"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/monitoring-usage",
+      "coverage": "api_request_body, file/inline modes, truncation and query_source boundaries",
+      "boundary": "No collector enabled, no raw-body capture or model call executed in this work"
+    }
+  ],
+  "implementation": "context_lab/observations.py",
+  "input_contract": "harness-context-capture/1",
+  "observation_contract": "harness-context-observation/1",
+  "comparison_contract": "harness-context-comparison/1",
+  "model_behavior": "NOT_ASSESSED",
+  "external_delivery": "NOT_ASSESSED"
+}

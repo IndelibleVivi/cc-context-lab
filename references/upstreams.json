@@ -23,7 +23,7 @@
         "fixture": "experiments/roof-boundaries.mjs",
         "checked_on": "2026-10-03",
         "node_version": "26.7.0",
-        "result": "F02/F03/F04 reproduced as handler-level defects; no CC runtime compatibility claim"
+        "result": "F01/F02/F03/F04/F05a/F05b reproduced; two preservation controls passed; synthetic handler inputs, no CC runtime compatibility claim"
       }
     },
     {
@@ -36,14 +36,58 @@
       "role": "作者选择的 prompt/reminder overrides",
       "examined_paths": [
         "README.md",
-        "system-reminders/task-list-reminder.md",
+        "system-reminders/agent-listing.md",
+        "system-reminders/agent-mention.md",
+        "system-reminders/auto-mode-exit.md",
+        "system-reminders/budget-usd.md",
+        "system-reminders/claudemd-context.md",
+        "system-reminders/compact-file-reference.md",
+        "system-reminders/date-change.md",
+        "system-reminders/edited-text-file.md",
         "system-reminders/hook-additional-context.md",
+        "system-reminders/hook-blocking-error.md",
+        "system-reminders/hook-stopped-continuation.md",
+        "system-reminders/local-command-caveat.md",
+        "system-reminders/mcp-claude-browser.md",
+        "system-reminders/mcp-instructions.md",
+        "system-reminders/mcp-kindly-web-search.md",
+        "system-reminders/mcp-magic.md",
+        "system-reminders/mcp-openaiDeveloperDocs.md",
+        "system-reminders/mcp-per-server-router.md",
+        "system-reminders/mcp-sequential-thinking.md",
+        "system-reminders/mcp-supabase.md",
+        "system-reminders/memory-update.md",
         "system-reminders/nested-memory.md",
-        "system-reminders/mcp-per-server-router.md"
+        "system-reminders/opened-file-in-ide.md",
+        "system-reminders/output-style-banner.md",
+        "system-reminders/output-token-usage.md",
+        "system-reminders/pdf-reference.md",
+        "system-reminders/plan-file-reference.md",
+        "system-reminders/plan-mode-exit.md",
+        "system-reminders/selected-lines-in-ide.md",
+        "system-reminders/skills-listing.md",
+        "system-reminders/stop-hook-session-goal.md",
+        "system-reminders/task-list-reminder.md",
+        "system-reminders/task-notification-framing.md",
+        "system-reminders/thinking-reminder.md",
+        "system-reminders/token-usage.md",
+        "system-reminders/tool-called.md",
+        "system-reminders/tool-error.md",
+        "system-reminders/tool-result.md",
+        "system-reminders/ultrathink-effort.md",
+        "system-reminders/user-sent-new-message.md",
+        "system-reminders/verify-plan-reminder.md"
       ],
-      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "coverage": "All 41 system-reminders Markdown files; body/placeholder/empty semantics mapped to fixed apply paths. system-prompts-lcc bodies not yet audited.",
       "runtime_verified": false,
-      "version_claim": "README 对照版本 2.1.280；不等于全部目标版本兼容"
+      "version_claim": "README 对照版本 2.1.280；不等于全部目标版本兼容",
+      "fetched_unread_tip": {
+        "revision": "b867bb28a338de4487996fdbdff02ed54906f170",
+        "fetched_on": "2026-10-05",
+        "note": "fetched 2026-10-05; bounded_read = true: worker did a bounded offline diff for main system/tools/compact relevance only (file names + selected entries), NOT a full read. Old read revision preserved for existing fixtures.",
+        "bounded_read": true,
+        "full_read": false
+      }
     },
     {
       "repo": "skrabe/tweakcc-fixed",
@@ -57,11 +101,26 @@
         "README.md",
         "src/systemReminderSync.ts",
         "src/patches/systemReminderOverrides.ts",
-        "src/patches/index.ts"
+        "src/patches/index.ts",
+        "src/systemPromptSync.ts",
+        "src/utils.ts"
       ],
-      "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
+      "coverage": "All 35 reminder registry apply entries and shared parsing helpers; selected apply pipeline/shadow-loading/escapeNonAscii sections. No installation, filesystem apply driver or full named-prompt audit.",
       "runtime_verified": false,
-      "version_claim": "README badge 2.0.98 至 2.1.286；未实机验证"
+      "version_claim": "README badge 2.0.98 至 2.1.286；未实机验证",
+      "offline_verification": {
+        "fixture": "experiments/reminder-placeholders.mjs",
+        "checked_on": "2026-10-03",
+        "node_version": "26.7.0",
+        "result": "P01-P05 passed using original selected TS functions on synthetic bundle shapes; not target-install compatibility."
+      },
+      "fetched_unread_tip": {
+        "revision": "6520e0cc06336f116b238975a6479c76a6688be6",
+        "fetched_on": "2026-10-05",
+        "note": "fetched 2026-10-05; bounded_read = true: worker did a bounded offline diff for main system/tools/compact relevance only (file names + selected entries), NOT a full read. Old read revision preserved for existing fixtures.",
+        "bounded_read": true,
+        "full_read": false
+      }
     },
     {
       "repo": "Piebald-AI/tweakcc",
@@ -78,7 +137,14 @@
       ],
       "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
       "runtime_verified": false,
-      "version_claim": "具体 prompt data 与非 prompt patch 支持分别核对"
+      "version_claim": "具体 prompt data 与非 prompt patch 支持分别核对",
+      "fetched_unread_tip": {
+        "revision": "30909c129e2096ba993d006628e52f0e059197c4",
+        "fetched_on": "2026-10-05",
+        "note": "fetched 2026-10-05; bounded_read = true: worker did a bounded offline diff for main system/tools/compact relevance only (file names + selected entries), NOT a full read. Old read revision preserved for existing fixtures.",
+        "bounded_read": true,
+        "full_read": false
+      }
     },
     {
       "repo": "rossignol6712/claude-code-custom-prompt",
@@ -109,7 +175,14 @@
       ],
       "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
       "runtime_verified": false,
-      "version_claim": "README 当前列至 2.1.287；仅读范围说明与目录，未逐份提示深读"
+      "version_claim": "README 当前列至 2.1.287；仅读范围说明与目录，未逐份提示深读",
+      "fetched_unread_tip": {
+        "revision": "3d973c78aa7a9829d1fb576f77bb0040373f5416",
+        "fetched_on": "2026-10-05",
+        "note": "fetched 2026-10-05; bounded_read = true: worker did a bounded offline diff for main system/tools/compact relevance only (file names + selected entries), NOT a full read. Old read revision preserved for existing fixtures.",
+        "bounded_read": true,
+        "full_read": false
+      }
     },
     {
       "repo": "badlogic/cchistory",
@@ -127,6 +200,171 @@
       "coverage": "bounded source reading; selected relevant sections, not whole-repository audit",
       "runtime_verified": false,
       "version_claim": "本轮无当前 CC 兼容性证据；代码 snapshot 2025-10-30"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "branch": "main",
+      "revision": "76dfb88f63ce51ff2e3fe2ead4fcf1f65f71f121",
+      "retrieved_on": "2026-10-04",
+      "url": "https://github.com/earendil-works/pi",
+      "role": "context 生命周期机制比较",
+      "examined_paths": [
+        "packages/coding-agent/docs/compaction.md",
+        "packages/coding-agent/docs/extensions.md"
+      ],
+      "coverage": "Documentation sections only: compaction flow, cut/entry model and context/context_with_system contracts. No implementation audit, install or model calls.",
+      "evidence_level": "upstream_documentation",
+      "runtime_verified": false
+    },
+    {
+      "repo": "nguyenvuthientrang/cliffcompaction",
+      "branch": "main",
+      "revision": "b48d660ae3c1f6037094d6cfc6b5d9f5938a7957",
+      "retrieved_on": "2026-10-04",
+      "url": "https://github.com/nguyenvuthientrang/cliffcompaction",
+      "role": "context 生命周期机制比较",
+      "examined_paths": [
+        "README.md"
+      ],
+      "coverage": "README prefix matching, content treatment, re-compaction and fail-open contract only. No proxy code audit, install or benchmarks; paper 2609.26779v1 section 2 read separately.",
+      "evidence_level": "upstream_documentation",
+      "runtime_verified": false
+    },
+    {
+      "repo": "dankefox/swap-tutorial",
+      "branch": "main",
+      "revision": "8ce3c7df73ead621762ff38993aab29b0ecbca8e",
+      "retrieved_on": "2026-10-04",
+      "url": "https://github.com/dankefox/swap-tutorial",
+      "role": "精炼续窗教程与作者扩展的范围",
+      "examined_paths": [
+        "README.md",
+        "LICENSE"
+      ],
+      "coverage": "Bounded source reading and selected pure-function synthetic observations; detailed coverage in references/forge-upstreams.json. No installation or live resume.",
+      "runtime_verified": false,
+      "detail_catalog": "references/forge-upstreams.json"
+    },
+    {
+      "repo": "wuxuyun0606-collab/lmc-5",
+      "branch": "main",
+      "revision": "fb3e72c9ee7357c8b17311097b0750082a8a1237",
+      "retrieved_on": "2026-10-04",
+      "url": "https://github.com/wuxuyun0606-collab/lmc-5",
+      "role": "Forge/Swap 命名、Carryover 参考算法与所查公开能力",
+      "examined_paths": [
+        "docs/FORGE_AND_SWAP.md",
+        "docs/REFINED_SESSION_CARRYOVER.md",
+        "extras/claude_code/refined_session_carryover.py"
+      ],
+      "coverage": "Bounded source reading and selected pure-function synthetic observations; detailed coverage in references/forge-upstreams.json. No installation or live resume.",
+      "runtime_verified": false,
+      "detail_catalog": "references/forge-upstreams.json"
+    },
+    {
+      "repo": "Siigari/claude-heartbeat",
+      "branch": "master",
+      "revision": "a561806e75fdca540b180df1e541e68d50092bcf",
+      "commit_date": "2026-05-14T11:45:55Z",
+      "retrieved_on": "2026-10-05",
+      "url": "https://github.com/Siigari/claude-heartbeat",
+      "role": "Stop/inbox/supervisor 自主轮次与消息包装",
+      "examined_paths": [
+        "README.md",
+        "hooks/heartbeat.js",
+        "supervisor.js",
+        "relay/relay.js",
+        ".claude/settings.json"
+      ],
+      "coverage": "Bounded source/documentation reading only; detailed coverage and exclusions in references/companion-sources.json. No installation, hook/model/weather execution.",
+      "runtime_verified": false,
+      "detail_catalog": "references/companion-sources.json"
+    },
+    {
+      "repo": "vectorize-io/hindsight",
+      "branch": "main",
+      "revision": "f7dd3f4fd7420f7beec60c32c965e5e5cf7be066",
+      "commit_date": "2026-10-02T16:52:39Z",
+      "retrieved_on": "2026-10-05",
+      "url": "https://github.com/vectorize-io/hindsight",
+      "role": "模型前 hook 自动记忆召回",
+      "examined_paths": [
+        "hindsight-integrations/claude-code/README.md",
+        "hindsight-integrations/claude-code/hooks/hooks.json",
+        "hindsight-integrations/claude-code/scripts/recall.py",
+        "hindsight-integrations/claude-code/scripts/lib/client.py",
+        "hindsight-integrations/claude-code/scripts/lib/config.py",
+        "hindsight-integrations/claude-code/scripts/lib/state.py",
+        "hindsight-integrations/claude-code/scripts/lib/content.py",
+        "hindsight-integrations/claude-code/scripts/lib/bank.py",
+        "hindsight-integrations/claude-code/scripts/setup_hooks.py",
+        "hindsight-integrations/claude-code/tests/test_hooks.py"
+      ],
+      "coverage": "Bounded source/documentation reading only; detailed coverage and exclusions in references/companion-sources.json. No installation, hook/model/weather execution.",
+      "runtime_verified": false,
+      "detail_catalog": "references/companion-sources.json"
+    },
+    {
+      "repo": "zilliztech/memsearch",
+      "branch": "main",
+      "revision": "2a4652fa086fbd45e92bfd8da7781ebe1642baa7",
+      "commit_date": "2026-09-24T08:07:41Z",
+      "retrieved_on": "2026-10-05",
+      "url": "https://github.com/zilliztech/memsearch",
+      "role": "开场近期记录注入与模型召回提示的对照",
+      "examined_paths": [
+        "plugins/claude-code/README.md",
+        "plugins/claude-code/hooks/hooks.json",
+        "plugins/claude-code/hooks/session-start.sh",
+        "plugins/claude-code/hooks/user-prompt-submit.sh"
+      ],
+      "coverage": "Bounded source/documentation reading only; detailed coverage and exclusions in references/companion-sources.json. No installation, hook/model/weather execution.",
+      "runtime_verified": false,
+      "detail_catalog": "references/companion-sources.json"
+    },
+    {
+      "repo": "CyberSealNull/CcCompanion",
+      "branch": "main",
+      "revision": "bbe5faac0708af34f8ff3b31ed2a4a1720c3d283",
+      "commit_date": "2026-07-23T02:45:52Z",
+      "retrieved_on": "2026-10-05",
+      "url": "https://github.com/CyberSealNull/CcCompanion",
+      "role": "独立 API 定时伴侣推送教程",
+      "examined_paths": [
+        "docs/HEARTBEAT_HOWTO.md",
+        "README.md"
+      ],
+      "coverage": "Bounded source/documentation reading only; detailed coverage and exclusions in references/companion-sources.json. No installation, hook/model/weather execution.",
+      "runtime_verified": false,
+      "detail_catalog": "references/companion-sources.json"
+    },
+    {
+      "repo": "callie0313/dylan-heartbeat",
+      "branch": "main",
+      "revision": "32ec7d51c7c60f80f20d7caa4647c0a85c5a651f",
+      "commit_date": "2026-08-10T13:44:22Z",
+      "retrieved_on": "2026-10-05",
+      "url": "https://github.com/callie0313/dylan-heartbeat",
+      "role": "自主唤醒时的天气注入与 prompt 包装",
+      "examined_paths": [
+        "README.md",
+        "wake_up.js"
+      ],
+      "coverage": "Bounded source/documentation reading only; detailed coverage and exclusions in references/companion-sources.json. No installation, hook/model/weather execution.",
+      "runtime_verified": false,
+      "detail_catalog": "references/companion-sources.json"
     }
-  ]
+  ],
+  "last_ref_check": {
+    "checked_on": "2026-10-05",
+    "method": "main thread fetched four public repo tips via .cache/profile-source-refs.json; worker did bounded offline diff, did not run check_upstreams.py network query",
+    "new_tips_seen": 4
+  },
+  "last_companion_ref_check": {
+    "checked_on": "2026-10-05",
+    "method": "git ls-remote on the five newly catalogued companion sources only",
+    "unchanged": 5,
+    "updated": 0,
+    "unavailable": 0
+  }
 }

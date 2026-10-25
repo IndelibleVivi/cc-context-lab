@@ -1,0 +1,253 @@
+{
+  "checked_on": "2026-10-05",
+  "evidence_level": "target_binary_local_composition",
+  "version": "2.1.289",
+  "entrypoint": "scripts/probe_context_runtime.py",
+  "artifact": "@anthropic-ai/claude-code-darwin-arm64@2.1.289",
+  "command_kind": "local slash command, no model response",
+  "settings": {
+    "claude_mds": false,
+    "auto_memory": false,
+    "bundled_skills": false,
+    "tools": [],
+    "mcp_servers": [],
+    "session_persistence": false
+  },
+  "resolved": {
+    "model": "claude-opus-5-5",
+    "promptModel": "claude-opus-5-5",
+    "traits": [
+      "lean",
+      "print",
+      "skills"
+    ],
+    "tools": [],
+    "surfaces": []
+  },
+  "section_events": [
+    {
+      "name": "communication",
+      "omitted": false,
+      "length": 94
+    },
+    {
+      "name": "pronouns",
+      "omitted": false,
+      "length": 357
+    },
+    {
+      "name": "action_caution",
+      "omitted": false,
+      "length": 520
+    },
+    {
+      "name": "task_continuity",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "fable_identity",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "tool_param_json",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "session_guidance",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "env_info_simple",
+      "omitted": false,
+      "length": 602
+    },
+    {
+      "name": "bg-session",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "context_management",
+      "omitted": false,
+      "length": 280
+    },
+    {
+      "name": "brief",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "focus_mode",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "act_dont_rederive",
+      "omitted": false,
+      "length": 277
+    },
+    {
+      "name": "delivering_work_max",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "overcorrection",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "subagent_steer_delegation",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "opus5_reduced_delegation",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "heron_brook",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "brook_heron",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "willow_tern",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "autonomy_append",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "endconv_deferred_hint",
+      "omitted": true,
+      "length": 0
+    },
+    {
+      "name": "memory",
+      "omitted": true,
+      "length": 0
+    }
+  ],
+  "composition": [
+    {
+      "id": "lean_body",
+      "scope": "shared",
+      "length": 1210
+    },
+    {
+      "id": "lab:core",
+      "scope": "session",
+      "length": 193
+    },
+    {
+      "id": "communication",
+      "scope": "session",
+      "length": 94
+    },
+    {
+      "id": "pronouns",
+      "scope": "session",
+      "length": 357
+    },
+    {
+      "id": "action_caution",
+      "scope": "session",
+      "length": 520
+    },
+    {
+      "id": "env_info_simple",
+      "scope": "session",
+      "length": 602
+    },
+    {
+      "id": "context_management",
+      "scope": "session",
+      "length": 280
+    },
+    {
+      "id": "act_dont_rederive",
+      "scope": "session",
+      "length": 277
+    },
+    {
+      "id": "total_tokens",
+      "scope": "session",
+      "length": 49
+    }
+  ],
+  "candidate_core_observed": true,
+  "requests_to_configured_loopback_endpoint": 0,
+  "generated_types_version": "2.1.289",
+  "generated_types_count": 3,
+  "reviewed_symbols": [
+    "PromptComposeInput",
+    "PromptComposeArgs",
+    "PromptComposeSection",
+    "PromptComposeTrait",
+    "PromptSectionInput",
+    "PromptAttachmentInput",
+    "DeclaredAttachmentInput",
+    "UndeclaredAttachmentInput",
+    "PromptAttachmentDetailOf",
+    "PlanModeDetail",
+    "PlanModeReentryDetail",
+    "PlanModeExitDetail",
+    "ToolDescribeInput",
+    "ToolDescribeResult",
+    "ToolDeferral",
+    "SessionCompactInput",
+    "SessionCompactResult",
+    "SessionCompacted",
+    "SessionCompactSkipped",
+    "SessionCompactTrigger",
+    "SessionMessage",
+    "TurnStepInput",
+    "ModsAPI clock namespace (after/every)",
+    "PromptSubmitInput",
+    "PromptSubmitArgs",
+    "PromptSubmitResult",
+    "PromptOrigin",
+    "SessionReceiveOrigin",
+    "UserPromptSubmitHookInput.source"
+  ],
+  "findings": {
+    "attachment_details": [
+      "plan_mode",
+      "plan_mode_reentry",
+      "plan_mode_exit"
+    ],
+    "undeclared_attachment_detail": "absent",
+    "compact_input_fields": [
+      "trigger",
+      "agentId?",
+      "instructions?",
+      "messages"
+    ],
+    "compact_output": "SessionCompacted | SessionCompactSkipped",
+    "tool_result_deferral": "optional boolean; omission preserves engine placement",
+    "turn_step_messages": "no rewritable messages field; messageCount pinned",
+    "prompt_submit_context": "hook-added blocks after prompt; attach before next; over 100000 chars each or 200000 total becomes head + path; this is not a TTL or history filter",
+    "prompt_submit_as_user": "changes model-visible wrapper; hook origin still plugin; no @file/pasted-image expansion"
+  },
+  "limits": [
+    "Only one local print/lean composition with tools/MCP/instruction files disabled; no interactive or other model branch matrix.",
+    "Generated types were read for listed symbols, not the full declaration set; no tsc check.",
+    "Lengths are JavaScript string lengths, not token counts or semantic classification.",
+    "No full prompt bodies retained in the report; local binary/types/config remain ignored.",
+    "No real provider, actual model request body, model behavior, heartbeat/channel, compact/resume/subagent validation.",
+    "Independent config and explicit endpoint are not an OS network sandbox."
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "checked_on": "2026-10-04",
+  "scope": "dankefox/swap-tutorial 与 wuxuyun0606-collab/lmc-5 的公开来源、Forge/精炼续窗/Swap 边界，以及 carried-over reference 算法的离线合成复现（source-only，非运行时验收）",
+  "runtime_verified": false,
+  "sources": [
+    {
+      "repo": "dankefox/swap-tutorial",
+      "branch": "main",
+      "revision": "8ce3c7df73ead621762ff38993aab29b0ecbca8e",
+      "commit_date": "2026-08-16T21:51:55+08:00",
+      "commit_subject": "chore: adopt AGPL-3.0 license",
+      "retrieved_via": "本地 public Git checkout（.cache/forge-public/dankefox--swap-tutorial）",
+      "license": "AGPL-3.0",
+      "examined_paths": [
+        "README.md",
+        "LICENSE"
+      ],
+      "coverage": "bounded reading of the whole 317-line README (its only non-license file); not a whole-ecosystem audit",
+      "observed_facts": [
+        "仓库只有 README.md + LICENSE 两个 tracked 文件；无脚本、无 fixtures、无 tests。",
+        "README 指向上游 wuxuyun0606-collab/lmc-5 的 FORGE_AND_SWAP.md、REFINED_SESSION_CARRYOVER.md 和 extras/claude_code/refined_session_carryover.py（单向往上游）。",
+        "README 自述后半段的『启动包 / 叙事脊椎 / 冷仓』是作者在生产里额外接上的扩展，并明说参考脚本不会自动搭建这些扩展。"
+      ],
+      "role": "教程/转述资料；描述作者生产扩展与上游参考脚本的用法",
+      "runtime_verified": false
+    },
+    {
+      "repo": "wuxuyun0606-collab/lmc-5",
+      "branch": "main",
+      "revision": "fb3e72c9ee7357c8b17311097b0750082a8a1237",
+      "commit_date": "2026-08-18T04:38:09-07:00",
+      "commit_subject": "Remove July cover illustration (#17)",
+      "retrieved_via": "本地 public Git checkout（.cache/forge-public/wuxuyun0606-collab--lmc-5）",
+      "declared_version": "0.3.0 (pyproject.toml version, CHANGELOG 'Unreleased' 段落)",
+      "python_support": "requires-python = \">=3.9\"（pyproject，package 支持声明）；target-version = \"py310\" 仅是 Ruff/lint 目标，非 runtime 要求",
+      "license": "AGPL-3.0-or-later（0.3.0 起；v0.2.0 及以前为 MIT，见 CHANGELOG/LICENSING.md）",
+      "examined_paths": [
+        "extras/claude_code/refined_session_carryover.py",
+        "extras/claude_code/__init__.py",
+        "docs/FORGE_AND_SWAP.md",
+        "docs/REFINED_SESSION_CARRYOVER.md",
+        "docs/credits.md",
+        "docs/SESSION_CHECKLIST.md",
+        "extras/pgvector_backend/hooks/session_start.py",
+        "extras/pgvector_backend/hooks/user_prompt_submit.py",
+        "extras/pgvector_backend/recall_pipeline.py",
+        "extras/pgvector_backend/narrative_timeline.py",
+        "src/lmc5/cli.py",
+        "src/lmc5/__main__.py",
+        "tests/test_refined_session_carryover.py",
+        "README.md",
+        "CHANGELOG.md",
+        "pyproject.toml"
+      ],
+      "coverage": "bounded source reading; the carryover module read in full; production extras sampled around the carryover/forge/startup-pack path; not a whole-repo audit",
+      "role": "上游 reference 实现与 Forge/精炼续窗/Swap 定义来源",
+      "runtime_verified": false
+    }
+  ],
+  "naming_map": {
+    "精炼续窗 / Refined Session Carryover": "从旧 transcript 过滤、打分、重写消息链，生成可 --resume 的新会话；上游参考脚本 extras/claude_code/refined_session_carryover.py。",
+    "Forge": "从耐久记忆 + 启动上下文重建新会话；上游 FORGE_AND_SWAP.md 概念，参考部署为 tmux + --resume + boot_context.json。所查 repo/路径未找到 forge 实现或 boot-context CLI。",
+    "Swap": "记忆数据库批量写前后的快照回滚（savepoint 或 table snapshot）；上游 FORGE_AND_SWAP.md 概念，所查 repo/路径未找到 swap 脚本实现。",
+    "swap-tutorial 的旧名 Swap": "作者内部旧称，公开教程统一改叫精炼续窗；上游把 Swap 留给 DB 回滚。"
+  },
+  "public_evidence": {
+    "carryover_reference_exists": {
+      "claim": "refined carryover 有公开参考脚本",
+      "evidence": "extras/claude_code/refined_session_carryover.py，tests/test_refined_session_carryover.py 三条测试",
+      "level": "source-only"
+    },
+    "forge_swap_implementation": {
+      "claim": "在所查的这两个 repo 与已读路径中，Forge 与 Swap 只有文档描述，未找到实现脚本",
+      "evidence": "docs/FORGE_AND_SWAP.md 给 forge.sh / swap() / take_swap_snapshot() 代码片段；所查仓库内未找到对应 .py/.sh 文件（grep swap_snapshot/boot-context 无实现命中）；不排除其它 repo/路径",
+      "level": "source-only"
+    },
+    "cold_archive_wiring": {
+      "claim": "公共 extras 中有冷仓（cold archive）接线与 adapter，属 recall 层 last-resort，不等同教程作者的完整换窗归档流程",
+      "evidence": [
+        "extras/pgvector_backend/recall_pipeline.py:1374 定义 cold_archive_search_adapter（默认表 lmc5_cold_storage，标 last_resort/cold_archive）",
+        "extras/pgvector_backend/hooks/user_prompt_submit.py:212-215 在 LMC5_COLD_ARCHIVE_FALLBACK 开启时调用 rp_module.cold_archive_search_adapter(pg) 并注入 RecallPipeline",
+        "extras/pgvector_backend/recall_pipeline.py:1052-1065 仅在 vector/fts/raw/literal 全空时调用冷归档（cold_archive_checked 追踪）"
+      ],
+      "level": "source-only"
+    },
+    "author_extensions_not_upstream": {
+      "claim": "教程的『完整套件』（启动包 + 四行叙事脊椎 + 换窗归档/冷仓全流程）在所查两个 repo 的已读路径中没有对应完整源码，也不是 carryover 参考脚本自带",
+      "evidence": [
+        "swap-tutorial README 明写『参考脚本本身不会自动替你搭好这些扩展』『以为参考脚本自带启动包和冷仓』是误区。",
+        "上游 extras/pgvector_backend/hooks/session_start.py 有 build_startup_pack()（budget_chars=6000 的通用启动包），但它是 extras 生产实现，且与本工单所读 carryover 参考脚本相互独立。",
+        "教程描述的『四行便签 / 700 字硬失败 / 完全确定性』叙事脊椎在所查公共源码中没有对应实现。",
+        "docs/FORGE_AND_SWAP.md 的 `python -m lmc5 boot-context` 子命令在所查的 src/lmc5/cli.py 中未找到。",
+        "冷仓：公共 extras 有 recall 层冷归档 adapter/接线（见 cold_archive_wiring），但没有教程作者那种『换窗时把整份旧 transcript 独立归档、可查证/回退』的完整流程公开实现。",
+        "docs/credits.md 记载 transcript-resume swap 设计来自『蛋宝老师家的蛋壳』，即教程作者一方；上游不反向链接 swap-tutorial。"
+      ],
+      "level": "source-only"
+    }
+  },
+  "offline_verification": {
+    "script": "experiments/carryover-selection.py",
+    "target": "wuxuyun0606-collab/lmc-5@fb3e72c9ee7357c8b17311097b0750082a8a1237 的 extras/claude_code/refined_session_carryover.py",
+    "method": "importlib 直接加载原模块（无算法替身、无上游包导入、不触发 __main__ CLI），用全合成输入调用其自身 select_refined_events / classify_event / compact_text / recent_poison_score",
+    "checked_on": "2026-10-04",
+    "result": "C1/C2/C3/C3b/C4/C5/C6/C7/C8 九项全部复现（exit 0）；见 docs/forge-upstreams.md",
+    "not_proven": [
+      "未运行 create_refined_session / rewrite_session 的磁盘写入与 --resume。",
+      "未使用官方 claude plugin test、真实 transcript 或模型请求。",
+      "未验证真实 Claude Code transcript 的字段形态、tool pairing 在过滤后是否仍可被 runtime 接受。",
+      "C5 仅证明字符串子串排除，不验证真实事件 origin；不能据此把用户引用的文本当成真实 hook。",
+      "C7 仅实测 poison_score；fail-closed 是 create_refined_session / main 中 poison_score >= 2 分支的静态推断，未执行文件写入。",
+      "target_tokens 不是 hard cap（C8）；tail 候选不受预算删除。",
+      "选中的正则/长度阈值是该 revision 的实现细节，非上游 schema 承诺。"
+    ],
+    "python_versions": [
+      "3.9.6",
+      "3.13.3"
+    ]
+  },
+  "read_files": [
+    ".cache/forge-public/dankefox--swap-tutorial/README.md",
+    ".cache/forge-public/dankefox--swap-tutorial/LICENSE",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/claude_code/refined_session_carryover.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/claude_code/__init__.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/docs/FORGE_AND_SWAP.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/docs/REFINED_SESSION_CARRYOVER.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/docs/credits.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/docs/SESSION_CHECKLIST.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/pgvector_backend/hooks/session_start.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/pgvector_backend/hooks/user_prompt_submit.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/pgvector_backend/recall_pipeline.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/extras/pgvector_backend/narrative_timeline.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/src/lmc5/cli.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/src/lmc5/__main__.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/tests/test_refined_session_carryover.py",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/README.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/CHANGELOG.md",
+    ".cache/forge-public/wuxuyun0606-collab--lmc-5/pyproject.toml"
+  ],
+  "known_unknowns": [
+    "swap-tutorial README 之外的作者扩展代码是否存在于其它未链接的私有仓库；公共侧无源。",
+    "lmc-5 生产部署（extras/pgvector_backend + PG + hooks）的真实换窗行为、启动包预算与叙事脊椎是否真按教程运行；本轮只读源码，未运行。",
+    "冷仓 adapter（recall 层 last-resort）与本工单所读 carryover 参考脚本如何（若）协作、以及教程作者完整归档/回退流程的具体实现；所查路径未找到该完整流程。",
+    "本 repo 与任务未指定的其它成员 fork / 镜像是否与这两个 revision 一致。"
+  ],
+  "last_ref_check": {
+    "checked_on": "2026-10-04",
+    "result": "Both main tips match the inspected revisions; see references/upstreams.json for the full eleven-source check."
+  }
+}

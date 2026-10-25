@@ -1,0 +1,405 @@
+{
+  "scenario_id": "common_rich_v1",
+  "title": "Common rich scenario: placement axis + ticks, ambient expiry, human message, busy burst, self-wake, internal-only, cancellation, silent end",
+  "description": "All times are seconds after session start (fixture clock; no real clock/sleep). Invented data only. NO real person, weather service, location, chat, model or delivery is involved. Outcomes are pre-scripted inputs, not model responses or send results. chat_active is an EXPLICITLY SUPPLIED fact, never inferred from a finished response.",
+  "assumptions": "turn_busy = one response/turn still running (busy_interval). chat_active = a human conversation ongoing across turns (chat_interval); the two are deliberately separate and overlapping so that turn_busy=false while chat_active=true can be observed.",
+  "shared": {
+    "main_session": "main-companion",
+    "independent_session": "indep-companion",
+    "idle_definition": "observed_runtime/user activity only as fixture-defined; never inferred sleep, mood, or contact need",
+    "self_wake_disclaimer": "self-wake plans are fixture-provided synthetic decisions, not model-generated"
+  },
+  "policies": [
+    {
+      "id": "P1_fixed_interval",
+      "kind": "fixed_interval",
+      "label": "fixed interval",
+      "interval_seconds": 300,
+      "assumptions": "Fixed opportunities every 300 seconds, starting at zero; placement controls execution."
+    },
+    {
+      "id": "P2_jittered_interval",
+      "kind": "jittered_interval",
+      "label": "explicitly seeded/listed jittered interval",
+      "interval_seconds": 300,
+      "jitter_offsets_seconds": [
+        37,
+        -52,
+        88,
+        -14,
+        63,
+        -41,
+        25,
+        -73
+      ],
+      "assumptions": "Every 300 seconds plus the listed repeating offset array; not random samples."
+    },
+    {
+      "id": "P3_event_driven",
+      "kind": "event_driven",
+      "label": "event driven",
+      "events": [
+        "human_message",
+        "ambient",
+        "memory"
+      ],
+      "assumptions": "Supplied human, ambient and memory arrivals propose autonomous opportunities, independently of the ordinary human reply loop. Internal outputs do not trigger themselves."
+    },
+    {
+      "id": "P4_self_scheduled_one_shots",
+      "kind": "self_wake",
+      "label": "self-scheduled one-shots",
+      "assumptions": "Wakes only for fixture-provided self-wake plans. Each plan fires at most once."
+    },
+    {
+      "id": "P5_idle_window",
+      "kind": "idle_window",
+      "label": "idle-window trigger",
+      "idle_after_seconds": 840,
+      "assumptions": "One opportunity after a complete quiet observation window; sampled at fixture ticks. No inference about sleep, mood, or contact need."
+    },
+    {
+      "id": "P6_hybrid",
+      "kind": "hybrid",
+      "label": "hybrid timer/event/self-wake",
+      "assumptions": "Combines periodic ticks, supplied events and self-wake plans into raw candidates. Coalescing is done by the placement axis, not here.",
+      "interval_seconds": 300
+    }
+  ],
+  "placements": [
+    {
+      "id": "PL_main_skip",
+      "rule": "main_skip",
+      "target": "main",
+      "label": "main_skip: skip autonomous opportunities during chat_active",
+      "assumptions": "LAB CHOICE, not an upstream default. While chat_active is true, an autonomous opportunity targeting the main conversation is SKIPPED (audited, not executed). It does not wait."
+    },
+    {
+      "id": "PL_main_defer",
+      "rule": "main_defer",
+      "target": "main",
+      "label": "main_defer: coalesce and rebuild after chat_active ends",
+      "assumptions": "LAB CHOICE. While chat_active is true, opportunities targeting main are COALESCED into one wake at chat_active end; the packet is re-selected/rebuild at that actual start (not merely at one turn_busy end)."
+    },
+    {
+      "id": "PL_independent",
+      "rule": "independent",
+      "target": "independent",
+      "label": "independent: run in a separate autonomous session during chat_active",
+      "assumptions": "LAB CHOICE. Opportunities run in a separate autonomous session with its own history; NOTHING is written or injected into the main conversation. Main conversation snapshots appear only if the fixture lists explicit read-only sources.",
+      "read_only_main_snapshots": [
+        "msg_1"
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "id": "observation-0",
+      "type": "tick",
+      "t": 0
+    },
+    {
+      "id": "mem_taste_1",
+      "type": "memory",
+      "t": 120,
+      "text": "long-standing note: user usually drinks black coffee in the morning (synthetic)"
+    },
+    {
+      "id": "amb_location_1",
+      "type": "ambient",
+      "t": 240,
+      "observed_at": 240,
+      "expires_at": 3600,
+      "text": "location: coarse 'home district' snapshot, accuracy ~1km (synthetic)"
+    },
+    {
+      "id": "amb_weather_1",
+      "type": "ambient",
+      "t": 240,
+      "observed_at": 240,
+      "expires_at": 1500,
+      "text": "Weather at coarse home area: 21C, light rain, wind 9km/h (synthetic)."
+    },
+    {
+      "id": "observation-300",
+      "type": "tick",
+      "t": 300
+    },
+    {
+      "id": "recall_1",
+      "type": "passive_recall",
+      "t": 300,
+      "supplied_by": "fixture",
+      "source_memory_id": "mem_taste_1",
+      "body": "recall body (fixture-supplied, no retrieval backend): earlier today the user mentioned the coffee machine was broken."
+    },
+    {
+      "id": "mem_ui",
+      "type": "memory",
+      "t": 500,
+      "ui_only": true,
+      "text": "A UI-only suggestion (synthetic)."
+    },
+    {
+      "id": "recall_ui",
+      "type": "passive_recall",
+      "t": 500,
+      "ui_only": true,
+      "body": "UI-only recall preview (synthetic)."
+    },
+    {
+      "id": "observation-600",
+      "type": "tick",
+      "t": 600
+    },
+    {
+      "id": "busy_1",
+      "type": "busy_interval",
+      "t": 900,
+      "end": 1800,
+      "note": "turn_busy: a response/turn is running; enters and exits before chat_active ends"
+    },
+    {
+      "id": "chat_1",
+      "type": "chat_interval",
+      "t": 900,
+      "end": 2100,
+      "note": "chat_active: human conversation ongoing across turns; extends past busy_1 so turn_busy=false but chat_active=true is observable from 1800 to 2100"
+    },
+    {
+      "id": "mem_corr_1",
+      "type": "memory",
+      "t": 900,
+      "corrects": "mem_taste_1",
+      "text": "CORRECTION at 0:15: user switched to oat-milk lattes this month (synthetic)"
+    },
+    {
+      "id": "observation-900",
+      "type": "tick",
+      "t": 900
+    },
+    {
+      "id": "internal_plan_1",
+      "type": "internal",
+      "t": 1000,
+      "body": "internal-only note (synthetic): decide whether to mention the rain when next awake"
+    },
+    {
+      "id": "sw_afternoon",
+      "type": "self_wake",
+      "t": 1000,
+      "planned_for": 2400,
+      "reason": "fixture plan: check in about afternoon (synthetic decision, not model-generated)",
+      "carryover": [
+        "internal_plan_1"
+      ]
+    },
+    {
+      "id": "sw_cancel_pending",
+      "type": "self_wake",
+      "t": 1000,
+      "planned_for": 1200,
+      "carryover": [
+        "internal_plan_1"
+      ]
+    },
+    {
+      "id": "sw_late",
+      "type": "self_wake",
+      "t": 1000,
+      "planned_for": 2700,
+      "reason": "fixture plan: late-day reflection (synthetic decision)",
+      "carryover": [
+        "internal_plan_1"
+      ]
+    },
+    {
+      "id": "sw_reflect",
+      "type": "self_wake",
+      "t": 1000,
+      "planned_for": 2200,
+      "carryover": []
+    },
+    {
+      "id": "observation-1200",
+      "type": "tick",
+      "t": 1200
+    },
+    {
+      "id": "amb_env_2",
+      "type": "ambient",
+      "t": 1380,
+      "observed_at": 1380,
+      "expires_at": 2700,
+      "text": "Weather update: rain stopped, 22C (synthetic)."
+    },
+    {
+      "id": "busy_indep_1",
+      "type": "busy_interval",
+      "t": 1500,
+      "end": 1650,
+      "session": "independent",
+      "note": "the independent session may have its own separate busy interval"
+    },
+    {
+      "id": "observation-1500",
+      "type": "tick",
+      "t": 1500
+    },
+    {
+      "id": "mem_corr_2",
+      "type": "memory",
+      "t": 1620,
+      "corrects": "mem_corr_1",
+      "text": "CORRECTION: current coffee preference is soy latte (synthetic)."
+    },
+    {
+      "id": "recall_2",
+      "type": "passive_recall",
+      "t": 1621,
+      "source_memory_id": "mem_corr_2",
+      "supplied_by": "fixture",
+      "body": "Current supplied recall: the user now prefers soy latte (synthetic)."
+    },
+    {
+      "id": "msg_1",
+      "type": "human_message",
+      "t": 1680,
+      "channel": "telegram",
+      "sender": "user",
+      "sender_time": 1675,
+      "reply_target": "chat:dm-42",
+      "attachment": {
+        "kind": "image",
+        "name": "kitchen.jpg"
+      },
+      "body": "hey, back home now — did the rain stop where you are? (synthetic exact text)"
+    },
+    {
+      "id": "cancel_pending",
+      "type": "cancel",
+      "t": 1800,
+      "target": "sw_cancel_pending"
+    },
+    {
+      "id": "observation-1800",
+      "type": "tick",
+      "t": 1800
+    },
+    {
+      "id": "observation-2100",
+      "type": "tick",
+      "t": 2100
+    },
+    {
+      "id": "observation-2400",
+      "type": "tick",
+      "t": 2400
+    },
+    {
+      "id": "cancel_1",
+      "type": "cancel",
+      "t": 2500,
+      "target": "sw_late",
+      "reason": "user asked to stop the late reminder (synthetic); cancelled plan stays in audit trace"
+    },
+    {
+      "id": "amb_expire_1",
+      "type": "ambient_expire",
+      "t": 2600,
+      "target": "amb_weather_1",
+      "note": "weather snapshot expires; it stays in the archive with provenance"
+    },
+    {
+      "id": "observation-2700",
+      "type": "tick",
+      "t": 2700
+    },
+    {
+      "id": "end",
+      "type": "run_end",
+      "t": 3000,
+      "note": "silent end: the run may end quietly with no delivery"
+    },
+    {
+      "id": "observation-3000",
+      "type": "tick",
+      "t": 3000
+    },
+    {
+      "id": "sw_orphan",
+      "type": "self_wake",
+      "t": 3200,
+      "planned_for": 4200,
+      "reason": "fixture plan (synthetic)",
+      "carryover": []
+    },
+    {
+      "id": "cancel_2",
+      "type": "cancel",
+      "t": 3250,
+      "target": "sw_orphan",
+      "reason": "second plan cancelled before it would fire (synthetic)"
+    },
+    {
+      "id": "observation-3300",
+      "type": "tick",
+      "t": 3300
+    },
+    {
+      "id": "observation-3600",
+      "type": "tick",
+      "t": 3600
+    },
+    {
+      "id": "observation-3900",
+      "type": "tick",
+      "t": 3900
+    },
+    {
+      "id": "observation-4200",
+      "type": "tick",
+      "t": 4200
+    }
+  ],
+  "outcomes": [
+    {
+      "trigger": "P2_jittered_interval",
+      "wake_scope": "policy",
+      "scripted_outcome": "internal_only",
+      "next_wake_plan": "none",
+      "note": "Illustrative silent/internal activity. Actual scripted result production is separately traced after each input packet."
+    },
+    {
+      "trigger": "P6_hybrid",
+      "wake_scope": "policy",
+      "scripted_outcome": "internal_only",
+      "next_wake_plan": "none",
+      "note": "Illustrative silent/internal activity. Actual scripted result production is separately traced after each input packet."
+    },
+    {
+      "trigger": "sw_afternoon",
+      "wake_scope": "wake",
+      "scripted_outcome": "external_attempted",
+      "external_delivery": "unknown",
+      "next_wake_plan": "none",
+      "note": "delivery result is a SEPARATE synthetic fact; here UNKNOWN, NOT send success"
+    },
+    {
+      "trigger": "event-msg_1",
+      "wake_scope": "wake",
+      "scripted_outcome": "reply_planned",
+      "external_delivery": "unknown",
+      "next_wake_plan": "none"
+    },
+    {
+      "trigger": "end",
+      "wake_scope": "run",
+      "scripted_outcome": "silent_end",
+      "external_delivery": "none",
+      "next_wake_plan": "none",
+      "note": "quiet stop, no outward contact"
+    }
+  ],
+  "duration_seconds": 4200
+}

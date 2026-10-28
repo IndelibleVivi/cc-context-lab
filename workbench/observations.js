@@ -99,10 +99,13 @@ function renderObservationSections(){
     }grid.appendChild(column);
   });detail.appendChild(grid);
 }
-function downloadObservation(value,name,type){
+function downloadLocalArtifact(value,name,type){
   var url=URL.createObjectURL(new Blob([value],{type:type+';charset=utf-8'}));
   var a=el('a',{attrs:{href:url,download:name}});document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+function downloadObservation(value,name,type){
+  downloadLocalArtifact(value,name,type);
   $('observation-status').textContent='已在本地生成 '+name+'；导入声明的证据层级保持原样。';
 }
 function attachObservation(){

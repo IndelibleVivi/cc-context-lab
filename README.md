@@ -10,7 +10,7 @@
 
 整体方向与连续建设阶段见 [development programme](docs/development-programme.md)：以具体 context 变更为单位，把研究、可复现对照、目标入口观察、原 runtime 接入与自然使用回填连起来。当前先贯通离线对照，不用合成结果替代实际请求或相处体验。
 
-目前交付是**有出处的研究库、Context Atlas、可复现 A/B 实验、本地请求观察与比较，以及 CC-specific source candidate**。观察器能保真读取 Anthropic Messages / OpenAI Responses body；这不是对使用这些格式的所有 harness 提供适配或兼容承诺。尚未提供可直接部署的 context manager/persona/profile 或经真实请求验证的完整剥离方案。当前证据见 [current state](docs/current-state.md)。
+目前交付是**有出处的研究库、Context Atlas、可复现 A/B 实验、本地请求观察与比较、贯通多阶段输入的 context case，以及 CC-specific source candidate**。观察器能保真读取 Anthropic Messages / OpenAI Responses body；这不是对使用这些格式的所有 harness 提供适配或兼容承诺。尚未提供可直接部署的 context manager/persona/profile 或经真实请求验证的完整剥离方案。当前证据见 [current state](docs/current-state.md)。
 
 ## 架构与边界
 
@@ -24,6 +24,7 @@ flowchart TB
   subgraph LAB["Lab：可复现研究与观察"]
     ENGINE["情境实验<br/>scenarios / A–B"]
     OBS["请求观察<br/>observations.py"]
+    CASE["Context case<br/>阶段与检查"]
     ATLAS["Context Atlas<br/>比较与保存"]
     CC["CC-specific candidate<br/>Mods / offline"]
     BRIEF["Change brief<br/>原值与条件"]
@@ -31,8 +32,9 @@ flowchart TB
   OWNER["原 runtime owner<br/>接入与恢复"]
   FIX --> ENGINE
   CAP --> OBS
-  ENGINE -->|"合成输入与历史轨迹"| ATLAS
-  OBS -->|"请求结构与条件差异"| ATLAS
+  ENGINE -->|"合成研究"| CASE
+  OBS -->|"阶段输入"| CASE
+  CASE -->|"原值、检查与缺口"| ATLAS
   REF -->|"来源投影"| ATLAS
   REF -->|"版本与规则依据"| CC
   ATLAS --> BRIEF
@@ -41,7 +43,7 @@ flowchart TB
   OWNER -. "显式捕获后再导入" .-> CAP
 ```
 
-实线是当前源码的数据/证据路径；虚线是需要原 owner 与对应执行权限的接续操作。Lab 不自动安装 candidate、启用 scheduler、调用模型或发送消息。外部 Memory/state 的内部 authority 继续归原项目。
+图示为贯穿案例的主路径，独立 study / request comparison 也可直接进入 Atlas。实线是当前源码的数据/证据路径；虚线是需要原 owner 与对应执行权限的接续操作。Lab 不自动安装 candidate、启用 scheduler、调用模型或发送消息。外部 Memory/state 的内部 authority 继续归原项目。
 
 两种观察必须分开读：合成引擎知道自己如何选择 current/history；单份 request body 不足以确定一个 block 的真正 origin 或生命周期，因此观察器保留 `unknown`。同格式按 JSON pointer 比较位置；跨格式明确不自动配对。Responses 中未展开的服务端历史和 prompt 引用会保留为缺口。
 
@@ -49,6 +51,7 @@ flowchart TB
 
 | 你要做什么 | 入口 |
 | --- | --- |
+| 围绕同一问题重跑多阶段输入、检查保留条件与缺口 | [Context case](docs/context-cases.md) |
 | 交互查看全景、合成回放、来源与配置变更准备 | [Context Atlas](workbench/README.md) |
 | 固定同一材料，比较 A/B 的当下、历史与来源轨迹并重跑 | [Context study](experiments/companion-input/STUDIES.md)、[Atlas 对照研究](workbench/README.md#对照研究与重跑) |
 | 检查本地 request 的 instructions/messages/tools、格式与条件差异 | [Request observation](docs/request-observation.md)、[通用观察模块](context_lab/observations.py) |
@@ -81,7 +84,16 @@ flowchart TB
 
 修改本仓库的 authored source 后，可运行 `python3 scripts/check_offline.py` 统一检查离线引擎、对照研究、Atlas、candidate 和请求准备器。需要 Python 3.10+ 与 Node.js；不下载依赖、不调用 CC binary、上游网络或模型。第三方原函数复现、实际 runtime 探针与模型实验仍按各自前提单独执行。
 
-用纯合成 request 体验通用观察和比较：
+用合成的多阶段案例体验完整路径（示例有意保留结构失败，runner 返回 1 并生成报告）：
+
+```sh
+python3 scripts/run_context_case.py --demo --out .cache/context-case
+python3 scripts/build_context_atlas.py --case .cache/context-case/case.json
+```
+
+案例可保存、CLI 重跑、查看逐项期望/原值、跳到关联 study 或显式请求比较，并固定带入 brief。阶段关联由研究者声明，结构 PASS 不等于模型理解；[完整用法与 0/1/2 退出码](docs/context-cases.md)。
+
+也可用纯合成 request 体验独立观察和比较：
 
 ```sh
 python3 scripts/inspect_context.py experiments/request-observation/fixtures/anthropic-a.json \
@@ -90,7 +102,7 @@ python3 scripts/inspect_context.py experiments/request-observation/fixtures/anth
 python3 scripts/build_context_atlas.py
 ```
 
-Atlas 默认展示四份合成 capture，不扫描真实会话或 logs。如需查看自己明确提供的本地 capture，用 `--capture capture.json`（可重复）生成页面；输出须在 Git 外或 worktree 的 ignored 路径。导入证据是调用者声明，工具不会将它升级为独立验证的 runtime 事实。实际请求正文、身份和私人上下文即使在 private remote 也不提交；[完整用法](docs/request-observation.md)。
+Atlas 默认展示合成 context case 及其阶段 captures，不扫描真实会话或 logs。如需查看自己明确提供的本地 capture，用 `--capture capture.json`（可重复）生成页面；输出须在 Git 外或 worktree 的 ignored 路径。导入证据是调用者声明，工具不会将它升级为独立验证的 runtime 事实。实际请求正文、身份和私人上下文即使在 private remote 也不提交；[完整用法](docs/request-observation.md)。
 
 纯阅读无需安装依赖。用 `python3 scripts/build_context_atlas.py` 可生成无网络依赖的本地交互页面，见 [Atlas 用法](workbench/README.md)。用 `python3 scripts/check_upstreams.py` 可只读检查十六个公开上游是否更新，需要 Python 3.10+ 和 Git；详细退出码见 [maintenance](docs/maintenance.md)。版本与覆盖声明都带观察日期；上游 source inspection、离线测试、真实 request 和行为结果分别记录。研究里出现的配置命令是实验候选，不会由本仓库自动执行。
 

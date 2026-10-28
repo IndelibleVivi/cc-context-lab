@@ -19,6 +19,8 @@ sys.path.insert(0, str(ROOT / 'experiments' / 'companion-input'))
 import run_session as rs
 import context_study as study
 from context_lab import observations as request_observation
+from context_lab import cases
+from context_lab.case_demo import make_demo_case
 from context_lab.artifacts import paths_alias, write_reports
 
 
@@ -26,16 +28,16 @@ def read_json(relative):
     return json.loads((ROOT / relative).read_text(encoding='utf-8'))
 
 
-def build_request_observations(capture_paths=()):
+def build_request_observations(capture_paths=(), normalized=None):
     """Project explicit local captures and synthetic demos; never discover logs."""
-    paths = list(capture_paths) or sorted((ROOT / 'experiments/request-observation/fixtures').glob('*.json'))
-    captures, ids = [], set()
-    for path in paths:
-        capture = request_observation.normalize_capture(request_observation.parse_capture_json(Path(path).read_text(encoding='utf-8')))
-        if capture['capture_id'] in ids:
-            raise ValueError('duplicate capture_id: ' + capture['capture_id'])
-        ids.add(capture['capture_id'])
-        captures.append(capture)
+    captures = [] if normalized is None else list(normalized)
+    if normalized is None:
+        paths = list(capture_paths) or sorted((ROOT / 'experiments/request-observation/fixtures').glob('*.json'))
+        captures = [request_observation.normalize_capture(request_observation.parse_capture_json(Path(path).read_text(encoding='utf-8')))
+                    for path in paths]
+    ids = [capture['capture_id'] for capture in captures]
+    if len(ids) != len(set(ids)):
+        raise ValueError('duplicate capture_id in observations')
     comparisons = {a['capture_id']: {b['capture_id']: request_observation.compare_observations(a, b)
                                     for b in captures} for a in captures}
     reports = {aid: {bid: request_observation.render_markdown(report) for bid, report in rows.items()}
@@ -58,7 +60,37 @@ def build_request_observations(capture_paths=()):
                 json_reports=json_reports, display_values=display_values)
 
 
-def build_data(study_plan=None, capture_paths=()):
+def build_case_projection(manifest):
+    report = cases.run_case(manifest, study_runner=study.run_study)
+    dumps = lambda value: json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
+    display = dict(
+        checks={c['id']: dict(expected=dumps(c['expected']), actual=dumps(c['actual'])) for c in report['checks']},
+        steps={step['id']: dumps(step['observation']['request_body']) if step['observation'] else None
+               for step in report['steps']})
+    def browser_safe(value):
+        if type(value) is int:
+            return abs(value) <= 9007199254740991
+        if isinstance(value, dict):
+            return all(browser_safe(v) for v in value.values())
+        if isinstance(value, list):
+            return all(browser_safe(v) for v in value)
+        return True
+    return dict(report=report, case_json=dumps(report['case']), report_json=dumps(report),
+                markdown=cases.render_markdown(report), display=display,
+                study_browser_safe=browser_safe(report['case']['study_plan']),
+                study_markdown=study.render_markdown(report['study']) if report['study'] else None)
+
+
+def build_data(study_plan=None, capture_paths=(), case_plan=None):
+    explicit_case = case_plan is not None
+    if case_plan is None and study_plan is None and not capture_paths:
+        case_plan = make_demo_case(read_json('experiments/companion-input/fixtures/common_scenario.json'))
+    case_projection = build_case_projection(case_plan) if case_plan is not None else None
+    if case_projection and case_projection['report']['study']:
+        # Unsafe case plans remain canonical report data only: do not feed
+        # wireStudy's bootstrap restore or its editable scenario registry.
+        study_plan = (case_projection['report']['case']['study_plan']
+                      if case_projection['study_browser_safe'] else None)
     model = read_json('workbench/model.json')
     catalog = read_json('references/upstreams.json')
     scenarios = []
@@ -99,7 +131,10 @@ def build_data(study_plan=None, capture_paths=()):
                 compatibility=read_json('references/context-profile-compatibility.json'),
                 target_runtime=read_json('references/target-runtime-2.1.289.json'),
                 study_plan=study_plan,
-                request_observations=build_request_observations(capture_paths),
+                request_observations=build_request_observations(capture_paths,
+                    normalized=[step['observation'] for step in case_projection['report']['steps'] if step['observation']]
+                    if case_projection else None),
+                context_case=case_projection, open_case=explicit_case,
                 open_observation=bool(capture_paths),
                 scenarios=scenarios)
 
@@ -113,6 +148,7 @@ def compose_html(data):
              '<!-- ATLAS_STYLE -->': '<style>' + (ROOT / 'workbench' / 'style.css').read_text(encoding='utf-8') + '</style>',
              '<!-- ATLAS_SCRIPT -->': '<script>' + (ROOT / 'workbench' / 'app.js').read_text(encoding='utf-8') + '</script>'}
     parts['<!-- ATLAS_STUDY_SCRIPT -->'] = '<script>' + (ROOT / 'workbench' / 'study.js').read_text(encoding='utf-8') + '</script>'
+    parts['<!-- ATLAS_CASE_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/cases.js').read_text(encoding='utf-8') + '</script>'
     parts['<!-- ATLAS_OBSERVATION_SCRIPT -->'] = '<script>' + (ROOT / 'workbench' / 'observations.js').read_text(encoding='utf-8') + '</script>'
     for marker, replacement in parts.items():
         if html.count(marker) != 1:
@@ -128,9 +164,12 @@ def main():
     ap.add_argument('--study', type=Path, help='open a saved study using its embedded synthetic fixture snapshot')
     ap.add_argument('--capture', type=Path, action='append', default=[],
                     help='project only these explicit local capture JSON files (repeatable); output must stay private')
+    ap.add_argument('--case', type=Path, help='open a self-contained harness-context-case/1; exclusive with --study/--capture')
     args = ap.parse_args()
     try:
-        if args.capture:
+        if args.case and (args.study or args.capture):
+            raise ValueError('--case owns its snapshots; do not combine with --study or --capture')
+        if args.capture or args.case:
             try:
                 relative = args.out.resolve().relative_to(ROOT)
             except ValueError:
@@ -139,13 +178,14 @@ def main():
                 ignored = subprocess.run(['git', 'check-ignore', '--quiet', '--', str(relative)], cwd=ROOT)
                 if ignored.returncode != 0:
                     raise ValueError('capture output inside the worktree must be Git-ignored; use .cache/ or an external directory')
-        for source in ([args.study] if args.study else []) + args.capture:
+        for source in ([args.study] if args.study else []) + args.capture + ([args.case] if args.case else []):
             outputs = [args.out / 'data.json'] + ([] if args.data_only else [args.out / 'index.html'])
             for target in outputs:
                 if paths_alias(target, source):
                     raise ValueError('input aliases generated output: ' + target.name)
         plan = json.loads(args.study.read_text(encoding='utf-8')) if args.study else None
-        data = build_data(plan, args.capture)
+        case_plan = request_observation.parse_capture_json(args.case.read_text(encoding='utf-8')) if args.case else None
+        data = build_data(plan, args.capture, case_plan)
         data['repo_base'] = os.path.relpath(ROOT, args.out.resolve()).replace(os.sep, '/')
         # Render everything before touching old artifacts; write_reports encodes
         # all content and atomically replaces each file without following links.

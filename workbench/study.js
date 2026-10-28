@@ -276,5 +276,8 @@ function wireStudy() {
   $('study-import').addEventListener('click',()=>{try{restoreStudy(JSON.parse($('study-import-text').value));$('study-status').textContent='研究已恢复，使用 snapshot 对应的 canonical 观察。';}
     catch(err){$('study-status').textContent='未导入：'+err.message;}});
   setStudyPreset(0);
-  if(getData().study_plan) {try{restoreStudy(getData().study_plan);}catch(err){$('study-status').textContent=err.message;}}
+  var unsafeCase=getData().context_case?.study_browser_safe===false;
+  $('study-case-notice').hidden=!unsafeCase;
+  $('study-case-notice').textContent=unsafeCase?'当前 case 的 study 含超出安全整数范围的值，没有载入此编辑器；这里使用独立的合成情境。请从案例下载 canonical JSON 并在 CLI 重跑。':'';
+  if(getData().study_plan&&!unsafeCase) {try{restoreStudy(getData().study_plan);}catch(err){$('study-status').textContent=err.message;}}
 }

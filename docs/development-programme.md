@@ -61,3 +61,5 @@
 本轮在离线 studies 之上新增 [请求观察](request-observation.md)：读取 Anthropic Messages / OpenAI Responses 的显式 capture，保存完整 body、section 原值和未知参数，比较同格式的 JSON pointer 与条件变化。跨格式不自动匹配。Atlas 默认仅合成示例，私人 capture 明确导入后仍只在本机保留。该能力让同一套研究问题能开始接住不同 harness 的请求材料；当前验证仍使用合成输入，尚未宣称新一轮真实 runtime 捕获。
 
 后续以具体场景扩展其他 wire reader 或原生事件接点，并让真实观察回到研究案例；不先造通用服务、安装器或自动生产控制层。
+
+2026-10-28 已进一步接成 [context case](context-cases.md)：同一问题/保留要求、可选 study snapshot、多阶段 captures、显式结构检查和比较均可保存、重跑与固定交接。它补上研究材料之间的关联，关联和阶段顺序仍是研究者声明；当前合成示例不升级为真实 runtime 生命周期证据。下一集成点继续是真实观察与自然使用回填。

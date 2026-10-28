@@ -30,6 +30,8 @@
               aria-controls="panel-overview" aria-selected="true" tabindex="0">全景</button>
       <button class="tab" role="tab" id="tab-replay" data-tab="replay"
               aria-controls="panel-replay" aria-selected="false" tabindex="-1">回放</button>
+      <button class="tab" role="tab" id="tab-case" data-tab="case"
+              aria-controls="panel-case" aria-selected="false" tabindex="-1">研究案例</button>
       <button class="tab" role="tab" id="tab-study" data-tab="study"
               aria-controls="panel-study" aria-selected="false" tabindex="-1">对照研究</button>
       <button class="tab" role="tab" id="tab-observation" data-tab="observation"
@@ -72,6 +74,31 @@
         <div class="inspector__body" id="overview-detail" hidden></div>
       </aside>
     </div>
+  </section>
+
+  <section class="panel" id="panel-case" role="tabpanel" aria-labelledby="tab-case" data-panel="case" tabindex="-1" hidden>
+    <div class="panel__head"><div class="panel__headtext">
+      <span class="section-kicker">CONTEXT CASE / QUESTION → INPUT → EVIDENCE</span>
+      <h2 class="panel__title" id="case-title">把同一个问题带过每个阶段</h2>
+      <p class="panel__lede" id="case-question"></p>
+    </div><span class="chip">本地结构检查 · 不评判相处质量</span></div>
+    <div class="observation-limits" id="case-limits"></div>
+    <p id="case-summary" class="study-axis-note" role="status"></p>
+    <div id="case-requirements" class="case-requirements"></div>
+    <div class="study-workspace">
+      <aside><h3 class="subhead">声明的阶段顺序</h3><p class="field__note">标签与排列由研究者提供，不证明真实继承或因果。</p><div id="case-steps" class="study-source-list"></div></aside>
+      <section id="case-step-detail" class="observation-raw" aria-live="polite"></section>
+    </div>
+    <section class="case-checks"><h3 class="subhead">逐项检查 · 仅针对指定 request body 的位置</h3>
+      <label class="field"><span class="field__label">检查结果</span><select id="case-filter"><option value="all">全部</option><option value="FAIL">FAIL · 发现不满足</option><option value="NOT_ASSESSED">NOT_ASSESSED · 缺少证据或无法判断</option><option value="PASS">PASS · 此位置满足结构条件</option></select></label>
+      <div id="case-checks"></div>
+    </section>
+    <section class="case-comparisons"><h3 class="subhead">显式比较关系</h3><div id="case-comparisons"></div></section>
+    <details id="case-study"><summary>关联的合成研究结果（关联由研究者声明）</summary><pre id="case-study-report"></pre><button class="btn" id="case-open-study" type="button">恢复关联 plan 到对照研究 →</button><p class="field__note">会替换当前未保存的 study 编辑；需要保留时先在对照研究下载 plan。案例本身保持固定。</p></details>
+    <section class="study-export"><div><h3 class="subhead">保存、重跑与交接</h3><p>案例包含完整输入快照。下载后可用 run_context_case.py 重跑，再以 build_context_atlas.py --case 重新打开；结果含私人正文时仅留本机。</p></div>
+      <div class="study-export-actions"><button class="btn" id="case-save" type="button">下载 case JSON</button><button class="btn" id="case-report-json" type="button">下载 report JSON</button><button class="btn" id="case-report-md" type="button">下载案例 Markdown</button><button class="btn btn--primary" id="case-to-brief" type="button">将完整案例带入 brief →</button></div>
+      <p id="case-status" class="field__note" role="status"></p>
+    </section>
   </section>
 
   <!-- ============================= 回放 ============================= -->
@@ -137,6 +164,7 @@
       </div>
       <span class="chip">离线合成 · MODEL NOT RUN</span>
     </div>
+    <p id="study-case-notice" class="study-axis-note" hidden></p>
     <div class="study-presets" id="study-presets" aria-label="研究起点"></div>
     <div class="study-question">
       <label class="field"><span class="field__label">研究标题</span><input id="study-title" type="text"></label>
@@ -233,6 +261,7 @@
 
     <div class="baseline" id="change-baseline" data-region="change-baseline" aria-label="当前证据基线"></div>
     <div id="study-brief-attachment" class="study-attachment" hidden></div>
+    <div id="case-brief-attachment" class="study-attachment" hidden></div>
     <div id="observation-brief-attachment" class="study-attachment" hidden></div>
 
     <div class="drill-grid">
@@ -325,6 +354,7 @@
 <!-- ATLAS_DATA -->
 <!-- ATLAS_STUDY_SCRIPT -->
 <!-- ATLAS_OBSERVATION_SCRIPT -->
+<!-- ATLAS_CASE_SCRIPT -->
 <!-- ATLAS_SCRIPT -->
 </body>
 </html>

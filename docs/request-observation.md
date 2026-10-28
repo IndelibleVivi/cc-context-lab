@@ -89,7 +89,7 @@ Responses 的 `previous_response_id`、`conversation` 或 `prompt` 引用会进�
 
 ## 在 Atlas 检查与交接
 
-默认 `python3 scripts/build_context_atlas.py` 只展示四份明确标为合成的 capture。打开“请求观察”，选择 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
+默认 `python3 scripts/build_context_atlas.py` 展示合成 context case 及其阶段 captures；独立 `--capture` 页面仍只包含明确提供的文件，不混入默认案例。打开“请求观察”，选择 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
 
 使用明确提供的材料：
 

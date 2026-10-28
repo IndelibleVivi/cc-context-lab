@@ -908,6 +908,7 @@ function renderChange() {
   renderBaseline();
   renderStudyAttachment();
   renderObservationAttachment();
+  renderCaseAttachment();
   renderChangeOutput();
 }
 
@@ -1201,6 +1202,9 @@ function buildBriefMarkdown() {
     L.push('');
     L.push(observationAttachment.markdown);
   }
+  if (caseAttachment) {
+    L.push('','## 附：完整 context case（带入时的固定快照）','',caseAttachment.markdown);
+  }
   return L.join('\n');
 }
 
@@ -1348,6 +1352,7 @@ function activateTab(name, focusTab) {
   for (var j = 0; j < panels.length; j++) panels[j].hidden = panels[j].getAttribute('data-panel') !== name;
   if (name === 'overview') requestAnimationFrame(drawGraphEdges);
   if (name === 'replay') renderReplay();
+  if (name === 'case') renderCase();
   if (name === 'study') renderStudy();
   if (name === 'observation') renderObservation();
   if (name === 'change') renderChange();
@@ -1414,9 +1419,10 @@ function boot() {
   wireTabs();
   wireStudy();
   wireObservation();
+  wireCase();
   renderOverview();
   new ResizeObserver(()=>requestAnimationFrame(drawGraphEdges)).observe($('overview-canvas'));
-  activateTab(getData().open_observation ? 'observation' : getData().study_plan ? 'study' : 'overview', false);
+  activateTab(getData().open_case ? 'case' : getData().open_observation ? 'observation' : getData().study_plan && !getData().context_case ? 'study' : 'overview', false);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

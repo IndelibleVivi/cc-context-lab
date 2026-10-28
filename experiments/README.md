@@ -155,3 +155,7 @@ JSON 的语法与字段检查只证明语料可读取；目前没有 runner 或�
 每个已执行实验留下简短 record：问题、profile/版本/上游 revision、合成输入、预期、实际、未覆盖范围、可复现步骤，以及是否采纳。具体失败必须保留；不把没有运行写成通过。
 
 原始请求与私人工作记录留在 Git 外。Repo 只保留足以复现结论的合成 fixture、脱敏事实和自己的归纳。离线结果、真实 request、运行行为和 owner acceptance 分别标注。
+
+## 多阶段 context case
+
+[案例 guide](../docs/context-cases.md) 将同一问题、要求、可选 canonical study snapshot、多阶段 request captures 和显式结构检查接到一起。`python3 scripts/run_context_case.py --demo --out .cache/context-case` 生成含预期 FAIL/NOT_ASSESSED 的合成案例（返回1并保留报告）；随后 `python3 scripts/build_context_atlas.py --case .cache/context-case/case.json` 可检查和固定交接。默认请求由 [case_demo.py](../context_lab/case_demo.py) 手工构造，不能当成真正的引擎输出或 runtime trace。

@@ -21,6 +21,9 @@ def main():
         ('companion input and typed decision contracts', [sys.executable, 'experiments/companion-input/run_lab.py', '--check', '--no-run']),
         ('context study and CLI', [sys.executable, 'scripts/test_context_study.py']),
         ('Atlas projection', [sys.executable, 'scripts/test_build_context_atlas.py']),
+        ('context case and CLI', [sys.executable, 'scripts/test_context_cases.py']),
+        ('case Atlas integration', [sys.executable, 'scripts/test_context_case_atlas.py']),
+        ('case presenter and fixed handoff', [node, '--test', 'scripts/test_case_ui.cjs']),
         ('request observation and CLI', [sys.executable, 'scripts/test_context_observations.py']),
         ('Atlas output safety and canonical values', [sys.executable, 'scripts/test_atlas_output_safety.py']),
         ('observation presenter and fixed handoff', [node, '--test', 'scripts/test_observation_ui.cjs']),
@@ -30,6 +33,7 @@ def main():
         ('request preparation only', [sys.executable, 'scripts/test_prepare_heartbeat_requests.py']),
         ('Atlas script syntax', [node, '--check', 'workbench/app.js']),
         ('study script syntax', [node, '--check', 'workbench/study.js']),
+        ('case script syntax', [node, '--check', 'workbench/cases.js']),
         ('observation script syntax', [node, '--check', 'workbench/observations.js']),
     ]
     for label, command in checks:

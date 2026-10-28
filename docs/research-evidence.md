@@ -108,3 +108,13 @@ compact 的后续实现候选是在官方事件里接入自有 writer，并独�
 今后版本迭代先用同一升级检查脚本调用所选 binary，保留各版本官方 offline 结果；这条路径已跑通，不重复作为待办。目标 types 与一次本地 composition 探针也已完成；下一层缺口是其它分支的正文分类、动态事件以及请求生命周期，需要真实请求证据时再安排获授权的隔离模型实验。现有 reminder 映射、原函数 fixture 与 continuity source tests 都不代表整个生命周期验收完成。
 
 GitHub 远端已建立为 [IndelibleVivi/cc-context-lab](https://github.com/IndelibleVivi/cc-context-lab)，visibility 已核为 private，研究内容由 `main` 管理。没有公开发布、安装插件或部署；远端 refs 不代表任何 CC runtime 已更新。私人材料与上游缓存不进入远端。
+
+## 2026-10-28：贯通 context case
+
+新增 self-contained `harness-context-case/1`、纯本地 runner、声明的多阶段 captures、requirement/显式 body pointer 检查和比较；复用 canonical study 与 request observer。默认合成案例包含初始、更新/纠正、Forge 后六份手工构造请求和一个明确缺失阶段；关联不是 tracing 或 study 引擎实际生成的请求。八项要求里四项满足结构条件、一项失败、三项未评估，模型行为/交付不自动通过。
+
+本轮统一离线入口共197 cases（既有159 + case/CLI22 + caseAtlas7 + caseUI9）、4JSsyntax通过。新增 coverage 包括 typed equality、null/missing/blocked、literal pointer、空白、巨大数组索引、无检查不通过、非结构层不接受结构断言、一次 canonical study callback、0/1/2退出码、坏输入/alias保留、私人输出与安全Markdown fence。
+
+浏览器完成 case 下载→CLI重跑→builder --case→重开→阶段原值/筛选→显式比较→关联study恢复和编辑→固定brief下载/移除。最终下载与canonical内容一致；另用跨格式/未展开引用和大整数合成case验证未知项与精度防线。1440×1100、390×844七视图无页横溢，console无应用错误；README Mermaid本地渲染核对。只有source、合成材料和loopback预览；没有新runtime probe、真实模型、scheduler、消息、安装或部署。
+
+独立复核发现 unsafe study 仅挡按钮而未挡 wireStudy 启动恢复及scenario导出的精度旁路，已在builder和bootstrap共同修复；integration断言顶层study_plan为空、unsafe fixture不进可编辑registry，canonical case仍保留精确值。

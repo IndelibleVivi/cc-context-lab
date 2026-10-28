@@ -1287,3 +1287,24 @@ select:hover, input:hover { border-color: var(--copper-soft); }
 
 /* ---- misc small copy ---- */
 .pkt-wakefacts { margin-top: 6px; }
+
+/* A case keeps requirements, declared stages and scoped checks together. */
+.case-requirements { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:24px 0; }
+.case-requirement, .case-check { min-width:0; padding:16px 20px; background:#fff5; border-top:2px solid var(--line-strong); overflow-wrap:anywhere; }
+.case-requirement h3 { font-size:15px; margin:6px 0; }
+.case-requirement p { margin:6px 0; }
+[data-status="FAIL"].case-requirement, [data-status="FAIL"].case-check { border-top-color:var(--copper); }
+[data-status="PASS"].case-requirement, [data-status="PASS"].case-check { border-top-color:var(--teal); }
+.case-checks { margin-top:32px; }
+.case-checks>.field { max-width:470px; }
+.case-check { margin-top:18px; }
+.case-check pre, #case-study-report { white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.8 var(--mono); max-height:380px; overflow:auto; background:#fff7; padding:14px; }
+.case-comparisons { border-top:1px solid var(--line-strong); margin-top:30px; padding:18px 0; }
+.case-comparison { padding:10px 0; border-bottom:1px solid var(--line); }
+#case-study { margin:20px 0; }
+#case-study summary { cursor:pointer; color:var(--petrol); }
+#panel-case :focus-visible { outline:2px solid var(--teal-soft); outline-offset:1px; box-shadow:none; }
+@media(max-width:650px) { .case-requirements { grid-template-columns:1fr; } }
+
+#panel-case .section-kicker { display:block; color:var(--teal); font:11px var(--mono); letter-spacing:.1em; margin-bottom:12px; }
+#case-limits summary { cursor:pointer; font-size:12px; color:var(--petrol); }

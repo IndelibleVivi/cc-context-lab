@@ -21,7 +21,8 @@ python3 scripts/build_context_atlas.py
 - **全景**：选择一个 context 环节，看来源/入口、owner、已有证据、关联问题和限制。图的箭头表达研究关系，不表示生产依赖自动扫描结果。
 - **回放**：选择合成情境、trigger、placement 与 history，点击实际 wake 查看 current input、历史、排除原因和轮后 scripted results。主聊天的活跃窗口与一轮执行的 busy 窗口分别显示。
 - **对照研究**：固定同一合成场景的 A/B 条件，逐来源检查 current/history/excluded/轮后产生，沿 constituent ID 查机会的跳过、延后与合并。保存完整 snapshot，导出报告或把研究固定带入 change brief。
-- **请求观察**：检查明确导入的 Anthropic Messages / OpenAI Responses body；条件、section 原值、未知字段与未展开引用并列显示。同格式按 JSON pointer 比较，跨格式不自动配对。默认四份 synthetic capture 不是 runtime 实测。
+- **研究案例**：固定同一问题、要求、合成 study 和多阶段 captures，按明确位置检查、查看失败/缺口，并作为完整 snapshot 带入 brief。
+- **请求观察**：检查明确导入的 Anthropic Messages / OpenAI Responses body；条件、section 原值、未知字段与未展开引用并列显示。同格式按 JSON pointer 比较，跨格式不自动配对。默认合成案例的阶段 captures 不是 runtime 实测。
 - **变更推演**：选择改动意图与范围，查看对应验证和原 runtime 交接问题，下载 Markdown brief。目标版本是填写的意图，不是实测结果。界面不执行展示的命令，不连接机器，不生成已激活配置。
 - **来源**：检索本仓库 catalog 的已读上游 revision、阅读范围与已记录的新 tip；不会自动把 fetched tip 提升为已读 pin 或兼容版本。
 
@@ -37,12 +38,24 @@ python3 scripts/build_context_atlas.py
 | `references/target-runtime-2.1.289.json` | 独立本地 composition/types 观察 |
 | [companion-input](../experiments/companion-input/README.md) | 合成规则、fixture 与回放引擎；Atlas 不复制一份模拟器 |
 | [context_study.py](../experiments/companion-input/context_study.py) | plan 校验、canonical A/B 执行与逐来源观察投影；浏览器只展示投影，不模拟 |
+| [cases.py](../context_lab/cases.py) | self-contained case、阶段关联、body pointer 检查与报告，复用 study/observer；不是独立 tracing |
 | [observations.py](../context_lab/observations.py) | strict capture reader、证据层、原值投影与比较；浏览器使用同一 canonical 结果和原值文本 |
 | [artifacts.py](../context_lab/artifacts.py) | Atlas 与报告 CLI 共用的预编码、输出预检与逐文件 atomic replace |
 
 构建覆盖两个场景中全部六种 trigger × 三种 placement × 两种 history。所有合成选择和结果都是 fixture/规则的产物，不能用它们认定 CC/OpenClaw 或社区实现的自然行为。来源 archive、轮后结果和实际输入在回放中分开。
 
 变更 brief 是下一次操作的准备材料。原 runtime repo 继续拥有真实 renderer、selector、启动方式和恢复；默认投影不含原始请求或私人配置。真实 capture 仅通过显式 `--capture` 进入本机 ignored 或 Git 外的 HTML/data/brief，绝不进入版本库；生产配置与私人 continuity 也不由页面接管。未经对应授权不安装、不启动 scheduler、不向外部 channel 发消息。
+
+## 研究案例与重跑
+
+默认页新增“研究案例”：把同一个问题、保留要求、合成 study snapshot、多阶段 capture 和明确结构检查放在一起。可检查失败与缺口、选择阶段原值、跳到显式请求比较、恢复关联 study，并将完整报告固定带入 brief。JSON/Markdown 全部来自同次 Python 计算，浏览器不重新执行检查。
+
+```sh
+python3 scripts/run_context_case.py --demo --out .cache/context-case
+python3 scripts/build_context_atlas.py --case .cache/context-case/case.json
+```
+
+合成示例有意保留 FAIL，runner 返回 1 并生成报告；缺材料、未检查的要求、模型行为与交付继续未评估。`--case` 内嵌 capture 同样只写 ignored 或 Git 外目录，不能与 --study/--capture 混用。下载 case 可重跑和重开，不自动保存；[完整合同](../docs/context-cases.md)。
 
 ## 对照研究与重跑
 
@@ -73,6 +86,10 @@ python3 scripts/build_context_atlas.py --study plan.json --out .cache/context-st
 ```sh
 python3 scripts/test_build_context_atlas.py
 python3 scripts/test_context_study.py
+python3 scripts/test_context_cases.py
+python3 scripts/test_context_case_atlas.py
+node --test scripts/test_case_ui.cjs
+node --check workbench/cases.js
 python3 scripts/test_context_observations.py
 python3 scripts/test_atlas_output_safety.py
 python3 experiments/companion-input/run_lab.py --check --no-run

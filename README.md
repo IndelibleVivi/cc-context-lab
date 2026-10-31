@@ -1,5 +1,7 @@
 # Harness Context Engineering Lab
 
+[中文（主文档）](README.md) · [English](README.en.md)
+
 研究、比较和维护 agent harness 的 context 来源、装配与生命周期。长期伴侣交互是主要使用语境之一：完整的自有 core、当下感知、自动记忆召回、自主轮次、跨 channel 相处与经历承接都在其中。Claude Code 是目前研究最深入的 harness，项目范围已扩展到跨 harness 的 context engineering；现有 repo / 路径仍使用 `cc-context-lab`，正式名称与 slug 迁移另定。
 
 目前作为 private 研究仓库维护：[GitHub](https://github.com/IndelibleVivi/cc-context-lab)。
@@ -45,7 +47,7 @@ flowchart TB
 
 图示为贯穿案例的主路径，独立 study / request comparison 也可直接进入 Atlas。实线是当前源码的数据/证据路径；虚线是需要原 owner 与对应执行权限的接续操作。Lab 不自动安装 candidate、启用 scheduler、调用模型或发送消息。外部 Memory/state 的内部 authority 继续归原项目。
 
-两种观察必须分开读：合成引擎知道自己如何选择 current/history；单份 request body 不足以确定一个 block 的真正 origin 或生命周期，因此观察器保留 `unknown`。同格式按 JSON pointer 比较位置；跨格式明确不自动配对。Responses 中未展开的服务端历史和 prompt 引用会保留为缺口。
+两种观察必须分开读：合成引擎知道自己如何选择 current/history；单份 request body 不足以确定一个 block 的真正 origin 或生命周期，因此观察器保留 `unknown`。同格式按 JSON pointer 比较位置；跨格式明确不自动配对。部分 capture 可显式声明已观察的顶层字段：未观察字段保持未知，不能补成空历史或判为删除。Responses 中未展开的服务端历史和 prompt 引用会保留为缺口。
 
 ## 从这里读
 
@@ -117,7 +119,7 @@ Atlas 默认展示合成 context case 及其阶段 captures，不扫描真实会
 
 另有 `python3 scripts/probe_context_runtime.py --claude <可信可执行文件>`：显式启动隔离的本地 slash-command 会话，生成 types、观察真实 engine composition；模型端点指向本机拒绝服务，不使用真实 provider。它与 offline tests 分开，条件和已证范围见 [target runtime](docs/target-runtime.md)。心跳/channel 已有可运行的合成输入包比较与真实机制的待验判据；用 `python3 experiments/companion-input/run_lab.py --check` 生成离线报告，没有创建 scheduler 或接通外部消息服务。
 
-对已有 runtime 的修改继续由其 source repo、candidate renderer 和 operator runbook 管理。本仓库准备可审核的规则、证据和接入说明，不持有生产配置 authority。当前阶段是本地研究，未连接或修改 VPS。
+对已有 runtime 的修改继续由其 source repo、candidate renderer 和 operator runbook 管理。本仓库准备可审核的规则、证据和接入说明，不持有生产配置 authority，也不会自动连接或修改部署。受管消费者的安装与运行状态独立记录，不由 Lab 的合成 PASS 推导。
 
 仓库内容面向后续维护者，保留原创技术归纳和公开 source links。私人讨论原文、身份正文、账号配置、真实请求、transcripts 和机器映射放在 Git 外；`.cache/`、`.local/`、`artifacts/` 等仅作本机缓存。第三方代码与原厂提示全文不 vendoring。本仓库未公开发布，也未选择公开 license。
 

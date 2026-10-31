@@ -40,10 +40,12 @@ function setup(){
   const elements=new Map();
   const get=id=>{if(!elements.has(id))elements.set(id,new Element(id.includes('baseline')||id.includes('candidate')?'select':'div'));return elements.get(id);};
   const capture=id=>({capture_id:id,wire_format:'openai-responses',evidence:{kind:'synthetic_fixture',observed_at:null},
+    evidence_scope:{request_body:'complete',observed_fields:null},
     runtime:{harness:'synthetic',version:null},unresolved_context:[],request_body:{exact:Number(exact)},request_parameters:{exact:Number(exact)}});
   const a=capture('A'),b=capture('B');
   const section={pointer:'/input/0',kind:'opaque',role:null,origin:'unknown',lifecycle:'unknown',value:{exact:Number(exact)}};
-  const comparison={baseline:a,candidate:b,alignment:'same_format_json_pointer',runtime_changes:[],changed_top_level_fields:['input'],
+  const comparison={baseline:a,candidate:b,alignment:'same_format_json_pointer',evidence_scope_alignment:'complete',
+    runtime_changes:[],comparable_top_level_fields:['input'],unobserved_top_level_fields:[],changed_top_level_fields:['input'],
     sections:[{pointer:'/input/0',change:'modified',baseline:section,candidate:{...section}},
               {pointer:'/input/1',change:'unchanged',baseline:{...section,pointer:'/input/1'},candidate:{...section,pointer:'/input/1'}}]};
   const jsonText='{"schema":"harness-context-comparison/1","synthetic_exact":'+exact+'}\n';
@@ -90,6 +92,64 @@ test('body, parameters and section details display canonical strings rather than
   assert.ok(!get('observation-bodies').textContent.includes(rounded));
   assert.match(get('observation-limits').textContent,/unknown/);
   assert.match(get('observation-identity').textContent,/合成/);
+  assert.match(get('observation-identity').textContent,/完整 request body 文件对象/);
+  assert.match(get('observation-summary').textContent,/evidence|complete|证据范围/);
+});
+
+test('partial scope labels observed fields and renders unobserved comparison rows without implying removal',()=>{
+  const {context,data,get}=setup();
+  const baseline={...data.comparisons.A.B.baseline,
+    evidence_scope:{request_body:'partial',observed_fields:['system','tools']},
+    request_body:{system:'SYNTHETIC SYSTEM',tools:[]}};
+  const candidate={...data.comparisons.A.B.candidate,
+    evidence_scope:{request_body:'partial',observed_fields:['system','tools','messages']},
+    request_body:{system:'SYNTHETIC SYSTEM',tools:[],messages:[]}};
+  const section={pointer:'/messages',kind:'message',role:null,origin:'unknown',lifecycle:'unknown',value:[]};
+  data.comparisons.A.B={...data.comparisons.A.B,baseline,candidate,
+    evidence_scope_alignment:'partial_scope_mismatch',
+    comparable_top_level_fields:['system','tools'],unobserved_top_level_fields:['messages'],
+    changed_top_level_fields:[],
+    sections:[{pointer:'/system',change:'unchanged',baseline_observed:true,candidate_observed:true,
+      baseline:{...section,pointer:'/system',kind:'instructions',value:'SYNTHETIC SYSTEM'},
+      candidate:{...section,pointer:'/system',kind:'instructions',value:'SYNTHETIC SYSTEM'}},
+      {pointer:'/messages',change:'unobserved',baseline_observed:false,candidate_observed:true,
+        baseline:null,candidate:section}]};
+  data.display_values.A.B={...data.display_values.A.B,
+    bodies:{baseline:{body:'{"system":"SYNTHETIC SYSTEM","tools":[]}',parameters:'{}'},
+      candidate:{body:'{"system":"SYNTHETIC SYSTEM","tools":[],"messages":[]}',parameters:'{}'}},
+    sections:[{baseline:'SYNTHETIC SYSTEM',candidate:'SYNTHETIC SYSTEM'},{baseline:null,candidate:'[]'}]};
+  context.observationState.selected=1;
+  context.renderObservation();
+  assert.match(get('observation-identity').textContent,/部分 request body/);
+  assert.match(get('observation-identity').textContent,/未列出字段未知，不是空值/);
+  assert.match(get('observation-summary').textContent,/partial_scope_mismatch/);
+  assert.match(get('observation-summary').textContent,/messages/);
+  assert.match(get('observation-detail').textContent,/不能判为 added、removed 或不存在/);
+});
+
+test('raw body headings reflect each side scope independently',()=>{
+  const {context,data,get}=setup();
+  const complete={...data.comparisons.A.B.baseline,
+    evidence_scope:{request_body:'complete',observed_fields:null}};
+  const partial={...data.comparisons.A.B.candidate,
+    evidence_scope:{request_body:'partial',observed_fields:['system','tools']}};
+  data.comparisons.A.B={...data.comparisons.A.B,baseline:complete,candidate:partial,
+    evidence_scope_alignment:'partial_scope_mismatch',
+    comparable_top_level_fields:['system','tools'],unobserved_top_level_fields:[],
+    changed_top_level_fields:[],
+    sections:[{pointer:'/system',change:'unchanged',baseline_observed:true,candidate_observed:true,
+      baseline:{pointer:'/system',kind:'instructions',role:null,origin:'unknown',lifecycle:'unknown',value:'SYNTHETIC'},
+      candidate:{pointer:'/system',kind:'instructions',role:null,origin:'unknown',lifecycle:'unknown',value:'SYNTHETIC'}}]};
+  data.display_values.A.B={...data.display_values.A.B,
+    bodies:{baseline:{body:'{"system":"SYNTHETIC","tools":[]}',parameters:'{}'},
+      candidate:{body:'{"system":"SYNTHETIC","tools":[]}',parameters:'{}'}},
+    sections:[{baseline:'SYNTHETIC',candidate:'SYNTHETIC'}]};
+  context.renderObservation();
+  const headings=all(get('observation-bodies'),element=>element.tagName==='h4').map(element=>element.textContent);
+  assert.ok(headings.includes('A / 完整 body'));
+  assert.ok(headings.includes('B / 声明的部分 request body（不是完整请求）'));
+  assert.ok(!headings.includes('B / 完整 body'));
+  assert.ok(headings.includes('观察到的其余 request parameters'));
 });
 
 test('section search finds canonical integer text and continues to find pointer/kind metadata',()=>{

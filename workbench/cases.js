@@ -47,11 +47,15 @@ function renderCaseStep(){
   if(!step.observation){root.appendChild(el('p',{text:'此阶段没有 capture，相关检查和比较均未评估。阶段标签不是运行证明。'}));return;}
   var o=step.observation;
   root.appendChild(el('p',{cls:'observation-evidence',text:o.capture_id+' · '+o.wire_format+' · '+(o.evidence.kind==='synthetic_fixture'?'合成材料':'captured_request 仅为导入者声明')}));
+  root.appendChild(el('p',{cls:'observation-evidence',text:o.evidence_scope?.request_body==='partial'?
+    '部分 request body · 已观察顶层字段：'+o.evidence_scope.observed_fields.map(field=>'/'+field).join('、')+'；未列出字段未知，不是空值':
+    '完整 request body 文件对象'}));
   root.appendChild(el('p',{cls:'field__note',text:'observed_at：'+(o.evidence.observed_at||'未记录')+'；origin/lifecycle unknown；顺序不证明真实继承。'}));
   var runtime=el('dl',{cls:'observation-runtime'});
   Object.entries(o.runtime).forEach(([k,v])=>{runtime.appendChild(el('dt',{text:k}));runtime.appendChild(el('dd',{text:v===null?'未记录':v}));});root.appendChild(runtime);
   o.unresolved_context.forEach(text=>root.appendChild(el('p',{cls:'observation-limits',text:text})));
-  root.appendChild(el('h4',{text:'完整原始 request body'}));root.appendChild(el('pre',{text:data.display.steps[step.id]}));
+  root.appendChild(el('h4',{text:o.evidence_scope?.request_body==='partial'?'声明的部分原始 request body（不是完整请求）':'完整原始 request body'}));
+  root.appendChild(el('pre',{text:data.display.steps[step.id]}));
 }
 function renderCaseChecks(){
   var report=caseResult(),root=$('case-checks');clear(root);
@@ -61,7 +65,9 @@ function renderCaseChecks(){
     var value=caseData().display.checks[c.id],card=el('article',{cls:'case-check',attrs:{'data-status':c.status}},[
       el('h4',{text:c.id+' · '+caseStatus(c.status)}),el('p',{text:'要求 '+c.requirement_id+' / 阶段 '+c.step_id}),
       el('code',{text:(c.pointer===''?'(body root)':c.pointer)+' · '+c.operator}),el('p',{text:c.reason}),
-      el('p',{cls:'field__note',text:'scope：仅本份显式 request body；局部缺失不证明全局删除或遗忘。'})]);
+      el('p',{cls:'field__note',text:c.scope_reason==='unobserved_field'?
+        'scope：该顶层字段未观察，因此未评估；不能按缺失、added 或 removed 处理。':
+        'scope：仅本份显式 request body；局部缺失不证明全局删除或遗忘。'})]);
     var grid=el('div',{cls:'study-trace-columns observation-values'},[
       el('div',{},[el('h4',{text:'声明的期望'}),el('pre',{text:value.expected})]),
       el('div',{},[el('h4',{text:'实际原值'}),el('pre',{text:c.actual_present===true?value.actual:c.actual_present===false?'该位置不存在（不是 JSON null）':'无法判断；没有可用原值'})])]);

@@ -211,7 +211,27 @@ def _evaluate_check(check, observations_by_step):
         return {
             **deepcopy(check), 'status': 'NOT_ASSESSED', 'actual_present': None,
             'actual': None,
+            'scope_reason': 'missing_capture',
             'reason': '该步骤没有 capture 证据；不能把缺失提交物当成请求中缺少字段。',
+        }
+    tokens = _decode_pointer(check['pointer'])
+    if not tokens and observation['evidence_scope']['request_body'] == 'partial':
+        return {
+            **deepcopy(check), 'status': 'NOT_ASSESSED', 'actual_present': None,
+            'actual': None,
+            'scope_reason': 'partial_body_root',
+            'reason': (
+                '该 check 指向 partial request body 的根；部分 body 不是一份完整提交物，'
+                '不能据此判断这份 capture 文件是否存在。'),
+        }
+    if tokens and not observations._body_field_observed(observation, tokens[0]):
+        return {
+            **deepcopy(check), 'status': 'NOT_ASSESSED', 'actual_present': None,
+            'actual': None,
+            'scope_reason': 'unobserved_field',
+            'reason': (
+                '顶层字段 `/' + tokens[0] + '` 不在该 capture 声明的 request '
+                'body 证据范围内；未观察不等于字段不存在。'),
         }
     state, actual = _resolve_pointer(
         observation['request_body'], check['pointer'])
@@ -221,7 +241,7 @@ def _evaluate_check(check, observations_by_step):
             '只检查显式 request body，无法判断该位置是否缺少。')
         return {
             **deepcopy(check), 'status': 'NOT_ASSESSED', 'actual_present': None,
-            'actual': None, 'reason': reason,
+            'actual': None, 'scope_reason': 'blocked_pointer', 'reason': reason,
         }
     present = state == 'present'
     operator = check['operator']
@@ -256,7 +276,8 @@ def _evaluate_check(check, observations_by_step):
         reason = '解析出的字符串按原样不包含 expected；没有隐式文本归一化。'
     return {
         **deepcopy(check), 'status': status, 'actual_present': present,
-        'actual': deepcopy(actual), 'reason': reason,
+        'actual': deepcopy(actual), 'scope_reason': 'observed',
+        'reason': reason,
     }
 
 
@@ -342,6 +363,9 @@ def run_case(manifest, study_runner=None):
         'capture 与研究问题的关联仅为 association declared only（作者声明），不是由 trace、study engine 或 observation 自动建立。',
         'PASS/FAIL 只是作者声明的有界结构判断，不自动证明 requirement、模型正确理解、readiness 或部署结论。',
         '所有检查只覆盖显式 request body。字段缺失只表示该提交物中未出现，不能证明服务端历史、archive 或全局上下文已删除。',
+        'partial request body 只覆盖 evidence_scope/observed_fields 声明的顶层字段；'
+        '未列出的字段和子树标为未观察，不按 absent 或完整相等处理。',
+        '请求形状的 partial scope 不证明 server/provider 注入、模型收到、真实 provenance 或生命周期。',
         '未提供的 capture、被阻断的指针和缺失一侧的比较均标为 NOT_ASSESSED；没有编造证据或比较。',
         'capture 的 evidence/runtime 来自自包含导入 manifest；不跟随路径、URL 或引用，也不推断 origin/lifecycle。',
         '模型行为与外部交付均未评估；真实 request、模型语义、scheduler 与外部消息不在本 case 的证据范围。',
@@ -406,7 +430,10 @@ def render_markdown(report):
             f"### {step['id']} · {step['label']}", '',
             '该步骤没有提供 capture：显式缺失证据，不能当作请求字段不存在。'
             if observation is None else
-            '该步骤提供一份自包含 capture；以下仅投影其显式 request body。',
+            ('该步骤只提供部分 request body 证据；只显示声明的观察字段，'
+             '未观察字段没有被补成空值。'
+             if observation['evidence_scope']['request_body'] == 'partial' else
+             '该步骤提供一份自包含 capture；以下仅投影其显式 request body。'),
             '',
         ])
         if observation is None:
@@ -416,9 +443,12 @@ def render_markdown(report):
                 'evidence': observation['evidence'],
                 'runtime': observation['runtime'],
                 'wire_format': observation['wire_format'],
+                'evidence_scope': observation['evidence_scope'],
                 'unresolved_context': observation['unresolved_context'],
             }),
-            '### 完整原始 request body', '',
+            ('### 声明的部分原始 request body（不是完整请求）'
+             if observation['evidence_scope']['request_body'] == 'partial' else
+             '### 完整原始 request body'), '',
             _json_block(observation['request_body']),
         ])
 

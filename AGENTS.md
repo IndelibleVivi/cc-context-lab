@@ -5,7 +5,7 @@
 
 ## Authority
 
-- README.md 拥有稳定范围与阅读路径；docs/current-state.md 拥有当前能力、证据和未验证项。docs/research-evidence.md 保留按日期的研究覆盖与既往结果，不覆盖当前状态。
+- README.md 拥有稳定范围与阅读路径，README.en.md 为语义同步的英文入口；docs/current-state.md 拥有当前能力、证据和未验证项。docs/research-evidence.md 保留按日期的研究覆盖与既往结果，不覆盖当前状态。
 - docs/ 拥有可复用的技术研究；references/ 记录公开 source revisions、官方文档与逐项 override 对照。声明版本与目标 runtime 版本分开标注。experiments/context-profile/ 下的 candidate 是未安装的 source，不是最终身份或完整 C 配置。
 - experiments/ 拥有合成实验方案和证据；尚未执行的步骤必须标成未执行。
 - `experiments/daily-quiet/hooks/quiet-rules.mjs` 是可迁移日常 presentation 规则的 canonical source；`register.mjs` 仅为 standalone 接线，受管 runtime 的 frozen copy 要记录 exact revision 并验证 parity。按片段 digest 识别已审话术，不以 CC version gate 或全局关键词替换冒充兼容；recovery 和执行权限继续由 runtime owner 决定。
@@ -13,6 +13,7 @@
 - `experiments/companion-input/context_study.py` 拥有离线 A/B plan 校验、canonical 执行和逐来源观察投影；`scripts/run_context_study.py` 是重跑入口。plan 固定完整合成 fixture snapshot，不能按同名情境静默换材料。Atlas 展示同一投影；多轴比较不写单因果结论，current/history/excluded/轮后产生分别保留。整体 programme 见 `docs/development-programme.md`。
 - `context_lab/cases.py` 拥有 self-contained case 的阶段/要求/检查与报告；只检查显式 request body 的位置，模型行为与交付不自动通过。study snapshot 仍交 canonical study runner；阶段关联由研究者声明，不冒充真实 tracing。`--case` 同样受私人输出和输入保护约束。
 - `context_lab/observations.py` 拥有跨 harness 的 capture 合同、strict JSON reader、保真结构投影和位置比较；wire format 不等于 harness 全链路支持。导入者的 captured_request 声明不升级为独立观察，origin/lifecycle 保持 unknown。`context_lab/artifacts.py` 是 Atlas 与两个报告 CLI 的本地写入 owner：先完整编码与预检，再暂存并逐文件 atomic replace，不是多文件事务。
+- partial capture 必须通过 `evidence_scope` 明确声明已观察的顶层字段并覆盖所有 body keys；未观察字段不补空、不判断 absence，partial body root 不评估。完整 v1 capture 保持兼容；比较与下载保留每侧 scope，known absence 与显式 null 分开。
 - Atlas 默认只读合成 case / capture fixtures；仅 `--capture` 明确提供的文件可进入私人观察页，不自动发现 logs、不跟随 body_ref/URL/服务端引用。私人 capture 输出限 Git 外或 worktree 的 ignored 路径。显示和下载用 Python canonical 字符串，不将原值经过 JS Number 再序列化。
 - Forge / Swap 按实际操作定义；会话续接、Memory curation 与数据库回滚分开。历史继承不产生新授权或独立确认。
 - 心跳、定时唤醒、thread 状态、context 保留和 external channels 属研究范围；liveness、模型 turn、外部交付与历史清理分别验收，研究不授权启用 scheduler 或发送消息。

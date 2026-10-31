@@ -16,7 +16,7 @@ python3 scripts/run_context_case.py .cache/daily-quiet/input.json --out .cache/d
 python3 scripts/build_context_atlas.py --case .cache/daily-quiet/result/case.json
 ```
 
-The demo uses invented bodies and an explicitly synthetic description rule. It executes the real pure rule functions and existing case checker, compares baseline/candidate/native-text-update, and leaves real resume, model behavior and external delivery unassessed. It is not a recording of a lifecycle or a prediction of conversation quality. `case.json` and reports retain the declared inputs; no default example contains private data.
+The demo uses invented bodies and an explicitly synthetic description rule. It executes the real pure rule functions and existing case checker, compares baseline/candidate/native-text-update, and includes a partial system/tools-only evidence shape. Its seven structural requirements pass; unknown history, real resume, model behavior and external delivery remain four `NOT_ASSESSED` requirements. It is not a recording of a lifecycle or a prediction of conversation quality. `case.json` and reports retain the declared inputs and evidence scope; no default example contains private data.
 
 ## Use the mod in an explicitly selected session
 

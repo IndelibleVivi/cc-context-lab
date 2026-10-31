@@ -36,12 +36,13 @@ function harness({noCase=false,safe=true}={}){
   const nodes=new Map();
   const node=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
   const observation=id=>({capture_id:id,wire_format:'openai-responses',evidence:{kind:'synthetic_fixture',observed_at:null},
+    evidence_scope:{request_body:'complete',observed_fields:null},
     runtime:{harness:'synthetic',version:null},unresolved_context:[],request_body:{input:[{exact:Number(exact)}]}});
   const captures=['DECOY_FIRST','DECOY_SECOND','CAPTURE_LATE','CAPTURE_EARLY'].map(observation);
   const comparison={baseline:captures[3],candidate:captures[2],alignment:'same_format_json_pointer',runtime_changes:[]};
   const checks=[
     {id:'large',step_id:'early',actual_present:true,actual:Number(exact),expected:Number(exact),status:'PASS'},
-    {id:'missing',step_id:'early',actual_present:false,actual:null,expected:null,status:'PASS'},
+    {id:'missing',step_id:'early',actual_present:false,actual:null,expected:null,status:'PASS',scope_reason:'observed'},
     {id:'null',step_id:'late',actual_present:true,actual:null,expected:null,status:'FAIL'},
     {id:'blocked',step_id:'absent',actual_present:null,actual:null,expected:null,status:'NOT_ASSESSED'},
   ].map(c=>({requirement_id:'R1',pointer:'/input/0/exact',operator:'equals',reason:'SYNTHETIC '+c.id,...c}));
@@ -120,6 +121,27 @@ test('missing location, JSON null and blocked evidence remain three different vi
   h.context.caseState.stepId='absent';h.context.renderCaseStep();
   assert.match(h.node('case-step-detail').textContent,/没有 capture/);
   assert.equal(descendants(h.node('case-step-detail'),n=>n.tagName==='pre').length,0);
+});
+
+test('partial case scope is visible and unobserved checks remain not assessed',()=>{
+  const h=harness();
+  const partial={...h.projection.report.steps[0].observation,
+    evidence_scope:{request_body:'partial',observed_fields:['system','tools']},
+    request_body:{system:'SYNTHETIC SYSTEM',tools:[]}};
+  h.projection.report.steps[0].observation=partial;
+  h.context.renderCase();
+  h.context.caseState.stepId='early';
+  h.context.renderCaseStep();
+  const text=h.node('case-step-detail').textContent;
+  assert.match(text,/部分 request body/);
+  assert.match(text,/已观察顶层字段：\/system、\/tools/);
+  assert.match(text,/未列出字段未知，不是空值/);
+  assert.match(text,/声明的部分原始 request body（不是完整请求）/);
+  assert.doesNotMatch(text,/### 完整原始 request body/);
+  h.projection.report.checks[3].scope_reason='unobserved_field';
+  h.context.renderCaseChecks();
+  const cards=h.node('case-checks').children;
+  assert.match(cards[3].textContent,/该顶层字段未观察/);
 });
 
 test('no case disables case actions while independent study and observation paths remain intact',()=>{

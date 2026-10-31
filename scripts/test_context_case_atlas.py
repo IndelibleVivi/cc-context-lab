@@ -48,6 +48,35 @@ class CaseAtlasIntegration(unittest.TestCase):
         self.assertEqual(data['context_case']['report']['requirements'][0]['status'],'NOT_ASSESSED')
         self.assertIsNone(data['study_plan'])
 
+    def test_partial_capture_scope_survives_report_atlas_and_unobserved_checks(self):
+        case=dict(schema='harness-context-case/1',case_id='partial',title='Partial shape',
+                  question='Which fields were observed?',
+                  requirements=[dict(id='r',text='Messages are absent',level='request_structure')],
+                  study_plan=None,
+                  steps=[dict(id='s',label='Partial shape',capture={
+                      'schema':'harness-context-capture/1','capture_id':'partial-capture',
+                      'evidence':{'kind':'synthetic_fixture','observed_at':None},
+                      'runtime':{'harness':'synthetic-partial'},
+                      'wire_format':'anthropic-messages',
+                      'evidence_scope':{'request_body':'partial','observed_fields':['model','system','tools']},
+                      'body':{'model':'synthetic-model','system':'Synthetic system','tools':[]}})],
+                  comparisons=[],
+                  checks=[dict(id='messages-absent',requirement_id='r',step_id='s',pointer='/messages',
+                               operator='absent',expected=None)])
+        data=atlas.build_data(case_plan=case);projection=data['context_case']
+        report=projection['report']
+        self.assertEqual(report['checks'][0]['status'],'NOT_ASSESSED')
+        self.assertEqual(report['requirements'][0]['status'],'NOT_ASSESSED')
+        observation=report['steps'][0]['observation']
+        self.assertEqual(observation['evidence_scope']['request_body'],'partial')
+        self.assertNotIn('messages',observation['request_body'])
+        self.assertEqual(json.loads(projection['report_json'])['checks'][0]['status'],'NOT_ASSESSED')
+        self.assertIn('partial',projection['markdown'])
+        self.assertIn('声明的部分原始 request body',projection['markdown'])
+        self.assertNotIn('### 完整原始 request body',projection['markdown'])
+        self.assertEqual(json.loads(projection['case_json'])['steps'][0]['capture']['evidence_scope'],
+                         {'request_body':'partial','observed_fields':['model','system','tools']})
+
     def test_big_integer_display_export_and_html_escaping_are_canonical(self):
         case=demo();step=next(s for s in case['steps'] if s['capture'])
         exact=9007199254740993

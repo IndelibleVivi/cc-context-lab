@@ -26,7 +26,7 @@ python3 scripts/build_context_atlas.py --case .cache/context-case/case.json
 | `case_id`、`title`、`question` | 稳定案例标识、标题和研究问题；非空字符串 |
 | `requirements` | `{id,text,level}` 数组；level 为 `request_structure`、`model_behavior` 或 `external_delivery` |
 | `study_plan` | 完整的 `cc-context-study/1` snapshot 或 null；由既有 study runner 校验和执行 |
-| `steps` | `{id,label,capture}` 数组；capture 是完整 [capture envelope](request-observation.md) 或 null |
+| `steps` | `{id,label,capture}` 数组；capture 是完整或显式 partial 的 [capture envelope](request-observation.md) 或 null |
 | `comparisons` | `{id,baseline,candidate}` 数组；两侧是显式 step ID，不按位置、名称或相似正文自动配对 |
 | `checks` | 下述结构检查数组；引用 requirement 与 step ID |
 
@@ -54,13 +54,34 @@ pointer 针对**原始 request body**，使用 [RFC 6901 string form](https://ww
 | `equals` | 任意有限 JSON | 原值相等；bool 与 number 区分，对象键顺序不影响比较，字符串/数组顺序保留 |
 | `contains_text` | 非空字符串 | 只在此位置是字符串时检查原样子串，不递归扫描或 stringify 整个 subtree |
 
-缺少 capture、祖先节点不存在、类型阻断和非法数组索引都记 NOT_ASSESSED，不能给 `absent` 一个假阳性。`null`、`false`、空数组与不存在分别保留。含未展开服务端引用时，检查始终只覆盖显式 body；不能据此声称隐藏历史也被删除。
+缺少 capture、祖先节点不存在、类型阻断和非法数组索引都记 NOT_ASSESSED，不能给
+`absent` 一个假阳性。若 pointer 的顶层字段不在 capture 的
+`evidence_scope.observed_fields` 中（partial body），任何 operator 也记
+NOT_ASSESSED，包括 `absent` 和 `exists`：**未观察不等于不存在**。字段在观察范围内、
+但 body 没有该成员时仍是明确缺失；`messages: []` 是观察到的空数组，也不能与
+unobserved messages 混同。`null`、`false`、空数组与不存在分别保留。含未展开服务端
+引用时，检查始终只覆盖显式 body；不能据此声称隐藏历史也被删除。
+
+对 partial capture，空 pointer（body 根）同样始终记 NOT_ASSESSED，并标
+`scope_reason=partial_body_root`；该结论适用于 `exists`、`absent`、`equals` 等所有
+operator。case check 描述 request body 内容，partial shape 不能证明整个提交文件或完整
+请求存在。完整 v1 capture 的 body-root 检查保持原语义。
+
+省略 `evidence_scope` 的既有完整 capture 继续使用完整 body 检查语义。partial
+snapshot 不补 `messages: []`，case JSON、report JSON/Markdown、Atlas 与 fixed brief
+保留 `request_body: partial`、观察字段和未评估原因。这些 shape 证据不证明
+server/provider 注入、模型收到、真实 provenance 或 lifecycle，也不把结构性
+PASS/FAIL 升级为模型行为或交付结论。
 
 只有 request_structure 要求可以关联这些检查：任一失败则该要求 FAIL，未失败但有未评估项则 NOT_ASSESSED，其余全部通过才 PASS；没有检查的要求仍未评估。模型行为与外部交付始终 NOT_ASSESSED，不因请求里出现某段文字或所有结构检查通过而升格。要求和检查本身由研究者声明，工具不证明验收条件设计正确，也不输出全案例 readiness 分数。
 
 ## 输出、退出码与保护
 
-输出为 `case.json`、`report.json`、`report.md`，分别保留输入快照、同次 canonical 计算和可读报告。报告包含实际 body、期望/原值、未评估项、阶段条件和完整比较；JSON 数值沿用 Python parser 的边界，原始 JSON 排版与数值词法形式不保留。浏览器显示与下载使用 Python canonical 字符串，避免大整数舍入。
+输出为 `case.json`、`report.json`、`report.md`，分别保留输入快照、同次 canonical
+计算和可读报告。报告包含实际 body、evidence scope、期望/原值、未评估项、阶段条件和
+完整或部分范围内的比较；报告中的 partial 比较分别列出 comparable 与 unobserved 顶层字段，
+不会把未观察位置写成 added/removed。JSON 数值沿用 Python parser 的边界，原始 JSON
+排版与数值词法形式不保留。浏览器显示与下载使用 Python canonical 字符串，避免大整数舍入。
 
 CLI 返回 0 表示成功生成且没有结构要求 FAIL，返回 1 表示成功生成且发现结构 FAIL，返回 2 表示输入、校验或输出错误。0 不代表所有要求通过或允许接入生产；NOT_ASSESSED 必须另外阅读。
 

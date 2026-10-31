@@ -1,10 +1,14 @@
 # 研究证据与覆盖记录
 
+记录按日期组织的已读来源、测试条件和未验范围。观察日期不代表后来重新实测，文中的“本轮”按所属日期理解。本页保留可复核的研究依据；当前能力、状态与下一集成点以 [current state](current-state.md) 为准，技术主题仍归对应专题与 references。
 
 ## 2026-11-01 Daily quiet
 
 便携来源、规则与native314/316合成事件边界见 [daily-quiet evidence](../references/daily-quiet.json) 与 [实验入口](../experiments/daily-quiet/README.md)。本次不将private shapes/transcripts或runtime安装状态发布为fixtures；fragment matching不依赖二进制版本，未知新原文保留。
-记录 2026-10-04/05、10/13 与 10/25 已读来源、测试条件和未验范围。观察日期不代表后来重新实测，文中的“本轮”按所属日期理解。本页保留可复核的研究依据；当前能力、状态与下一集成点以 [current state](current-state.md) 为准，技术主题仍归对应专题与 references。
+
+通用观察合同增加显式partial scope，完整v1输入兼容。已通过未知字段、partial body root、known absence与null、跨格式未知范围、报告/brief/Atlas round-trip回归；独立review发现的四处误判已修正并复核。统一offline gate通过224项顶层/Node cases及四项JS syntax。
+
+Daily quiet合成case经CLI与builder重跑，7项结构要求PASS、4项NOT_ASSESSED、0项FAIL。实际浏览器核对partial阶段与updated→shape比较，messages标为unobserved，A完整/B部分的body标题正确；下载comparison JSON与同次Python canonical结果相等。1440×1000与390×844两种布局没有页面横向溢出，console未见warn/error。来自loopback静态预览，不是完整真实请求、lifecycle或模型体验证明。
 
 ## 2026-10-25：方向校准与验证覆盖
 

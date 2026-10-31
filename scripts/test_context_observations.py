@@ -32,6 +32,17 @@ def observe(name='anthropic-a'):
     return normalize_capture(fixture(name))
 
 
+def partial_capture(body, observed_fields):
+    capture = fixture()
+    capture['capture_id'] = 'synthetic-partial'
+    capture['body'] = body
+    capture['evidence_scope'] = {
+        'request_body': 'partial',
+        'observed_fields': observed_fields,
+    }
+    return capture
+
+
 class ObservationTests(unittest.TestCase):
     def test_all_fixtures_normalize_without_mutating_source(self):
         for path in sorted(FIXTURES.glob('*.json')):
@@ -41,6 +52,10 @@ class ObservationTests(unittest.TestCase):
                 result = normalize_capture(capture)
                 self.assertEqual(capture, before)
                 self.assertEqual(result['request_body'], capture['body'])
+                self.assertEqual(result['evidence_scope'], {
+                    'request_body': 'complete',
+                    'observed_fields': None,
+                })
                 self.assertEqual(result['runtime']['version'], 'synthetic')
                 self.assertEqual(result['evidence']['kind'], 'synthetic_fixture')
                 self.assertEqual(result['evidence']['provenance'], 'imported_manifest')
@@ -111,6 +126,105 @@ class ObservationTests(unittest.TestCase):
         self.assertNotIn('input', result['request_body'])
         self.assertIn('server-side/unexpanded', ' '.join(result['limitations']))
         self.assertEqual(result['request_parameters']['prompt'], capture['body']['prompt'])
+
+    def test_partial_anthropic_system_tools_does_not_fabricate_messages(self):
+        body = {
+            'model': 'synthetic-model',
+            'system': [{'type': 'text', 'text': 'Synthetic system\nstays.'}],
+            'tools': [{'name': 'synthetic_tool',
+                       'input_schema': {'type': 'object'}}],
+            'future_parameter': {'retain': True},
+        }
+        capture = partial_capture(body, [
+            'model', 'system', 'tools', 'future_parameter'])
+        before = deepcopy(capture)
+        result = normalize_capture(capture)
+        self.assertEqual(capture, before)
+        self.assertEqual(result['request_body'], body)
+        self.assertNotIn('messages', result['request_body'])
+        self.assertEqual(result['evidence_scope'], {
+            'request_body': 'partial',
+            'observed_fields': sorted(body),
+        })
+        self.assertEqual([section['pointer'] for section in result['sections']],
+                         ['/system', '/tools/0'])
+        self.assertEqual(result['sections'][0]['value'], body['system'])
+        self.assertEqual(result['sections'][1]['value'], body['tools'][0])
+        self.assertEqual(result['request_parameters'], {
+            'model': 'synthetic-model',
+            'future_parameter': {'retain': True},
+        })
+        self.assertIn('partial', ' '.join(result['limitations']))
+        self.assertIn('未观察', ' '.join(result['limitations']))
+        markdown = render_markdown(result)
+        self.assertIn('声明的部分原始 request body', markdown)
+        self.assertNotIn('### 完整原始 request body', markdown)
+        self.assertIn('"request_body": "partial"', markdown)
+
+    def test_partial_empty_messages_is_observed_but_omission_is_unobserved(self):
+        empty = normalize_capture(partial_capture({
+            'model': 'synthetic-model',
+            'system': 'Synthetic guidance',
+            'messages': [],
+        }, ['model', 'system', 'messages']))
+        omitted = normalize_capture(partial_capture({
+            'model': 'synthetic-model',
+            'system': 'Synthetic guidance',
+        }, ['model', 'system']))
+        self.assertEqual(empty['request_body']['messages'], [])
+        self.assertIn('messages', empty['evidence_scope']['observed_fields'])
+        self.assertNotIn('messages', omitted['request_body'])
+        self.assertNotIn('messages', omitted['evidence_scope']['observed_fields'])
+        comparison = compare_observations(omitted, empty)
+        self.assertEqual(comparison['evidence_scope_alignment'],
+                         'partial_scope_mismatch')
+        self.assertIn('messages', comparison['unobserved_top_level_fields'])
+        self.assertNotIn('messages', comparison['changed_top_level_fields'])
+        self.assertFalse(any(
+            row['pointer'].startswith('/messages')
+            for row in comparison['sections']))
+
+    def test_malformed_evidence_scope_is_rejected(self):
+        cases = [
+            (None, 'evidence_scope'),
+            ({}, 'evidence_scope/request_body'),
+            ({'request_body': 'complete', 'observed_fields': ['model']},
+             'evidence_scope'),
+            ({'request_body': 'partial'}, 'evidence_scope/observed_fields'),
+            ({'request_body': 'partial', 'observed_fields': []},
+             'evidence_scope/observed_fields'),
+            ({'request_body': 'partial',
+              'observed_fields': ['model', 'model']},
+             'evidence_scope/observed_fields/1'),
+            ({'request_body': 'partial', 'observed_fields': ['missing']},
+             'evidence_scope/observed_fields'),
+            ({'request_body': 'partial', 'observed_fields': ['model']},
+             'evidence_scope/observed_fields'),
+        ]
+        for scope, error in cases:
+            with self.subTest(scope=scope):
+                capture = fixture()
+                capture['evidence_scope'] = scope
+                with self.assertRaisesRegex(ValueError, error):
+                    normalize_capture(capture)
+
+    def test_explicit_complete_v1_scope_and_legacy_omission_have_same_semantics(self):
+        legacy = fixture()
+        self.assertNotIn('evidence_scope', legacy)
+        explicit = deepcopy(legacy)
+        explicit['evidence_scope'] = {'request_body': 'complete'}
+        legacy_result = normalize_capture(legacy)
+        explicit_result = normalize_capture(explicit)
+        self.assertEqual(explicit_result['request_body'], legacy_result['request_body'])
+        self.assertEqual(explicit_result['sections'], legacy_result['sections'])
+        self.assertEqual(explicit_result['evidence_scope'], {
+            'request_body': 'complete',
+            'observed_fields': None,
+        })
+        comparison = compare_observations(legacy_result, explicit_result)
+        self.assertEqual(comparison['evidence_scope_alignment'], 'complete')
+        self.assertEqual(comparison['request_body_equal_scope'], 'complete')
+        self.assertTrue(comparison['request_body_equal'])
 
     def test_each_explicit_state_reference_allows_absent_input(self):
         for key, value in [('previous_response_id', 'SYNTHETIC_RESPONSE'),
@@ -264,6 +378,117 @@ class ComparisonTests(unittest.TestCase):
         self.assertNotIn('/tools', [r['pointer'] for r in result['sections']])
         a['body']['flag'], b['body']['flag'] = False, 0
         self.assertIn('flag', compare_observations(normalize_capture(a), normalize_capture(b))['changed_top_level_fields'])
+
+    def test_partial_scope_comparison_never_calls_unobserved_fields_added_or_removed(self):
+        observed = normalize_capture(partial_capture({
+            'system': 'Synthetic system',
+            'tools': [],
+        }, ['system', 'tools']))
+        with_unobserved_messages = normalize_capture(partial_capture({
+            'system': 'Synthetic system',
+            'tools': [],
+            'messages': [{'role': 'user', 'content': 'Synthetic only'}],
+        }, ['system', 'tools', 'messages']))
+        comparison = compare_observations(observed, with_unobserved_messages)
+        self.assertEqual(comparison['evidence_scope_alignment'],
+                         'partial_scope_mismatch')
+        self.assertEqual(comparison['comparable_top_level_fields'],
+                         ['system', 'tools'])
+        self.assertEqual(comparison['unobserved_top_level_fields'], ['messages'])
+        self.assertTrue(comparison['request_body_equal'])
+        self.assertEqual(comparison['request_body_equal_scope'],
+                         'comparable_observed_fields')
+        self.assertEqual(comparison['changed_top_level_fields'], [])
+        for row in comparison['sections']:
+            if row['pointer'].startswith('/messages'):
+                self.assertEqual(row['change'], 'unobserved')
+                self.assertFalse(row['baseline_observed'])
+                self.assertTrue(row['candidate_observed'])
+        markdown = render_markdown(comparison)
+        self.assertIn('unobserved_top_level_fields', markdown)
+        self.assertIn('未观察', markdown)
+        self.assertNotIn('baseline 全部移除、candidate 全部新增', markdown)
+
+    def test_partial_equality_distinguishes_declared_absence_from_empty_array(self):
+        absent = normalize_capture(partial_capture(
+            {'system': 'Synthetic system'}, ['system', 'messages']))
+        empty = normalize_capture(partial_capture(
+            {'system': 'Synthetic system', 'messages': []},
+            ['system', 'messages']))
+        both_absent = normalize_capture(partial_capture(
+            {'system': 'Synthetic system'}, ['system', 'messages']))
+
+        absent_vs_empty = compare_observations(absent, empty)
+        self.assertEqual(absent_vs_empty['comparable_top_level_fields'],
+                         ['messages', 'system'])
+        self.assertEqual(absent_vs_empty['changed_top_level_fields'],
+                         ['messages'])
+        self.assertFalse(absent_vs_empty['request_body_equal'])
+
+        absent_future = normalize_capture(partial_capture(
+            {'system': 'Synthetic system'}, ['system', 'future']))
+        explicit_null = normalize_capture(partial_capture(
+            {'system': 'Synthetic system', 'future': None},
+            ['system', 'future']))
+        absent_vs_null = compare_observations(absent_future, explicit_null)
+        self.assertFalse(absent_vs_null['request_body_equal'])
+        self.assertEqual(absent_vs_null['changed_top_level_fields'], ['future'])
+
+        absent_vs_absent = compare_observations(absent, both_absent)
+        self.assertEqual(absent_vs_absent['changed_top_level_fields'], [])
+        self.assertTrue(absent_vs_absent['request_body_equal'])
+
+    def test_partial_field_universe_includes_declared_absent_fields_and_unknown_values(self):
+        declared_absent = normalize_capture(partial_capture(
+            {'system': 'Synthetic system'}, ['system', 'messages', 'future']))
+        observed_unknown = normalize_capture(partial_capture({
+            'system': 'Synthetic system',
+            'future': {'nested_unknown': [None, 9007199254740993]},
+        }, ['system', 'future', 'messages']))
+        comparison = compare_observations(declared_absent, observed_unknown)
+        self.assertEqual(comparison['comparable_top_level_fields'],
+                         ['future', 'messages', 'system'])
+        self.assertEqual(comparison['changed_top_level_fields'],
+                         ['future'])
+        self.assertFalse(comparison['request_body_equal'])
+        self.assertEqual(
+            comparison['candidate']['request_body']['future'],
+            {'nested_unknown': [None, 9007199254740993]})
+
+    def test_cross_format_partial_disjoint_scopes_do_not_claim_added_or_removed(self):
+        anthropic = normalize_capture(partial_capture({
+            'model': 'synthetic-model',
+            'system': 'Synthetic Anthropic system',
+        }, ['model', 'system']))
+        responses_capture = fixture('responses-a')
+        responses_capture['capture_id'] = 'synthetic-responses-partial'
+        responses_capture['evidence_scope'] = {
+            'request_body': 'partial',
+            'observed_fields': ['model', 'tools'],
+        }
+        responses_capture['body'] = {
+            'model': 'synthetic-model',
+            'tools': [],
+        }
+        responses = normalize_capture(responses_capture)
+        comparison = compare_observations(anthropic, responses)
+        self.assertEqual(comparison['alignment'], 'cross_format_unaligned')
+        self.assertEqual(comparison['evidence_scope_alignment'],
+                         'partial_scope_mismatch')
+        self.assertEqual(comparison['unobserved_top_level_fields'],
+                         ['system', 'tools'])
+        self.assertEqual(comparison['comparable_top_level_fields'],
+                         ['model'])
+        self.assertEqual(comparison['changed_top_level_fields'], [])
+        self.assertTrue(comparison['request_body_equal'])
+        self.assertTrue(comparison['sections'])
+        self.assertTrue(all(row['change'] == 'unobserved'
+                            for row in comparison['sections']))
+        markdown = render_markdown(comparison)
+        self.assertIn('cross_format_unaligned', markdown)
+        self.assertNotIn('baseline 全部移除、candidate 全部新增', markdown)
+        self.assertNotIn(': removed', markdown)
+        self.assertNotIn(': added', markdown)
 
     def test_whitespace_array_order_significant_object_key_order_irrelevant(self):
         a = fixture()

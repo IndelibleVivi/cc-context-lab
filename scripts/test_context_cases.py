@@ -55,6 +55,20 @@ def capture(capture_id='A', body=None):
     }
 
 
+def partial_capture(capture_id='P', body=None, observed_fields=None):
+    value = capture(capture_id, body if body is not None else {
+        'model': 'synthetic-model-placeholder',
+        'system': [{'type': 'text', 'text': 'Synthetic partial system.'}],
+        'tools': [{'name': 'synthetic_tool',
+                   'input_schema': {'type': 'object'}}],
+    })
+    value['evidence_scope'] = {
+        'request_body': 'partial',
+        'observed_fields': observed_fields or sorted(value['body']),
+    }
+    return value
+
+
 def manifest():
     return {
         'schema': 'harness-context-case/1',
@@ -353,6 +367,109 @@ class PureCaseContracts(unittest.TestCase):
             'external_delivery': 'NOT_ASSESSED',
             'chronology': 'DECLARED_NOT_VERIFIED',
         })
+
+    def test_unobserved_messages_are_not_assessed_but_observed_absence_and_empty_array_are(self):
+        raw = manifest()
+        raw['steps'] = [
+            {'id': 'partial', 'label': 'Partial shape',
+             'capture': partial_capture('partial-capture')},
+            {'id': 'empty', 'label': 'Observed empty messages',
+             'capture': partial_capture('empty-capture', {
+                 'model': 'synthetic-model-placeholder',
+                 'system': [{'type': 'text', 'text': 'Synthetic system.'}],
+                 'messages': [],
+             }, ['model', 'system', 'messages'])},
+            {'id': 'absent', 'label': 'Observed but no messages member',
+             'capture': partial_capture('absent-capture', {
+                 'model': 'synthetic-model-placeholder',
+                 'system': [{'type': 'text', 'text': 'Synthetic system.'}],
+             }, ['model', 'system', 'messages'])},
+        ]
+        raw['comparisons'] = []
+        raw['checks'] = []
+        add_check(raw, 'partial_absent', 'partial', '/messages',
+                  'absent', None)
+        add_check(raw, 'partial_exists', 'partial', '/messages',
+                  'exists', None)
+        add_check(raw, 'empty_absent', 'empty', '/messages', 'absent', None)
+        add_check(raw, 'empty_equals', 'empty', '/messages', 'equals', [])
+        add_check(raw, 'empty_child', 'empty', '/messages/0', 'absent', None)
+        add_check(raw, 'absent_absent', 'absent', '/messages', 'absent', None)
+        report = run_case(raw)
+        for check_id in ('partial_absent', 'partial_exists'):
+            row = check(report, check_id)
+            self.assertEqual(row['status'], 'NOT_ASSESSED', check_id)
+            self.assertIsNone(row['actual_present'])
+            self.assertIsNone(row['actual'])
+            self.assertEqual(row['scope_reason'], 'unobserved_field')
+            self.assertIn('未观察', row['reason'])
+        self.assertEqual(check(report, 'empty_absent')['status'], 'FAIL')
+        self.assertTrue(check(report, 'empty_absent')['actual_present'])
+        self.assertEqual(check(report, 'empty_absent')['scope_reason'],
+                         'observed')
+        self.assertEqual(check(report, 'empty_equals')['status'], 'PASS')
+        self.assertEqual(check(report, 'empty_child')['status'], 'PASS')
+        self.assertFalse(check(report, 'empty_child')['actual_present'])
+        self.assertEqual(check(report, 'absent_absent')['status'], 'PASS')
+        self.assertFalse(check(report, 'absent_absent')['actual_present'])
+        self.assertEqual(report['requirements'][0]['status'], 'FAIL')
+        self.assertEqual(report['summary']['failed'], 1)
+        partial = next(step for step in report['steps']
+                       if step['id'] == 'partial')['observation']
+        self.assertEqual(partial['evidence_scope']['request_body'],
+                         'partial')
+        self.assertNotIn('messages', partial['request_body'])
+        text = render_markdown(report)
+        self.assertIn('声明的部分原始 request body', text)
+        self.assertIn('未观察不等于字段不存在', text)
+        self.assertIn('server/provider 注入', text)
+
+        unobserved_only = manifest()
+        unobserved_only['steps'] = [
+            {'id': 'partial', 'label': 'Partial shape',
+             'capture': partial_capture('partial-only-capture')},
+        ]
+        unobserved_only['comparisons'] = []
+        unobserved_only['checks'] = []
+        add_check(unobserved_only, 'unobserved_absent', 'partial',
+                  '/messages', 'absent', None)
+        unobserved_report = run_case(unobserved_only)
+        self.assertEqual(
+            unobserved_report['checks'][0]['status'], 'NOT_ASSESSED')
+        self.assertEqual(
+            unobserved_report['requirements'][0]['status'], 'NOT_ASSESSED')
+        self.assertEqual(unobserved_report['summary'], {
+            'passed': 0, 'failed': 0, 'not_assessed': 1,
+        })
+
+    def test_partial_body_root_checks_never_claim_the_capture_file_exists(self):
+        raw = manifest()
+        raw['steps'] = [
+            {'id': 'partial', 'label': 'Partial shape',
+             'capture': partial_capture('partial-root-capture')},
+            {'id': 'complete', 'label': 'Complete shape',
+             'capture': capture('complete-root-capture')},
+        ]
+        raw['comparisons'] = []
+        raw['checks'] = []
+        for operator, expected in (
+                ('exists', None), ('absent', None),
+                ('equals', {'model': 'synthetic-model-placeholder'})):
+            add_check(raw, 'partial_' + operator, 'partial', '',
+                      operator, expected)
+        add_check(raw, 'complete_root', 'complete', '', 'exists', None)
+        report = run_case(raw)
+        for operator in ('exists', 'absent', 'equals'):
+            row = check(report, 'partial_' + operator)
+            self.assertEqual(row['status'], 'NOT_ASSESSED')
+            self.assertIsNone(row['actual_present'])
+            self.assertIsNone(row['actual'])
+            self.assertEqual(row['scope_reason'], 'partial_body_root')
+        self.assertEqual(check(report, 'complete_root')['status'], 'PASS')
+        self.assertEqual(check(report, 'complete_root')['scope_reason'],
+                         'observed')
+        self.assertEqual(report['requirements'][0]['status'],
+                         'NOT_ASSESSED')
 
     def test_requirement_precedence_and_non_structure_checks_rejected(self):
         raw = manifest()

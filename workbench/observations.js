@@ -13,6 +13,12 @@ function observationReport(){return observationData().reports[observationState.b
 function observationJson(){return observationData().json_reports[observationState.baselineId]?.[observationState.candidateId]||'';}
 function observationDisplay(){return observationData().display_values[observationState.baselineId]?.[observationState.candidateId];}
 function observationLabel(capture){return capture.capture_id+' · '+capture.wire_format+' · '+capture.evidence.kind;}
+function observationScopeLabel(capture){
+  var scope=capture.evidence_scope;
+  if(!scope||scope.request_body==='complete')return '完整 request body 文件对象';
+  return '部分 request body · 已观察顶层字段：'+scope.observed_fields.map(field=>'/'+field).join('、')+
+    '；未列出字段未知，不是空值';
+}
 
 function renderObservation(){
   var data=observationData(),captures=data.captures;
@@ -40,6 +46,7 @@ function renderObservation(){
     panel.appendChild(el('p',{cls:'observation-evidence',text:capture.evidence.kind==='synthetic_fixture'?
       '合成示例 · 没有实际 runtime 捕获':'captured_request · 导入者声明，未独立验证'}));
     panel.appendChild(el('p',{cls:'field__note',text:'声明的 observed_at：'+(capture.evidence.observed_at||'未记录')+'；页面生成日期不替代它。'}));
+    panel.appendChild(el('p',{cls:'observation-evidence',text:observationScopeLabel(capture)}));
     var list=el('dl',{cls:'observation-runtime'});
     Object.entries(Object.assign({wire_format:capture.wire_format},capture.runtime)).forEach(function(pair){
       list.appendChild(el('dt',{text:pair[0]}));list.appendChild(el('dd',{text:pair[1]===null?'未记录':String(pair[1])}));
@@ -48,6 +55,8 @@ function renderObservation(){
   $('observation-summary').textContent=(comparison.alignment==='cross_format_unaligned'?
     '跨 wire format · 不自动配对。相似原文不证明同一来源或输入等价。':
     '同一 wire format · 按 JSON pointer 比较位置，不按来源身份或自然语义配对。')+
+    '；证据范围：'+comparison.evidence_scope_alignment+
+    '；未观察顶层字段：'+(comparison.unobserved_top_level_fields.join('、')||'无')+
     ' runtime 条件变化：'+(comparison.runtime_changes.join('、')||'无')+
     '；请求顶层字段变化：'+(comparison.changed_top_level_fields.join('、')||'无')+'。';
   var limits=$('observation-limits');clear(limits);
@@ -59,9 +68,12 @@ function renderObservation(){
   renderObservationSections();
   var bodies=$('observation-bodies');clear(bodies);
   ['baseline','candidate'].forEach(function(side,i){
-    bodies.appendChild(el('div',{},[el('h4',{text:i?'B / 完整 body':'A / 完整 body'}),
+    var partial=comparison[side].evidence_scope?.request_body==='partial';
+    bodies.appendChild(el('div',{},[el('h4',{text:(i?'B / ':'A / ')+
+      (partial?'声明的部分 request body（不是完整请求）':'完整 body')}),
       el('pre',{text:observationDisplay().bodies[side].body}),
-      el('h4',{text:'其余 request parameters'}),el('pre',{text:observationDisplay().bodies[side].parameters})]));
+      el('h4',{text:partial?'观察到的其余 request parameters':'其余 request parameters'}),
+      el('pre',{text:observationDisplay().bodies[side].parameters})]));
   });
 }
 function renderObservationSections(){
@@ -98,6 +110,9 @@ function renderObservationSections(){
       column.appendChild(el('pre',{text:observationDisplay().sections[observationState.selected][side]}));
     }grid.appendChild(column);
   });detail.appendChild(grid);
+  if(row.change==='unobserved'){
+    detail.appendChild(el('p',{cls:'observation-limits',text:'至少一侧未观察此字段；不能判为 added、removed 或不存在。'}));
+  }
 }
 function downloadLocalArtifact(value,name,type){
   var url=URL.createObjectURL(new Blob([value],{type:type+';charset=utf-8'}));

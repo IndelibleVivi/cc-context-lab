@@ -1,5 +1,9 @@
 # 研究证据与覆盖记录
 
+
+## 2026-11-01 Daily quiet
+
+便携来源、规则与native314/316合成事件边界见 [daily-quiet evidence](../references/daily-quiet.json) 与 [实验入口](../experiments/daily-quiet/README.md)。本次不将private shapes/transcripts或runtime安装状态发布为fixtures；fragment matching不依赖二进制版本，未知新原文保留。
 记录 2026-10-04/05、10/13 与 10/25 已读来源、测试条件和未验范围。观察日期不代表后来重新实测，文中的“本轮”按所属日期理解。本页保留可复核的研究依据；当前能力、状态与下一集成点以 [current state](current-state.md) 为准，技术主题仍归对应专题与 references。
 
 ## 2026-10-25：方向校准与验证覆盖

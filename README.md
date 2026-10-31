@@ -51,6 +51,7 @@ flowchart TB
 
 | 你要做什么 | 入口 |
 | --- | --- |
+| 比较日常提醒和工具话术的保守剥离，并检查原厂更新后的事实保留 | [Daily quiet](experiments/daily-quiet/README.md) |
 | 围绕同一问题重跑多阶段输入、检查保留条件与缺口 | [Context case](docs/context-cases.md) |
 | 交互查看全景、合成回放、来源与配置变更准备 | [Context Atlas](workbench/README.md) |
 | 固定同一材料，比较 A/B 的当下、历史与来源轨迹并重跑 | [Context study](experiments/companion-input/STUDIES.md)、[Atlas 对照研究](workbench/README.md#对照研究与重跑) |
@@ -79,6 +80,10 @@ flowchart TB
 | 比较心跳、定时任务、入站消息和外部交付 | [Heartbeat / channels](docs/heartbeat-and-channels.md) |
 
 从伴侣交互出发先读 companion context；定位 CC 输入面再读 context map，把 official controls 与对应 source dossier 并排看。官方合同、社区实际实现和目标版本实测分别提供证据。
+
+## 日常安静的可迁移对照
+
+[Daily quiet](experiments/daily-quiet/README.md) 提供来源有界的纯规则、薄 Mods 接线、native test-kit fixture 和合成 case。它按 engine 类型及已审工具说明片段工作，不锁 CC 版本；新事实与未知文本保留，主身份、工具 schema、权限与 recovery 由各 owner 继续管理。Node 与 Linux CC 2.1.314/2.1.316 的合成事件检查分别记录在 [evidence](references/daily-quiet.json)。这不构成真实 resume、完整请求、模型体验或部署声明。
 
 ## 使用方式与边界
 

@@ -1,0 +1,6 @@
+{
+  "name": "daily-quiet-context",
+  "version": "0.1.0",
+  "author": {"name": "Harness Context Engineering Lab contributors"},
+  "description": "Conservative context presentation experiment; preserves tools, unknown content and runtime authority."
+}

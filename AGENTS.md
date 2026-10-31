@@ -8,6 +8,7 @@
 - README.md 拥有稳定范围与阅读路径；docs/current-state.md 拥有当前能力、证据和未验证项。docs/research-evidence.md 保留按日期的研究覆盖与既往结果，不覆盖当前状态。
 - docs/ 拥有可复用的技术研究；references/ 记录公开 source revisions、官方文档与逐项 override 对照。声明版本与目标 runtime 版本分开标注。experiments/context-profile/ 下的 candidate 是未安装的 source，不是最终身份或完整 C 配置。
 - experiments/ 拥有合成实验方案和证据；尚未执行的步骤必须标成未执行。
+- `experiments/daily-quiet/hooks/quiet-rules.mjs` 是可迁移日常 presentation 规则的 canonical source；`register.mjs` 仅为 standalone 接线，受管 runtime 的 frozen copy 要记录 exact revision 并验证 parity。按片段 digest 识别已审话术，不以 CC version gate 或全局关键词替换冒充兼容；recovery 和执行权限继续由 runtime owner 决定。
 - workbench/ 拥有研究视图和人工关系模型；不覆盖 docs/references 的技术证据。scripts/build_context_atlas.py 从 canonical references 与 companion-input 引擎生成忽略的 .cache/context-atlas/；不手改派生数据，不复制第二套引擎。Atlas 导出的 brief 只准备变更，不授予运行或部署权限。
 - `experiments/companion-input/context_study.py` 拥有离线 A/B plan 校验、canonical 执行和逐来源观察投影；`scripts/run_context_study.py` 是重跑入口。plan 固定完整合成 fixture snapshot，不能按同名情境静默换材料。Atlas 展示同一投影；多轴比较不写单因果结论，current/history/excluded/轮后产生分别保留。整体 programme 见 `docs/development-programme.md`。
 - `context_lab/cases.py` 拥有 self-contained case 的阶段/要求/检查与报告；只检查显式 request body 的位置，模型行为与交付不自动通过。study snapshot 仍交 canonical study runner；阶段关联由研究者声明，不冒充真实 tracing。`--case` 同样受私人输出和输入保护约束。
@@ -31,6 +32,8 @@
 完成本 repo 的 source/test/docs 后，默认正常 commit/push 到现有 private remote；owner 明确要求不提交时除外。每次只 stage 已检查的明确路径，私人 continuity、身份、真实 capture/request/transcript、账号资料与 cache 即使 private remote 也不上传。公开发布、安装、真实模型调用与部署仍需对应授权。
 
 ## Verification / docs
+
+Daily quiet 的纯规则测试为 `node --test experiments/daily-quiet/tests/rules.test.mjs`，已纳入统一 gate；native `claude plugin test` 单独验证指定可信 build，不在 offline gate 自动执行。
 
 `python3 scripts/check_offline.py` 是 authored source 的统一纯离线检查入口；组合下述已有检查，失败即非零。它不执行第三方 checkout、官方 binary、runtime probe、网络检查或模型，不改变各层证据含义。CI/provider 如以后接线，只调用此入口，不另维护同一套 gate。
 

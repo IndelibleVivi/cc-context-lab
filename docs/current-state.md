@@ -1,6 +1,14 @@
 # 当前研究状态
 
-更新：2026-10-28（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，现有 remote 已核为 private。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
+更新：2026-11-01（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，现有 remote 已核为 private。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
+
+## 2026-11-01 日常 presentation candidate
+
+新增 [Daily quiet](../experiments/daily-quiet/README.md)：canonical纯规则、standalone Mods接线、13项Node合成检查、三项native test-kit fixture及可重跑case。来源为已审原生话术片段的digest与project-authored变换，不收录原厂全文或私人context。规则不按CC版本开关；未知片段、新功能事实与schema保留，严格恢复资格继续由runtime owner独立管理。
+
+Linux CC2.1.314/2.1.316分别通过native validation（含catalog warnings）和3项合成事件测试。上下文fixture必须让claudeMd与instructionFiles一致，才能判断保留追踪；故意不一致的输入被原生引擎撤去metadata，不能据此归因候选丢失。独立review指出全局空白归一化会改变未知示例，已改成保留所有非目标分隔符并加回归。
+
+合成case真实调用纯规则与既有case引擎：6项结构要求PASS，真实resume、模型体验和交付3项NOT_ASSESSED；没有整体readiness结论。本节不声称runtime安装、provider请求或自然相处验收。当前仓库仍private、公开rights尚未选定；公开候选只包含authored source、synthetic fixtures和public-safe evidence。
 
 ## 当前方向与能力
 

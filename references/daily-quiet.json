@@ -1,0 +1,19 @@
+{
+  "schema": "daily-quiet-evidence/1",
+  "observed_on": "2026-11-01",
+  "rules": "experiments/daily-quiet/hooks/quiet-rules.mjs",
+  "source_kind": "project-authored transformations and synthetic fixtures; native prose represented by reviewed fragment digests",
+  "native_checks": [
+    {"harness": "Claude Code", "version": "2.1.314", "platform": "linux-x64", "validation": "passed with catalog warnings", "synthetic_tests_passed": 3},
+    {"harness": "Claude Code", "version": "2.1.316", "platform": "linux-x64", "validation": "passed with catalog warnings", "synthetic_tests_passed": 3}
+  ],
+  "scope": "Plugin loader and synthetic prompt.attachment / prompt.context / tool.describe contracts. Target-generated 2.1.314 PromptContextInput/Result instructionFiles clauses were inspected.",
+  "not_assessed": ["future native API compatibility", "complete real request body", "resume/compact/fork lifecycle", "provider receipt", "conversation quality", "external delivery"],
+  "official_sources": [
+    "https://code.claude.com/docs/en/plugins/mods/reference",
+    "https://code.claude.com/docs/en/settings-reference#includegitinstructions",
+    "https://code.claude.com/docs/en/skills#override-skill-visibility-from-settings"
+  ],
+  "private_material_included": false,
+  "model_called": false
+}

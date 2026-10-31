@@ -29,6 +29,7 @@ def main():
         ('observation presenter and fixed handoff', [node, '--test', 'scripts/test_observation_ui.cjs']),
         ('study import and handoff', [node, '--test', 'scripts/test_study_ui.cjs']),
         ('candidate logic', [node, '--test', 'experiments/context-profile/tests/register.test.js']),
+        ('portable daily quiet rules', [node, '--test', 'experiments/daily-quiet/tests/rules.test.mjs']),
         ('offline checker boundary', [sys.executable, 'scripts/test_check_context_profile.py']),
         ('request preparation only', [sys.executable, 'scripts/test_prepare_heartbeat_requests.py']),
         ('Atlas script syntax', [node, '--check', 'workbench/app.js']),

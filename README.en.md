@@ -4,7 +4,7 @@
 
 Research, compare and maintain the sources, assembly and lifecycle of context in agent harnesses. Claude Code is the most deeply studied harness; the existing repository slug remains `cc-context-lab`. Long-running companion interaction is a primary use case, including an owned core, present context, automatic memory recall, autonomous turns, channels and continuity. Fewer tokens are not a substitute for better interaction.
 
-The repository currently provides a sourced research library, Context Atlas, reproducible synthetic A/B studies, local request observation, multi-stage context cases and CC-specific source candidates. It is maintained in a [private GitHub repository](https://github.com/IndelibleVivi/cc-context-lab); public visibility and reuse terms have not been selected. It is not a deployed context manager, complete persona/profile or fully verified context-stripping solution. See the [current evidence and gaps](docs/current-state.md).
+The repository currently provides a sourced research library, Context Atlas, reproducible synthetic A/B studies, local request observation, multi-stage context cases and CC-specific source candidates. The [project repository](https://github.com/IndelibleVivi/cc-context-lab) uses SUL-1.0 for original functional material and CC BY-NC-SA 4.0 for original research content; see the [licensing map](LICENSING.md). It is not a deployed context manager, complete persona/profile or fully verified context-stripping solution. See the [current evidence and gaps](docs/current-state.md).
 
 ## Run the daily quiet comparison
 
@@ -55,4 +55,4 @@ Runtime source repositories, candidate renderers and operator runbooks own real 
 
 The repository contains project-authored research, transformations, synthetic fixtures and public source links. It does not vendor complete third-party implementations or native prompt texts. Private discussions, identity, account configuration, real requests, transcripts, machine mappings and continuity remain outside Git, including private remotes. `.cache/`, `.local/` and `artifacts/` are local-only output locations.
 
-No public license has been selected. References to third-party sources do not relicense those sources. [AGENTS.md](AGENTS.md) records maintenance authority and verification rules; the Chinese README is the canonical full documentation map.
+Original code, scripts, tests and executable experiment materials use [SUL-1.0](LICENSE), a source-available license with use restrictions. Original documentation, diagrams and research arrangement use [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md). Third-party sources and externally loaded checkouts retain their original rights. This is not a single OSI open-source grant for the whole repository. Include the applicable notices and [path map](LICENSING.md) when copying a plugin directory. [AGENTS.md](AGENTS.md) records maintenance authority and verification rules; the Chinese README is the canonical full documentation map.

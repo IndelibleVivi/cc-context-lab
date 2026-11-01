@@ -4,7 +4,7 @@
 
 研究、比较和维护 agent harness 的 context 来源、装配与生命周期。长期伴侣交互是主要使用语境之一：完整的自有 core、当下感知、自动记忆召回、自主轮次、跨 channel 相处与经历承接都在其中。Claude Code 是目前研究最深入的 harness，项目范围已扩展到跨 harness 的 context engineering；现有 repo / 路径仍使用 `cc-context-lab`，正式名称与 slug 迁移另定。
 
-目前作为 private 研究仓库维护：[GitHub](https://github.com/IndelibleVivi/cc-context-lab)。
+项目仓库：[GitHub](https://github.com/IndelibleVivi/cc-context-lab)。原创功能材料采用 SUL-1.0，原创研究文图采用 CC BY-NC-SA 4.0；[完整授权范围](LICENSING.md)。
 
 目标是保留 harness 的工具执行、会话和 MCP 能力，同时掌握送给模型的主提示、工具说明、动态 reminders、文件与记忆来源，以及 compact / resume / subagent、Forge / carryover 的继承和重建方式。线程状态、心跳/定时唤醒、context 保留与“阅后即焚”、外部 channel 的输入和交付也在研究范围内。自己的 core 可以充分而完整；研究重点是控制来源、冲突与生命周期，不能把 token 更少直接当成体验更好。
 
@@ -121,6 +121,8 @@ Atlas 默认展示合成 context case 及其阶段 captures，不扫描真实会
 
 对已有 runtime 的修改继续由其 source repo、candidate renderer 和 operator runbook 管理。本仓库准备可审核的规则、证据和接入说明，不持有生产配置 authority，也不会自动连接或修改部署。受管消费者的安装与运行状态独立记录，不由 Lab 的合成 PASS 推导。
 
-仓库内容面向后续维护者，保留原创技术归纳和公开 source links。私人讨论原文、身份正文、账号配置、真实请求、transcripts 和机器映射放在 Git 外；`.cache/`、`.local/`、`artifacts/` 等仅作本机缓存。第三方代码与原厂提示全文不 vendoring。本仓库未公开发布，也未选择公开 license。
+仓库内容面向后续维护者，保留原创技术归纳和公开 source links。私人讨论原文、身份正文、账号配置、真实请求、transcripts 和机器映射放在 Git 外；`.cache/`、`.local/`、`artifacts/` 等仅作本机缓存。第三方代码与原厂提示全文不 vendoring。
+
+原创代码、脚本、测试与可执行实验材料使用 [SUL-1.0](LICENSE)，属于 source-available；原创文档、图示与研究编排使用 [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md)。第三方引用和外部 checkout 保留原有权利；不是整仓统一授予任意商用的 OSI open-source license。复制插件子目录时也需携带相应许可和 [path map](LICENSING.md)。
 
 维护约定见 [AGENTS.md](AGENTS.md)。

@@ -10,9 +10,11 @@ Linux CC2.1.314/2.1.316分别通过native validation（含catalog warnings）和
 
 合成case真实调用纯规则与既有case引擎：7项结构要求PASS，未知history、真实resume、模型体验和交付4项NOT_ASSESSED；没有整体readiness结论。新增system/tools-only阶段，只声明这两个顶层字段，不伪造messages。通用capture可选`evidence_scope`，旧完整v1仍兼容；未知字段和partial body root不评估，比较区分known absence与null，跨格式也不把未知写成删除。报告、Atlas与下载都保留scope。
 
-本轮`python3 scripts/check_offline.py`通过224项顶层/Node cases与四项JS syntax；Daily quiet合成case经CLI与Atlas重建，0项结构失败。独立review的四项partial边界已修复并复核。本节不声称provider请求或自然相处验收。受管消费者的安装与运行状态由原runtime独立维护，不作为本Lab合成结果。当前仓库仍private、公开rights尚未选定；公开候选只包含authored source、synthetic fixtures和public-safe evidence。
+本轮`python3 scripts/check_offline.py`通过224项顶层/Node cases与四项JS syntax；Daily quiet合成case经CLI与Atlas重建，0项结构失败。独立review的四项partial边界已修复并复核。本节不声称provider请求或自然相处验收。受管消费者的安装与运行状态由原runtime独立维护，不作为本Lab合成结果。公开候选只包含authored source、synthetic fixtures和public-safe evidence。
 
 实际浏览器已核对partial阶段、messages为unobserved的比较、A完整/B部分body标题；下载JSON与同次canonical比较相等。1440×1000/390×844无页面横向溢出，console未见warn/error。英文README是同步入口，中文README保留完整阅读地图。
+
+2026-11-01已确定分层授权：原创功能材料SUL-1.0、原创文档/图示/研究编排CC BY-NC-SA 4.0。完整标准正文、内容授权通知及第三方/历史排除见[LICENSING.md](../LICENSING.md)。两份plugin manifest声明目录内存在的两组许可；上次native检查为加入license字段之前的snapshot，没有据此宣称新的catalog acceptance。当前license source已备好，公开visibility切换与匿名读取尚待完成。
 
 ## 当前方向与能力
 
@@ -48,4 +50,4 @@ case 的 pointer 检查分开 present / 明确的最终缺失 / 遍历阻断；n
 
 当前 case 已连接研究问题、条件、阶段输入与结构结果；下一主线沿现有 capture 入口，将**同一个研究问题、条件和保留要求**带到指定 build/入口/candidate 的真实观察，再交回原 runtime 的接入、恢复和自然使用回填。主 system/tools/reminders、ambient、自动 recall、自主活动、channel 与 compact/Forge 始终保留在完整目标内；不另造 scheduler、Memory backend 或自动生产控制层。具体接点见 [Context DevOps](context-devops.md) 与 programme。
 
-本轮source/test/docs可正常commit/push至现有private remote；私人continuity、身份、真实配置/capture/transcript和cache留在Git外。Lab没有新增模型推理、scheduler或消息发送入口；原runtime的接入授权与操作独立。仓库未公开发布，也未选择公开license。
+本轮source/test/docs正常commit/push至现有origin；私人continuity、身份、真实配置/capture/transcript和cache留在Git外。Lab没有新增模型推理、scheduler或消息发送入口；原runtime的接入授权与操作独立。公开visibility与读取结果以本页当前记录为准。

@@ -6,6 +6,7 @@
 ## Authority
 
 - README.md 拥有稳定范围与阅读路径，README.en.md 为语义同步的英文入口；docs/current-state.md 拥有当前能力、证据和未验证项。docs/research-evidence.md 保留按日期的研究覆盖与既往结果，不覆盖当前状态。
+- LICENSE拥有SUL-1.0标准正文；LICENSE-DOCUMENTATION.md拥有CC BY-NC-SA 4.0内容授权通知，LICENSING.md拥有path map和第三方排除。新增材料按用途分类；不把引用、外部checkout或文档许可套给第三方代码。插件子目录复制时需携带这些授权文件。
 - docs/ 拥有可复用的技术研究；references/ 记录公开 source revisions、官方文档与逐项 override 对照。声明版本与目标 runtime 版本分开标注。experiments/context-profile/ 下的 candidate 是未安装的 source，不是最终身份或完整 C 配置。
 - experiments/ 拥有合成实验方案和证据；尚未执行的步骤必须标成未执行。
 - `experiments/daily-quiet/hooks/quiet-rules.mjs` 是可迁移日常 presentation 规则的 canonical source；`register.mjs` 仅为 standalone 接线，受管 runtime 的 frozen copy 要记录 exact revision 并验证 parity。按片段 digest 识别已审话术，不以 CC version gate 或全局关键词替换冒充兼容；recovery 和执行权限继续由 runtime owner 决定。
@@ -30,7 +31,7 @@
 静态 source、离线 fixture、安装、真实 request 和行为验收分别标注。
 不得隐式执行上游 install/patch、真实模型调用、transcript 清理或生产操作。
 不复制完整第三方实现、原厂提示全文或私有研究记录；引用 exact revision 和必要短例。
-完成本 repo 的 source/test/docs 后，默认正常 commit/push 到现有 private remote；owner 明确要求不提交时除外。每次只 stage 已检查的明确路径，私人 continuity、身份、真实 capture/request/transcript、账号资料与 cache 即使 private remote 也不上传。公开发布、安装、真实模型调用与部署仍需对应授权。
+完成本 repo 的 source/test/docs 后，默认正常 commit/push 到现有 origin；owner 明确要求不提交时除外。每次只 stage 已检查的明确路径，私人 continuity、身份、真实 capture/request/transcript、账号资料与 cache 不上传。visibility变更、安装、真实模型调用与部署仍需对应授权。
 
 ## Verification / docs
 

@@ -1,6 +1,6 @@
 # 当前研究状态
 
-更新：2026-11-01（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，现有 remote 已核为 private。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
+更新：2026-11-01（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，[现有仓库](https://github.com/IndelibleVivi/cc-context-lab)已公开，provider与匿名HTTPS读取均已核对。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
 
 ## 2026-11-01 日常 presentation 与部分证据对照
 
@@ -14,7 +14,9 @@ Linux CC2.1.314/2.1.316分别通过native validation（含catalog warnings）和
 
 实际浏览器已核对partial阶段、messages为unobserved的比较、A完整/B部分body标题；下载JSON与同次canonical比较相等。1440×1000/390×844无页面横向溢出，console未见warn/error。英文README是同步入口，中文README保留完整阅读地图。
 
-2026-11-01已确定分层授权：原创功能材料SUL-1.0、原创文档/图示/研究编排CC BY-NC-SA 4.0。完整标准正文、内容授权通知及第三方/历史排除见[LICENSING.md](../LICENSING.md)。两份plugin manifest声明目录内存在的两组许可；上次native检查为加入license字段之前的snapshot，没有据此宣称新的catalog acceptance。当前license source已备好，公开visibility切换与匿名读取尚待完成。
+2026-11-01已确定分层授权并公开：原创功能材料SUL-1.0、原创文档/图示/研究编排CC BY-NC-SA 4.0。完整标准正文、内容授权通知及第三方/历史排除见[LICENSING.md](../LICENSING.md)。两份plugin manifest声明目录内存在的两组许可；上次native检查为加入license字段之前的snapshot，没有据此宣称新的catalog acceptance。
+
+初始公开snapshot为`5bfd6d6ea58a66eeec914e74e3e92c6b1acc6762`及其已检查历史：120个tree paths，178个unique history text blobs，信号扫描完整、零findings，无跳过项；人工复核第三方/私人边界。该扫描不是rights或privacy证书。GitHub回读PUBLIC/main，未登录HTTPS读到对应授权文件且与candidate原值一致。没有创建tag、Release、Pages或hosted CI；公开仓库不等于runtime安装或自然体验验收。
 
 ## 当前方向与能力
 

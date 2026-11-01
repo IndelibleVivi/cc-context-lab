@@ -1,0 +1,7 @@
+{
+  "model": "synthetic-claude-model",
+  "max_tokens": 64,
+  "system": [{"type": "text", "text": "SYNTHETIC OWNED CORE"}],
+  "messages": [{"role": "user", "content": "Synthetic request: report the current fixture state."}],
+  "synthetic_note": "This file has no index entry. Similar content cannot prove a retry, failure or execution order."
+}

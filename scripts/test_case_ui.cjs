@@ -62,7 +62,8 @@ function harness({noCase=false,safe=true}={}){
       null:{expected:'null',actual:'null'},blocked:{expected:'null',actual:'null'}},
     steps:{early:canonicalBody,late:canonicalBody,absent:null}},study_markdown:'# FIXED STUDY',study_browser_safe:safe};
   const data={context_case:noCase?null:projection,model:{capabilities:[],checks:[],workflow:[]},
-    request_observations:{captures,comparisons:{CAPTURE_EARLY:{CAPTURE_LATE:comparison}},reports:{},json_reports:{},display_values:{}}};
+    request_observations:{captures,comparisons:{CAPTURE_EARLY:{CAPTURE_LATE:{baseline_id:'CAPTURE_EARLY',candidate_id:'CAPTURE_LATE',
+      alignment:comparison.alignment,runtime_changes:comparison.runtime_changes}}},serializations:{},display_values:{}}};
   const downloads=[],tabs=[],restores=[];
   const context=vm.createContext({document:{readyState:'loading',addEventListener:()=>{}},console});
   // Suppress app boot, then replace only DOM/environment boundaries. The real
@@ -170,7 +171,9 @@ test('declared comparison opens its exact capture pair rather than the first two
   assert.equal(h.context.observationState.candidateId,'CAPTURE_LATE');
   assert.equal(h.context.observationState.selected,0);assert.equal(h.context.observationState.query,'');
   assert.equal(h.node('observation-search').value,'');
-  assert.equal(h.context.observationComparison(),h.projection.report.comparisons[0].comparison);
+  const displayed=h.context.observationComparison(),expected=h.projection.report.comparisons[0].comparison;
+  assert.equal(displayed.baseline,expected.baseline);assert.equal(displayed.candidate,expected.candidate);
+  assert.equal(displayed.alignment,expected.alignment);
   assert.deepEqual(h.tabs.at(-1),['observation',true]);
   const before=plain(h.context.observationState),count=h.tabs.length;
   buttons[1].fire('click');h.context.openCaseComparison('unknown');

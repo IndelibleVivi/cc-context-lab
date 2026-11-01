@@ -2,7 +2,8 @@
 """Inspect explicit local JSON request captures; no transport or runtime execution.
 
 Raw bodies and generated reports may contain private data. The default output
-is ignored local cache; keep real captures and their reports out of Git.
+is ignored local cache; outputs inside the worktree are checked against the
+same private-path policy as the case runner and CC-run importer.
 """
 
 import argparse
@@ -13,6 +14,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from context_lab.artifacts import paths_alias, write_reports
+from context_lab.io_policy import ensure_private_output
 from context_lab.observations import compare_observations, parse_capture_json, normalize_capture, render_markdown
 
 
@@ -30,6 +32,7 @@ def output_paths(inputs, output_dir, comparison):
             raise ValueError('output is not a regular file: ' + str(target))
     if paths_alias(*targets):
         raise ValueError('output paths alias each other')
+    ensure_private_output(output_dir, ROOT, targets)
     return targets
 
 

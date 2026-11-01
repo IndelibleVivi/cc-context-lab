@@ -41,7 +41,7 @@ function setup(){
   const get=id=>{if(!elements.has(id))elements.set(id,new Element(id.includes('baseline')||id.includes('candidate')?'select':'div'));return elements.get(id);};
   const capture=id=>({capture_id:id,wire_format:'openai-responses',evidence:{kind:'synthetic_fixture',observed_at:null},
     evidence_scope:{request_body:'complete',observed_fields:null},
-    runtime:{harness:'synthetic',version:null},unresolved_context:[],request_body:{exact:Number(exact)},request_parameters:{exact:Number(exact)}});
+    runtime:{harness:'synthetic',version:null},unresolved_context:[],sections:[]});
   const a=capture('A'),b=capture('B');
   const section={pointer:'/input/0',kind:'opaque',role:null,origin:'unknown',lifecycle:'unknown',value:{exact:Number(exact)}};
   const comparison={baseline:a,candidate:b,alignment:'same_format_json_pointer',evidence_scope_alignment:'complete',
@@ -49,13 +49,16 @@ function setup(){
     sections:[{pointer:'/input/0',change:'modified',baseline:section,candidate:{...section}},
               {pointer:'/input/1',change:'unchanged',baseline:{...section,pointer:'/input/1'},candidate:{...section,pointer:'/input/1'}}]};
   const jsonText='{"schema":"harness-context-comparison/1","synthetic_exact":'+exact+'}\n';
-  const markdown='# SYNTHETIC canonical Markdown\n\n'+exact+'\n';
+  const markdown='# SYNTHETIC canonical Markdown\n\n'+exact+'\n\n## Candidate\n\nBODY B\n';
   const value='{\n  "exact": '+exact+'\n}';
   const display={sections:[{baseline:value,candidate:value},{baseline:'UNCHANGED SYNTHETIC',candidate:'UNCHANGED SYNTHETIC'}],
     bodies:{baseline:{body:value,parameters:value},candidate:{body:value,parameters:value}}};
-  const data={captures:[a,b],comparisons:{A:{B:comparison},B:{A:{...comparison,baseline:b,candidate:a}}},
-    reports:{A:{B:markdown},B:{A:'# REVERSED'}},json_reports:{A:{B:jsonText},B:{A:'{"reverse":true}\n'}},
-    display_values:{A:{B:display},B:{A:display}}};
+  const data={captures:[a,b],comparisons:{A:{B:{...comparison,baseline_id:'A',candidate_id:'B',export_tokens:[jsonText],markdown_prefix:'# SYNTHETIC canonical Markdown\n'}},
+    B:{A:{...comparison,baseline_id:'B',candidate_id:'A',export_tokens:['{"reverse":true}\n'],markdown_prefix:'# REVERSED'}}},
+    serializations:{A:{json:'{"exact":'+exact+'}',markdown:exact,sections:{}},B:{json:'{}',markdown:'BODY B',sections:{}}},
+    display_values:{A:{body:value,parameters:value,sections:{'/input/0':value,'/input/1':'UNCHANGED SYNTHETIC'}},
+      B:{body:value,parameters:value,sections:{'/input/0':value,'/input/1':'UNCHANGED SYNTHETIC'}}}};
+  a.sections=[section,{...section,pointer:'/input/1'}];b.sections=a.sections;
   const downloads=[],activated=[],preview=[];
   const context=vm.createContext({getData:()=>({request_observations:data}),$:get,
     clear:element=>{element.children=[];element._text='';},el:(tag,props={},children=[])=>new Element(tag,props,children),
@@ -70,7 +73,7 @@ function setup(){
 
 test('canonical comparison JSON and download preserve integers outside JS Number precision',()=>{
   const {context,jsonText,downloads,get}=setup();
-  assert.equal(context.observationComparison().baseline.request_body.exact,Number(rounded));
+  assert.equal('request_body' in context.observationComparison().baseline,false);
   assert.equal(context.observationJson(),jsonText);
   context.wireObservation();
   get('observation-download-json').fire('click');
@@ -98,14 +101,15 @@ test('body, parameters and section details display canonical strings rather than
 
 test('partial scope labels observed fields and renders unobserved comparison rows without implying removal',()=>{
   const {context,data,get}=setup();
-  const baseline={...data.comparisons.A.B.baseline,
+  const baseline={...data.captures[0],
     evidence_scope:{request_body:'partial',observed_fields:['system','tools']},
     request_body:{system:'SYNTHETIC SYSTEM',tools:[]}};
-  const candidate={...data.comparisons.A.B.candidate,
+  const candidate={...data.captures[1],
     evidence_scope:{request_body:'partial',observed_fields:['system','tools','messages']},
     request_body:{system:'SYNTHETIC SYSTEM',tools:[],messages:[]}};
   const section={pointer:'/messages',kind:'message',role:null,origin:'unknown',lifecycle:'unknown',value:[]};
-  data.comparisons.A.B={...data.comparisons.A.B,baseline,candidate,
+  data.captures[0]=baseline;data.captures[1]=candidate;
+  data.comparisons.A.B={...data.comparisons.A.B,
     evidence_scope_alignment:'partial_scope_mismatch',
     comparable_top_level_fields:['system','tools'],unobserved_top_level_fields:['messages'],
     changed_top_level_fields:[],
@@ -114,10 +118,9 @@ test('partial scope labels observed fields and renders unobserved comparison row
       candidate:{...section,pointer:'/system',kind:'instructions',value:'SYNTHETIC SYSTEM'}},
       {pointer:'/messages',change:'unobserved',baseline_observed:false,candidate_observed:true,
         baseline:null,candidate:section}]};
-  data.display_values.A.B={...data.display_values.A.B,
-    bodies:{baseline:{body:'{"system":"SYNTHETIC SYSTEM","tools":[]}',parameters:'{}'},
-      candidate:{body:'{"system":"SYNTHETIC SYSTEM","tools":[],"messages":[]}',parameters:'{}'}},
-    sections:[{baseline:'SYNTHETIC SYSTEM',candidate:'SYNTHETIC SYSTEM'},{baseline:null,candidate:'[]'}]};
+  data.display_values.A={body:'{"system":"SYNTHETIC SYSTEM","tools":[]}',parameters:'{}',sections:{'/system':'SYNTHETIC SYSTEM'}};
+  data.display_values.B={body:'{"system":"SYNTHETIC SYSTEM","tools":[],"messages":[]}',parameters:'{}',
+    sections:{'/system':'SYNTHETIC SYSTEM','/messages':'[]'}};
   context.observationState.selected=1;
   context.renderObservation();
   assert.match(get('observation-identity').textContent,/部分 request body/);
@@ -129,11 +132,12 @@ test('partial scope labels observed fields and renders unobserved comparison row
 
 test('raw body headings reflect each side scope independently',()=>{
   const {context,data,get}=setup();
-  const complete={...data.comparisons.A.B.baseline,
+  const complete={...data.captures[0],
     evidence_scope:{request_body:'complete',observed_fields:null}};
-  const partial={...data.comparisons.A.B.candidate,
+  const partial={...data.captures[1],
     evidence_scope:{request_body:'partial',observed_fields:['system','tools']}};
-  data.comparisons.A.B={...data.comparisons.A.B,baseline:complete,candidate:partial,
+  data.captures[0]=complete;data.captures[1]=partial;
+  data.comparisons.A.B={...data.comparisons.A.B,
     evidence_scope_alignment:'partial_scope_mismatch',
     comparable_top_level_fields:['system','tools'],unobserved_top_level_fields:[],
     changed_top_level_fields:[],
@@ -187,7 +191,7 @@ test('attachment freezes canonical JSON, Markdown and capture IDs across compari
   assert.equal(context.observationAttachment.candidateId,'B');
   assert.equal(activated[0][0],'change');
   context.observationState.baselineId='B';context.observationState.candidateId='A';
-  data.json_reports.A.B='MUTATED';data.reports.A.B='MUTATED';
+  data.comparisons.A.B.export_tokens=['MUTATED'];data.comparisons.A.B.markdown_prefix='MUTATED';
   assert.equal(context.observationAttachment.jsonText,jsonText);
   assert.equal(context.observationAttachment.markdown,markdown);
   context.renderObservationAttachment();
@@ -200,4 +204,43 @@ test('attachment freezes canonical JSON, Markdown and capture IDs across compari
   assert.equal(context.observationJson(),'{"reverse":true}\n');
   assert.equal(get('observation-brief-attachment').hidden,true);
   assert.equal(preview.length,1);
+});
+
+
+test('missing comparison clears prior values and supplies a rebuild selection',()=>{
+  const {context,data,get}=setup();context.renderObservation();
+  delete data.comparisons.A.B;
+  context.renderObservation();
+  assert.match(get('observation-summary').textContent,/未准备此比较/);
+  assert.equal(get('observation-bodies').textContent,'');
+  assert.equal(get('observation-identity').textContent,'');
+  assert.equal(get('observation-download-json').disabled,true);
+  assert.match(get('observation-detail').textContent,/comparison-pairs.json/);
+});
+
+test('single request renders independently and never needs a self comparison',()=>{
+  const {context,data,get}=setup();context.observationState.candidateId=null;
+  context.renderObservation();
+  assert.match(get('observation-summary').textContent,/单份 request/);
+  assert.equal(context.observationComparison(),null);
+  assert.equal(context.observationJson(),data.serializations.A.json+'\n');
+  assert.equal(get('observation-download-json').disabled,false);
+});
+
+test('special legal IDs use own pair keys and null sentinel never selects string null',()=>{
+  for(const id of ['toString','constructor','__proto__']){
+    const {context,data,get}=setup();
+    data.captures.push({...data.captures[0],capture_id:id});
+    context.observationState.candidateId=id;
+    assert.equal(context.observationComparison(),null);
+    assert.doesNotThrow(()=>context.renderObservation());
+    assert.match(get('observation-summary').textContent,/未准备/);
+    context.observationState.baselineId=id;context.observationState.candidateId='B';
+    assert.equal(context.observationComparison(),null);
+  }
+  const {context,data}=setup();
+  data.comparisons.A.null={...data.comparisons.A.B};
+  context.observationState.candidateId=null;
+  assert.equal(context.observationComparison(),null);
+  assert.equal(context.observationView().single,true);
 });

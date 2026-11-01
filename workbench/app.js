@@ -1198,7 +1198,7 @@ function buildBriefMarkdown() {
   }
   if (observationAttachment) {
     L.push('');
-    L.push('## 附：请求观察（带入时的固定快照）');
+    L.push(observationAttachment.kind==='cc_run'?'## 附：CC Run（带入时的固定快照）':'## 附：请求观察（带入时的固定快照）');
     L.push('');
     L.push(observationAttachment.markdown);
   }
@@ -1355,6 +1355,7 @@ function activateTab(name, focusTab) {
   if (name === 'case') renderCase();
   if (name === 'study') renderStudy();
   if (name === 'observation') renderObservation();
+  if (name === 'run') renderRun();
   if (name === 'change') renderChange();
   if (name === 'sources') renderSources();
 }
@@ -1419,10 +1420,11 @@ function boot() {
   wireTabs();
   wireStudy();
   wireObservation();
+  wireRun();
   wireCase();
   renderOverview();
   new ResizeObserver(()=>requestAnimationFrame(drawGraphEdges)).observe($('overview-canvas'));
-  activateTab(getData().open_case ? 'case' : getData().open_observation ? 'observation' : getData().study_plan && !getData().context_case ? 'study' : 'overview', false);
+  activateTab(getData().open_run ? 'run' : getData().open_case ? 'case' : getData().open_observation ? 'observation' : getData().study_plan && !getData().context_case ? 'study' : 'overview', false);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

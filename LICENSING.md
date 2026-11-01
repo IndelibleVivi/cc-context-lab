@@ -12,7 +12,7 @@ copyright in their own contributions; this map does not assign their rights.
 | Material | Paths / rule | License |
 | --- | --- | --- |
 | Functional source, tools, tests and browser implementation | `*.py`, `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `*.css`, `*.html` under `context_lab/`, `scripts/`, `experiments/` and `workbench/`; `.gitignore` | [SUL-1.0](LICENSE) |
-| Machine-executed experiment inputs and plugin configuration | All `experiments/**/*.json`, including `experiments/continuity-cases.json`, decision cases, synthetic fixtures, `hooks/hooks.json`, and both `experiments/context-profile/.claude-plugin/plugin.json` and `experiments/daily-quiet/.claude-plugin/plugin.json` | [SUL-1.0](LICENSE) |
+| Machine-executed experiment inputs and plugin configuration | All `experiments/**/*.json` and `experiments/**/*.jsonl`, including `experiments/continuity-cases.json`, decision cases, synthetic fixtures, `hooks/hooks.json`, and both `experiments/context-profile/.claude-plugin/plugin.json` and `experiments/daily-quiet/.claude-plugin/plugin.json` | [SUL-1.0](LICENSE) |
 | Documentation, research prose and diagrams | Root Markdown files, `docs/**/*.md`, `experiments/**/*.md`, `workbench/README.md`, including diagrams authored in those documents | [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md) |
 | Research indexes and Atlas relationship model | Original selection, arrangement and analysis in `references/**/*.json` and `workbench/model.json` | [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md) |
 | Original executable examples embedded in documentation | Functional code and shell examples within the documentation above | [SUL-1.0](LICENSE); surrounding prose remains CC BY-NC-SA 4.0 |

@@ -4,7 +4,7 @@
 
 ## 生成与打开
 
-需要 Python 3.9+，仅使用标准库。生成过程不调用 CC、模型或上游网络：
+需要 Python 3.10+，仅使用标准库。生成过程不调用 CC、模型或上游网络：
 
 ```sh
 python3 scripts/build_context_atlas.py
@@ -22,7 +22,8 @@ python3 scripts/build_context_atlas.py
 - **回放**：选择合成情境、trigger、placement 与 history，点击实际 wake 查看 current input、历史、排除原因和轮后 scripted results。主聊天的活跃窗口与一轮执行的 busy 窗口分别显示。
 - **对照研究**：固定同一合成场景的 A/B 条件，逐来源检查 current/history/excluded/轮后产生，沿 constituent ID 查机会的跳过、延后与合并。保存完整 snapshot，导出报告或把研究固定带入 change brief。
 - **研究案例**：固定同一问题、要求、合成 study 和多阶段 captures，按明确位置检查、查看失败/缺口，并作为完整 snapshot 带入 brief。
-- **请求观察**：检查明确导入的 Anthropic Messages / OpenAI Responses body；条件、section 原值、未知字段与未展开引用并列显示。同格式按 JSON pointer 比较，跨格式不自动配对。默认合成案例的阶段 captures 不是 runtime 实测。
+- **CC Run**：查看显式 selection 导入的请求及其 sidecar；未索引、响应关联冲突、partial scope 和未选引用保留，可重开固定 snapshot。
+- **请求观察**：检查明确导入的 Anthropic Messages / OpenAI Responses body；条件、section 原值、未知字段与未展开引用并列显示。单份观察独立可用；同格式按 JSON pointer 比较，跨格式不自动配对。只准备明确 pair，缺少比较时导出选择再重建。默认合成案例的阶段 captures 不是 runtime 实测。
 - **变更推演**：选择改动意图与范围，查看对应验证和原 runtime 交接问题，下载 Markdown brief。目标版本是填写的意图，不是实测结果。界面不执行展示的命令，不连接机器，不生成已激活配置。
 - **来源**：检索本仓库 catalog 的已读上游 revision、阅读范围与已记录的新 tip；不会自动把 fetched tip 提升为已读 pin 或兼容版本。
 
@@ -40,11 +41,21 @@ python3 scripts/build_context_atlas.py
 | [context_study.py](../experiments/companion-input/context_study.py) | plan 校验、canonical A/B 执行与逐来源观察投影；浏览器只展示投影，不模拟 |
 | [cases.py](../context_lab/cases.py) | self-contained case、阶段关联、body pointer 检查与报告，复用 study/observer；不是独立 tracing |
 | [observations.py](../context_lab/observations.py) | strict capture reader、证据层、原值投影与比较；浏览器使用同一 canonical 结果和原值文本 |
+| [cc_runs.py](../context_lab/cc_runs.py)、[cc_run_view.py](../context_lab/cc_run_view.py) | 显式 CC 材料导入、关联与sidecar；固定snapshot重开和私有查看 |
+| [io_policy.py](../context_lab/io_policy.py) | 各入口共享的 resolved 输出、每目标ignored/untracked检查；声明synthetic也不绕过 |
 | [artifacts.py](../context_lab/artifacts.py) | Atlas 与报告 CLI 共用的预编码、输出预检与逐文件 atomic replace |
 
 构建覆盖两个场景中全部六种 trigger × 三种 placement × 两种 history。所有合成选择和结果都是 fixture/规则的产物，不能用它们认定 CC/OpenClaw 或社区实现的自然行为。来源 archive、轮后结果和实际输入在回放中分开。
 
-变更 brief 是下一次操作的准备材料。原 runtime repo 继续拥有真实 renderer、selector、启动方式和恢复；默认投影不含原始请求或私人配置。真实 capture 仅通过显式 `--capture` 进入本机 ignored 或 Git 外的 HTML/data/brief，绝不进入版本库；生产配置与私人 continuity 也不由页面接管。未经对应授权不安装、不启动 scheduler、不向外部 channel 发消息。
+变更 brief 是下一次操作的准备材料。原 runtime repo 继续拥有真实 renderer、selector、启动方式和恢复；默认投影只含合成请求，不含真实私人配置。真实 capture 仅通过显式 `--capture` 进入本机 ignored 或 Git 外的 HTML/data/brief，绝不进入版本库；生产配置与私人 continuity 也不由页面接管。未经对应授权不安装、不启动 scheduler、不向外部 channel 发消息。
+
+## CC run 与明确比较
+
+完整的可运行例子与 selection 合同见 [CC runs](../docs/cc-runs.md)。`build_context_atlas.py --run run.json` 读取已导入的材料，或用 `--run cc-run-snapshot.json` 重开下载的固定包；不能与 `--case` / `--study` / `--capture` 混用。仅 importer 生成且 digest 匹配的同目录 captures 会被读取，原始日志引用不会被展开。
+
+默认 run/capture 页不生成比较，B 为“单份观察”。`--pair A B`（可重复）或 `--pairs comparison-pairs.json` 明确准备有向 pair。case 默认使用自身声明的 pairs；需要别的组合时下载固定 case 输入及 pair 选择重建。未准备 pair 的页面会清空旧原值并禁用结果导出。正文和 canonical 显示材料按 capture 共享，pair 不再保存另一份完整正文；浏览器用 Python片段展开所选导出。
+
+Run 页可按提交材料的 session/process/agent 分组；未知身份保持未记录，列表不冒充实际 tracing。选择请求后查看 scope、关联原记录，再跳到原值。run snapshot保存sidecar与captures；单份/pair导出携带sidecar和content losses，brief固定带入时的内容。原始response/index字节仍须保留源文件，snapshot不替代原始日志archive。
 
 ## 研究案例与重跑
 
@@ -84,6 +95,12 @@ python3 scripts/build_context_atlas.py --study plan.json --out .cache/context-st
 私人请求观察的导入、输出与交接见 [request observation](../docs/request-observation.md)。`--capture` 可重复，只投影明确文件；输出必须留 Git 外或 ignored 目录。生成的 HTML/data/report 含完整输入，private remote 也不上传。页面不自动读取真实 logs 或服务端历史。
 
 ```sh
+python3 scripts/test_io_policy.py
+python3 scripts/test_cc_runs.py
+python3 scripts/test_atlas_pairs.py
+python3 scripts/test_cc_run_view.py
+node --test scripts/test_run_ui.cjs
+node --check workbench/runs.js
 python3 scripts/test_build_context_atlas.py
 python3 scripts/test_context_study.py
 python3 scripts/test_context_cases.py

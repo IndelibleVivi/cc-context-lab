@@ -148,7 +148,7 @@ Responses 的 `previous_response_id`、`conversation` 或 `prompt` 引用会进�
 
 ## 在 Atlas 检查与交接
 
-默认 `python3 scripts/build_context_atlas.py` 展示合成 context case 及其阶段 captures；独立 `--capture` 页面仍只包含明确提供的文件，不混入默认案例。打开“请求观察”，选择 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
+默认 `python3 scripts/build_context_atlas.py` 展示合成 context case 及其阶段 captures；独立 `--capture` 页面仍只包含明确提供的文件，不混入默认案例。打开“请求观察”，先查看单份，或选择已明确准备的 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
 
 使用明确提供的材料：
 
@@ -158,9 +158,11 @@ python3 scripts/build_context_atlas.py \
   --out .cache/private-observation-atlas
 ```
 
-这时仅投影指定 capture，不混入默认示例；重复 capture_id 会拒绝。输出必须在 Git 外或 worktree 的 ignored 目录。页面、`data.json`、下载报告与 brief 都可能包含观察到的私人正文，即使 partial 或 remote private 也不能提交。界面、JSON/Markdown 和 brief 会显示 evidence scope；unobserved 行不冒充缺失或变化。原始 body 标题按 A、B 各自的 scope 显示，partial 一侧标“声明的部分 request body（不是完整请求）”，不影响另一侧保留“完整 body”标签。输出不是自动脱敏产品；synthetic fixtures 以外的材料不进入仓库默认投影。
+这时仅投影指定 capture，不混入默认示例；重复 capture_id 会拒绝。默认只做单份观察；用 `--pair <baseline-capture-id> <candidate-capture-id>`（可重复）或 `--pairs comparison-pairs.json` 明确准备比较，capture ID 以输入 manifest 为准。缺少 pair 时页面提供选择清单与重建命令，不把缺比较写成没有变化。case 默认只准备自身声明的比较，不做自比较。输出必须在 Git 外或 worktree 的 ignored 目录。页面、`data.json`、下载报告与 brief 都可能包含观察到的私人正文，即使 partial 或 remote private 也不能提交。界面、JSON/Markdown 和 brief 会显示 evidence scope；unobserved 行不冒充缺失或变化。原始 body 标题按 A、B 各自的 scope 显示，partial 一侧标“声明的部分 request body（不是完整请求）”，不影响另一侧保留“完整 body”标签。输出不是自动脱敏产品；synthetic fixtures 以外的材料不进入仓库默认投影。
 
-共享 writer 在任何写入前完成 render/UTF-8 编码和路径检查；拒绝 symlink、非普通文件、输入及输出 alias。每个文件先暂存再 atomic replace，已有 hardlink 不会改写另一链接的内容。多个文件不是一个事务，中途文件系统失败可能留下部分已更新的产物，命令返回错误。
+CC 的显式 request/response/index/event 可先走 [CC run importer](cc-runs.md)，再用 Atlas `--run` 查看；run 的单份/pair导出携带sidecar，完整snapshot可重开。独立capture仍按旧合同读取。
+
+共享 IO policy 在任何 mkdir/staging 前要求 resolved 输出目录及每个目标留在 Git 外或本 worktree 的 ignored且untracked位置；`synthetic_fixture` 也不能绕过。共享 writer 在任何写入前完成 render/UTF-8 编码和路径检查；拒绝 symlink、非普通文件、输入及输出 alias。每个文件先暂存再 atomic replace，已有 hardlink 不会改写另一链接的内容。多个文件不是一个事务，中途文件系统失败可能留下部分已更新的产物，命令返回错误。
 
 ## 验证与来源
 

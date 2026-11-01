@@ -20,6 +20,11 @@ def main():
     checks = [
         ('companion input and typed decision contracts', [sys.executable, 'experiments/companion-input/run_lab.py', '--check', '--no-run']),
         ('context study and CLI', [sys.executable, 'scripts/test_context_study.py']),
+        ('shared private output policy', [sys.executable, 'scripts/test_io_policy.py']),
+        ('explicit CC run importer', [sys.executable, 'scripts/test_cc_runs.py']),
+        ('selected Atlas comparison pairs', [sys.executable, 'scripts/test_atlas_pairs.py']),
+        ('CC run snapshots and Atlas', [sys.executable, 'scripts/test_cc_run_view.py']),
+        ('CC run presenter', [node, '--test', 'scripts/test_run_ui.cjs']),
         ('Atlas projection', [sys.executable, 'scripts/test_build_context_atlas.py']),
         ('context case and CLI', [sys.executable, 'scripts/test_context_cases.py']),
         ('case Atlas integration', [sys.executable, 'scripts/test_context_case_atlas.py']),
@@ -35,6 +40,7 @@ def main():
         ('Atlas script syntax', [node, '--check', 'workbench/app.js']),
         ('study script syntax', [node, '--check', 'workbench/study.js']),
         ('case script syntax', [node, '--check', 'workbench/cases.js']),
+        ('CC run script syntax', [node, '--check', 'workbench/runs.js']),
         ('observation script syntax', [node, '--check', 'workbench/observations.js']),
     ]
     for label, command in checks:

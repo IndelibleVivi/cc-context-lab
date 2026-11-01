@@ -36,7 +36,7 @@ class AtlasOutputSafetyTests(unittest.TestCase):
         with patch.object(sys, 'argv', argv), \
                 patch.object(atlas, 'build_data', return_value=deepcopy(synthetic_data() if data is None else data)), \
                 patch.object(atlas, 'compose_html', **kwargs), \
-                patch.object(atlas.subprocess, 'run', side_effect=AssertionError('unexpected Git/process call')), \
+                patch.object(atlas.io_policy.subprocess, 'run', side_effect=AssertionError('unexpected Git/process call')), \
                 redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             try:
                 result = atlas.main()
@@ -136,15 +136,13 @@ class AtlasOutputSafetyTests(unittest.TestCase):
             incoming.write_text('SYNTHETIC INPUT')
             argv = ['build_context_atlas.py', '--capture', str(incoming), '--out', str(out)]
             with patch.object(atlas, 'ROOT', root), patch.object(sys, 'argv', argv), \
-                    patch.object(atlas.subprocess, 'run') as check_ignore, \
+                    patch.object(atlas.io_policy, 'ensure_private_output', side_effect=ValueError('output must be Git-ignored')) as check_private, \
                     patch.object(atlas, 'build_data') as build, \
                     redirect_stderr(io.StringIO()):
-                check_ignore.return_value.returncode = 1
                 with self.assertRaises(SystemExit) as caught:
                     atlas.main()
                 self.assertEqual(caught.exception.code, 2)
-                check_ignore.assert_called_once()
-                self.assertEqual(check_ignore.call_args.args[0][:3], ['git', 'check-ignore', '--quiet'])
+                check_private.assert_called_once_with(out, root, targets=[out / 'data.json', out / 'index.html'])
                 build.assert_not_called()
             self.assertFalse(out.exists())
             self.assertEqual(incoming.read_text(), 'SYNTHETIC INPUT')
@@ -177,27 +175,22 @@ class AtlasOutputSafetyTests(unittest.TestCase):
             paths = [Path(directory) / name for name in ('A.json', 'B.json')]
             for destination, value in zip(paths, (capture, candidate)):
                 destination.write_text(json.dumps(value, ensure_ascii=False), encoding='utf-8')
-            data = atlas.build_request_observations(paths)
-        for aid, candidates in data['comparisons'].items():
-            for bid, comparison in candidates.items():
-                with self.subTest(baseline=aid, candidate=bid):
-                    self.assertEqual(json.loads(data['json_reports'][aid][bid]), comparison)
-                    self.assertIn('9007199254740993', data['json_reports'][aid][bid])
-                    self.assertEqual(data['reports'][aid][bid], atlas.request_observation.render_markdown(comparison))
-                    display = data['display_values'][aid][bid]
-                    self.assertEqual(len(display['sections']), len(comparison['sections']))
-                    for row, rendered in zip(comparison['sections'], display['sections']):
-                        for side in ('baseline', 'candidate'):
-                            expected = None if row[side] is None else row[side]['value']
-                            if expected is None or isinstance(expected, str):
-                                self.assertEqual(rendered[side], expected)
-                            else:
-                                self.assertEqual(json.loads(rendered[side]), expected)
-                    for side in ('baseline', 'candidate'):
-                        for destination, original in (('body', 'request_body'), ('parameters', 'request_parameters')):
-                            text = display['bodies'][side][destination]
-                            self.assertEqual(json.loads(text), comparison[side][original])
-                            self.assertIn('9007199254740993', text)
+            data = atlas.build_request_observations(paths, pairs=[('A', 'B')])
+        expected = atlas.request_observation.compare_observations(
+            atlas.request_observation.normalize_capture(capture), atlas.request_observation.normalize_capture(candidate))
+        exported = atlas.expand_observation_export(data, 'A', 'B')
+        self.assertEqual(json.loads(exported['json']), expected)
+        self.assertIn('9007199254740993', exported['json'])
+        self.assertEqual(exported['markdown'], atlas.request_observation.render_markdown(expected))
+        for side, cid in (('baseline', 'A'), ('candidate', 'B')):
+            display = data['display_values'][cid]
+            for row in expected[side]['sections']:
+                rendered = display['sections'][row['pointer']]
+                self.assertEqual(rendered if isinstance(row['value'], str) else json.loads(rendered), row['value'])
+            for destination, original in (('body', 'request_body'), ('parameters', 'request_parameters')):
+                text = display[destination]
+                self.assertEqual(json.loads(text), expected[side][original])
+                self.assertIn('9007199254740993', text)
 
 
 if __name__ == '__main__':

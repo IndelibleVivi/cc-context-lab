@@ -1,6 +1,6 @@
 # 愿景、能力结构与连续建设
 
-2026-10-25 校准并扩大范围为 Harness Context Engineering Lab；现有 slug 仍为 `cc-context-lab`。本文维护产品方向和阶段之间的关系；当前已证事实归 [current state](current-state.md)，各技术结论仍归专题与 `references/`。阶段描述不授予真实模型调用、安装或生产操作权限。
+2026-10-25 校准并扩大范围为 Harness Context Engineering Lab；2026-11-01 确认保留跨 harness 范围，当前先完成 CC 材料主线。现有 slug 仍为 `cc-context-lab`。本文维护产品方向和阶段之间的关系；当前已证事实归 [current state](current-state.md)，各技术结论仍归专题与 `references/`。阶段描述不授予真实模型调用、安装或生产操作权限。
 
 ## 为什么存在
 
@@ -63,3 +63,20 @@
 后续以具体场景扩展其他 wire reader 或原生事件接点，并让真实观察回到研究案例；不先造通用服务、安装器或自动生产控制层。
 
 2026-10-28 已进一步接成 [context case](context-cases.md)：同一问题/保留要求、可选 study snapshot、多阶段 captures、显式结构检查和比较均可保存、重跑与固定交接。它补上研究材料之间的关联，关联和阶段顺序仍是研究者声明；当前合成示例不升级为真实 runtime 生命周期证据。下一集成点继续是真实观察与自然使用回填。
+
+## CC 材料主线（2026-11-01）
+
+本轮把下一阶段研究中可复用的 IO、选择性比较与显式导入接到 canonical modules；不采用收回 CC 专属产品范围的建议。原 studies、两个 wire readers、case v1、完整个人化语境与原 runtime ownership 继续保留。独立导入成功只关闭离线材料边界，不关闭整条 programme。
+
+| 工作包 | 当前结果 | 仍需什么 |
+| --- | --- | --- |
+| P0 输出政策与范围 | 共享 IO policy 接入 inspector / case / Atlas / importer；所有具体目标检查 ignored/untracked；跨 harness 范围保留 | 不授予 native/生产操作 |
+| P1 选择性比较 | 单份观察独立可用；只算明确 pairs；case 默认自身 comparisons；共享 canonical 文本、缺 pair 重建、精确导出 | 大规模真实材料的实际使用证据 |
+| P2 CC run 材料链 | request/response/index/event 显式选材、关联冲突、target声明与content losses、sidecar、Atlas run、固定 snapshot 重开 | 实际目标 build 的显式原生日志格式验收；完整 target fingerprint 仍待发展 |
+| P3 共享机制索引与 Handbook | 规划中；既有 docs/references 继续拥有事实 | 稳定 claim IDs、机制/recipe 导航、共享校验与表格投影 |
+| P4 跨阶段关系与 receipts | 规划中；旧四类 pointer 检查保留 | 来源 identity、受限关系谓词、witnesses、scope-aware absence 与 adapter reachability |
+| P5 三套完整 recipes | owned core / 动态 state / compact-resume 的完整方向保留 | 固定输入、成功/失败/回退、native request/lifecycle 与独立行为证据 |
+| P6 用户路径 | Run 的查看、单份/pair、固定导出已接入现有 Atlas | recipe/claim/source/receipt 的联动入口，不能以当前 Run 页冒充完成 |
+| P7 升级复验 | 规划中；原只读 upstream checker 和 candidate checker 保留各自意义 | 两个固定 run/fingerprint 的影响分析、适用 claims/recipes、真实复验与 owner 恢复材料 |
+
+下一接点先建立主线使用到的共享机制/claim/recipe 依据，并把已有 case 的保留要求绑定到显式 run 和来源 identity。可以继续离线准备 source 与反例；native acquisition、模型任务、安装与原 runtime 接入另按相应授权进行。未知/未执行项继续 `NOT_ASSESSED`，不把历史报告、文档合同或合成通过升级为本轮真实验证。当前可运行链路见 [CC runs](cc-runs.md)。

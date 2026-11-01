@@ -36,6 +36,8 @@
               aria-controls="panel-study" aria-selected="false" tabindex="-1">对照研究</button>
       <button class="tab" role="tab" id="tab-observation" data-tab="observation"
               aria-controls="panel-observation" aria-selected="false" tabindex="-1">请求观察</button>
+      <button class="tab" role="tab" id="tab-run" data-tab="run"
+              aria-controls="panel-run" aria-selected="false" tabindex="-1">CC Run</button>
       <button class="tab" role="tab" id="tab-change" data-tab="change"
               aria-controls="panel-change" aria-selected="false" tabindex="-1">变更推演</button>
       <button class="tab" role="tab" id="tab-sources" data-tab="sources"
@@ -242,11 +244,29 @@
     <section class="study-export">
       <div><h3 class="subhead">带走这份观察</h3><p>报告携带原值与导入者声明的条件；如果你投影了私人 capture，这个页面和导出文件也含私人正文，应保留在本机。</p></div>
       <div class="study-export-actions">
-        <button type="button" class="btn btn--primary" id="observation-download-json">下载 comparison JSON</button>
+        <button type="button" class="btn btn--primary" id="observation-download-json">下载观察 JSON</button>
         <button type="button" class="btn" id="observation-download-markdown">下载观察 Markdown</button>
         <button type="button" class="btn" id="observation-to-brief">带入变更 brief →</button>
       </div>
       <p id="observation-status" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
+  <section class="panel" id="panel-run" role="tabpanel" aria-labelledby="tab-run" data-panel="run" tabindex="-1" hidden>
+    <div class="panel__head"><div class="panel__headtext">
+      <span class="section-kicker">CC RUN / EXPLICIT LOCAL EVIDENCE</span>
+      <h2 class="panel__title">一次运行，逐份核对请求与关联</h2>
+      <p class="panel__lede">按选定材料记录的 session / process / agent 查看。列表顺序只沿材料排列；关联、实际时序与 provider 交付分别判断。</p>
+    </div><span class="chip">本地材料 · 不启动 CC</span></div>
+    <p id="run-summary" class="study-axis-note" role="status"></p>
+    <details><summary>声明的 runtime / fingerprint 与观察条件</summary><pre id="run-fingerprint" class="observation-raw"></pre></details>
+    <div class="study-workspace">
+      <aside><h3 class="subhead">选定的 request artifacts</h3><div id="run-requests" class="study-source-list"></div></aside>
+      <section id="run-detail" class="observation-raw" aria-live="polite"></section>
+    </div>
+    <section class="study-export"><div><h3 class="subhead">固定材料与证据边界</h3><p>Snapshot 包含 sidecar、所选 captures 与关联缺口。请求观察导出也携带 run caveats；真实材料仅留本机。</p></div>
+      <div class="study-export-actions"><button id="run-download" type="button" class="btn">下载 run snapshot</button><button id="run-to-brief" type="button" class="btn btn--primary">将 run 带入 brief →</button></div>
+      <p id="run-status" class="field__note" role="status"></p>
     </section>
   </section>
 
@@ -354,6 +374,7 @@
 <!-- ATLAS_DATA -->
 <!-- ATLAS_STUDY_SCRIPT -->
 <!-- ATLAS_OBSERVATION_SCRIPT -->
+<!-- ATLAS_RUN_SCRIPT -->
 <!-- ATLAS_CASE_SCRIPT -->
 <!-- ATLAS_SCRIPT -->
 </body>

@@ -1,0 +1,110 @@
+{
+  "schema": "cc-run-research/1",
+  "observed_on": "2026-11-01",
+  "timezone": "Asia/Singapore",
+  "source_baseline": "fda9acb389f55487a506b6f06fcaccb5028ded5f",
+  "sources": [
+    {
+      "id": "cc.monitoring.body-files",
+      "url": "https://code.claude.com/docs/en/monitoring-usage#api-request-body-event",
+      "kind": "official_documentation",
+      "coverage": "request/response body events, file-mode index, redaction, per-process correlation; not whole-page or native-build validation",
+      "observed_on": "2026-11-01",
+      "claims": [
+        "file-mode index records successful responses, not every request attempt",
+        "thinking redaction still applies to logged bodies",
+        "event sequence is per process; documented index and request_body_id require 2.1.274 or later"
+      ],
+      "target_native_run": false
+    }
+  ],
+  "implementation": {
+    "selection_schemas": [
+      "cc-source-selection/1",
+      "cc-source-selection/2"
+    ],
+    "run_schemas": [
+      "cc-run-evidence/1",
+      "cc-run-evidence/2"
+    ],
+    "snapshot_schema": "cc-run-snapshot/1",
+    "selected_export_schema": "cc-run-observation-export/1",
+    "owners": [
+      "context_lab/cc_runs.py",
+      "context_lab/io_policy.py",
+      "context_lab/cc_run_view.py",
+      "context_lab/observations.py"
+    ],
+    "provenance": "project-authored engineering seed adapted to canonical modules; all committed fixtures are synthetic"
+  },
+  "verification": {
+    "kind": "authored_synthetic_offline",
+    "offline_gate": "python3 scripts/check_offline.py",
+    "offline_gate_exit": 0,
+    "cases": 285,
+    "js_syntax_checks": 5,
+    "importer_tests": 33,
+    "private_output_tests": 8,
+    "selected_pair_tests": 6,
+    "run_view_tests": 7,
+    "run_presenter_tests": 4,
+    "native_format_verified": false,
+    "provider_called": false,
+    "browser": {
+      "kind": "local_synthetic_UI_acceptance",
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "flows": [
+        "run list and unindexed/partial request",
+        "single observation and selected/missing pair",
+        "canonical JSON download with sidecar",
+        "frozen snapshot CLI reopen",
+        "actual brief snapshot extraction and replay",
+        "keyboard focus after selection"
+      ],
+      "page_overflow": false,
+      "console_warn_error": false,
+      "native_acquisition": false
+    }
+  },
+  "scaling": {
+    "surface": "request_observations JSON projection, not entire HTML or production performance",
+    "message_bytes_per_capture": 65536,
+    "counts": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "explicit_pairs": [
+      0,
+      1,
+      3,
+      7
+    ],
+    "projection_bytes": [
+      471985,
+      949127,
+      1903419,
+      3812003
+    ],
+    "selection": "directed adjacent pairs declared explicitly; no causal inference",
+    "baseline": {
+      "source_revision": "fda9acb389f55487a506b6f06fcaccb5028ded5f",
+      "captures": 8,
+      "pairs": 64,
+      "projection_bytes": 87253498,
+      "same_normalized_inputs": true,
+      "verification": "isolated authored function from pinned Git baseline, offline in memory"
+    }
+  },
+  "not_assessed": [
+    "new native CC acquisition or native-format acceptance",
+    "provider-rendered context or model behavior",
+    "actual compact/resume/child tracing",
+    "runtime installation or deployment",
+    "full RuntimeFingerprint and claim-dependent upgrade validation"
+  ]
+}

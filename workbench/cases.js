@@ -33,7 +33,9 @@ function renderCase(){
   report.comparisons.forEach(c=>{
     var row=el('div',{cls:'case-comparison'},[el('p',{text:c.id+' · '+c.baseline+' → '+c.candidate}),
       el('p',{cls:'field__note',text:c.comparison?(c.comparison.alignment==='cross_format_unaligned'?'跨格式不自动对齐':'同格式按位置比较')+'；条件变化：'+(c.comparison.runtime_changes.join('、')||'无'):'NOT_ASSESSED · 缺少比较一侧的 capture'})]);
-    var button=el('button',{cls:'btn',attrs:{type:'button'},text:'打开这组请求比较 →',on:{click:()=>openCaseComparison(c.id)}});button.disabled=!c.comparison;row.appendChild(button);comparisons.appendChild(row);
+    var aid=c.comparison?.baseline.capture_id,bid=c.comparison?.candidate.capture_id,pairs=observationData().comparisons;
+    var prepared=Object.hasOwn(pairs,aid)&&Object.hasOwn(pairs[aid],bid);
+    var button=el('button',{cls:'btn',attrs:{type:'button'},text:prepared?'打开这组请求比较 →':'此比较未准备 · 打开重建说明 →',on:{click:()=>openCaseComparison(c.id)}});button.disabled=!c.comparison;row.appendChild(button);comparisons.appendChild(row);
   });
   $('case-open-study').disabled=data.study_browser_safe===false;
   if(data.study_browser_safe===false)$('case-status').textContent='关联 study 含超出浏览器安全范围的整数，请使用 canonical case JSON 在 CLI 重跑，避免进入 study 编辑时丢失精度。';

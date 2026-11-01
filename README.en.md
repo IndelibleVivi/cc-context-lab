@@ -4,7 +4,21 @@
 
 Research, compare and maintain the sources, assembly and lifecycle of context in agent harnesses. Claude Code is the most deeply studied harness; the existing repository slug remains `cc-context-lab`. Long-running companion interaction is a primary use case, including an owned core, present context, automatic memory recall, autonomous turns, channels and continuity. Fewer tokens are not a substitute for better interaction.
 
-The repository currently provides a sourced research library, Context Atlas, reproducible synthetic A/B studies, local request observation, multi-stage context cases and CC-specific source candidates. The [project repository](https://github.com/IndelibleVivi/cc-context-lab) uses SUL-1.0 for original functional material and CC BY-NC-SA 4.0 for original research content; see the [licensing map](LICENSING.md). It is not a deployed context manager, complete persona/profile or fully verified context-stripping solution. See the [current evidence and gaps](docs/current-state.md).
+The repository currently provides a sourced research library, Context Atlas, reproducible synthetic A/B studies, local request observation, explicit CC run imports and frozen snapshots, multi-stage context cases and CC-specific source candidates. The [project repository](https://github.com/IndelibleVivi/cc-context-lab) uses SUL-1.0 for original functional material and CC BY-NC-SA 4.0 for original research content; see the [licensing map](LICENSING.md). It is not a deployed context manager, complete persona/profile or fully verified context-stripping solution. See the [current evidence and gaps](docs/current-state.md).
+
+## Import an explicit CC run
+
+The current development priority is the CC evidence path; the cross-harness scope and existing readers remain. This synthetic example needs Python 3.10+ and Node.js, with no installation or model calls:
+
+```sh
+python3 scripts/import_cc_run.py --selection experiments/cc-runs/fixtures/selection.json --out .cache/cc-run-example
+python3 scripts/build_context_atlas.py --run .cache/cc-run-example/run.json \
+  --pair synthetic-file-mode:request-main synthetic-file-mode:request-partial --out .cache/cc-run-atlas
+```
+
+Open the generated Atlas, select **CC Run**, and inspect its associated, unindexed and partial requests. The importer reads only selected request/response/index/event files. It keeps ambiguous links and content losses; it never discovers logs or follows recorded paths. Single-request viewing is independent of comparison. Only explicit directed pairs are prepared; an unavailable pair shows a rebuild selection rather than an empty diff.
+
+Download a frozen run snapshot to reopen with `--run`. Observation exports and fixed briefs retain the run sidecar and caveats. All concrete output targets inside the worktree must be ignored and untracked, including outputs declared synthetic. This is an offline evidence workflow, not newly verified native logging, lifecycle behavior or provider acceptance. See [CC run contracts and usage](docs/cc-runs.md).
 
 ## Run the daily quiet comparison
 
@@ -28,6 +42,7 @@ The case exercises baseline, candidate, changed native text and a partial system
 | --- | --- |
 | Understand source, trust and runtime-owner boundaries | [Chinese README architecture](README.md#架构与边界), [Context DevOps](docs/context-devops.md) |
 | Reproduce multi-stage context checks | [Context cases](docs/context-cases.md) |
+| Import selected CC request / response / index / event material and reopen snapshots | [CC runs](docs/cc-runs.md) |
 | Inspect explicit Anthropic Messages / OpenAI Responses captures | [Request observation](docs/request-observation.md) |
 | Browse sources, cases, comparisons and fixed change briefs | [Context Atlas](workbench/README.md) |
 | Compare current/history, placement and source selection | [Context studies](experiments/companion-input/STUDIES.md) |
@@ -37,7 +52,7 @@ The case exercises baseline, candidate, changed native text and a partial system
 
 The observer preserves explicit request values and unknown parameters. The wire format does not imply support for every harness using it. Same-format comparisons align JSON pointers; cross-format comparisons do not infer semantic equivalence. Origin and lifecycle remain `unknown`. Partial captures must declare the observed top-level fields; unobserved history is unknown rather than empty, absent or deleted. Unexpanded server-side references remain gaps. Imported manifests are declarations, not independently verified runtime provenance.
 
-Build the default synthetic Atlas with `python3 scripts/build_context_atlas.py`. Import real local captures only through explicit `--capture` inputs and keep generated output outside Git or in ignored paths. The builder does not discover logs or follow external references. Its downloadable brief prepares evidence; it grants no installation, deployment or messaging authority.
+Build the default synthetic Atlas with `python3 scripts/build_context_atlas.py`. Import real local captures only through explicit `--capture` or `--run` inputs and keep generated output outside Git or in ignored paths. The builder does not discover logs or follow external references. Its downloadable brief prepares evidence; it grants no installation, deployment or messaging authority.
 
 ## Verification and operational boundary
 

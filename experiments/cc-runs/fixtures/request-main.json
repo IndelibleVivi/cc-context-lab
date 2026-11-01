@@ -1,0 +1,9 @@
+{
+  "model": "synthetic-claude-model",
+  "max_tokens": 64,
+  "system": [{"type": "text", "text": "SYNTHETIC OWNED CORE"}],
+  "messages": [{"role": "user", "content": "Synthetic request: report the current fixture state."}],
+  "tools": [{"name": "fixture_read", "description": "Synthetic read-only fixture tool.", "input_schema": {"type": "object", "properties": {"key": {"type": "string"}}, "required": ["key"]}}],
+  "synthetic_large_integer": 9007199254740993,
+  "synthetic_explicit_null": null
+}

@@ -2,8 +2,8 @@
 """Run one self-contained context case; no tracing, model or network calls.
 
 Case and report bodies may contain private data. Output must be outside the
-Git worktree or in an ignored directory inside it. The only subprocess is a
-read-only `git check-ignore` privacy check.
+Git worktree or in an ignored directory inside it. Privacy checks are
+read-only Git subprocesses shared with the request observer and run importer.
 """
 
 import argparse
@@ -20,22 +20,8 @@ sys.path.insert(0, str(ROOT))
 from context_lab.artifacts import paths_alias, write_reports
 from context_lab.case_demo import make_demo_case
 from context_lab.cases import render_markdown, run_case
+from context_lab.io_policy import ensure_private_output
 from context_lab.observations import parse_capture_json
-
-
-def ensure_private_output(output_dir):
-    """Require an external path or a Git-ignored worktree path."""
-    try:
-        relative = output_dir.resolve().relative_to(ROOT)
-    except ValueError:
-        return
-    checked = subprocess.run(
-        ['git', 'check-ignore', '--quiet', '--', str(relative)],
-        cwd=ROOT, capture_output=True, text=True)
-    if checked.returncode != 0:
-        raise ValueError(
-            'case output inside the worktree must be Git-ignored; '
-            'use .cache/ or an external directory')
 
 
 def output_paths(input_path, output_dir):
@@ -89,7 +75,7 @@ def main(argv=None):
     if args.demo == (args.case is not None):
         parser.error('provide exactly one of case or --demo')
     try:
-        ensure_private_output(args.out)
+        ensure_private_output(args.out, ROOT)
         targets = output_paths(args.case, args.out)
         if args.case is not None:
             if not args.case.is_file():
@@ -129,6 +115,7 @@ def main(argv=None):
         if args.case is None or not paths_alias(
                 args.case, targets['case.json']):
             contents.insert(0, (targets['case.json'], serialized_case))
+        ensure_private_output(args.out, ROOT, [target for target, _ in contents])
         write_reports(contents, args.out)
     except (OSError, ValueError, TypeError, KeyError, RecursionError) as exc:
         print(f'{parser.prog}: error: {exc}', file=sys.stderr)

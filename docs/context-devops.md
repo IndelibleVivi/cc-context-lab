@@ -8,6 +8,8 @@
 
 [Context Atlas](../workbench/README.md) 是这些材料的本地交互研究入口。它把 canonical references、机制关系和同一引擎的合成回放组合起来；对照研究固定同一材料的 A/B，逐来源查看 current/history/excluded/轮后产生，能保存、重跑并把实际观察带入变更 brief。图表示研究关系，不表示已部署的服务架构。现有专题继续拥有技术结论，原 runtime 的 renderer/runbook 继续拥有配置和接入。愿景与阶段连接见 [development programme](development-programme.md)。
 
+2026-11-01 的 CC 主线已接入 [显式 run 材料链](cc-runs.md)：从选定 request/response/index/event 到 captures/sidecar、单份/指定 pair、固定 snapshot与brief。该入口不采集或执行runtime；它保留未索引、关联矛盾、content losses和声明的target条件。跨 harness 范围保留，当前只优先打通 CC；共享机制/recipe/升级复验仍按programme标明未完成部分。
+
 ## 一个持续可用的研究对象
 
 比较机制时，至少让读者找到以下事实；这是一套阅读关系，不强制另建生产数据库：

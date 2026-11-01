@@ -1,0 +1,54 @@
+{
+  "schema": "cc-source-selection/1",
+  "run_id": "synthetic-file-mode",
+  "evidence_kind": "synthetic_fixture",
+  "runtime": {
+    "harness": "Claude Code",
+    "version": "synthetic-build",
+    "entrypoint": "synthetic-file-mode-fixture",
+    "mode": "synthetic",
+    "candidate": "synthetic-owned-core",
+    "session_path": null
+  },
+  "sources": [
+    {
+      "id": "request-main",
+      "kind": "request",
+      "path": "request-main.json",
+      "sha256": "3c49b8a6afe851836412db1fecf2bdf5190405bb6c3c3a67a9bd2b7f4e658feb",
+      "recorded_path": "synthetic-recorded/request-001.json"
+    },
+    {
+      "id": "request-unindexed",
+      "kind": "request",
+      "path": "request-unindexed.json",
+      "sha256": "de2ba2c6a3f3de1d09b1f99f6ee84c155c6c5b3357342bb8f4b858cdd36e2b40"
+    },
+    {
+      "id": "request-partial",
+      "kind": "request",
+      "path": "request-partial.json",
+      "sha256": "b70a16481880dbd2fd9ffcbec1a5f2afeb0315256d9fc677d9795de5b9dbdc46",
+      "evidence_scope": {
+        "request_body": "partial",
+        "observed_fields": [
+          "system",
+          "tools"
+        ]
+      }
+    },
+    {
+      "id": "response-main",
+      "kind": "response",
+      "path": "response-main.json",
+      "sha256": "ec87cdd9caf278da44f3bed67cda760cd5681bd5b9ffc4b4514218a1157f35a4",
+      "recorded_path": "synthetic-recorded/response-001.json"
+    },
+    {
+      "id": "index",
+      "kind": "index",
+      "path": "index.jsonl",
+      "sha256": "ad6a2acfcc20f2d33c6ded8c71299a6ec0846136360d46be4609aed6a4fbe33b"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "synthetic-message-001",
+  "type": "message",
+  "role": "assistant",
+  "model": "synthetic-claude-model",
+  "content": [{"type": "text", "text": "This entire response file is a fixture."}],
+  "stop_reason": "end_turn",
+  "usage": {"input_tokens": 1, "output_tokens": 1}
+}

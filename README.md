@@ -10,9 +10,9 @@
 
 长期用途是为受管 runtime 的 DevOps 提供连续研究依据：看清版本与输入、比较机制、定位升级影响，并把具体配置变更交回原项目验证和接入。完整用途见 [Context DevOps](docs/context-devops.md)。
 
-整体方向与连续建设阶段见 [development programme](docs/development-programme.md)：以具体 context 变更为单位，把研究、可复现对照、目标入口观察、原 runtime 接入与自然使用回填连起来。当前先贯通离线对照，不用合成结果替代实际请求或相处体验。
+整体方向与连续建设阶段见 [development programme](docs/development-programme.md)：以具体 context 变更为单位，把研究、可复现对照、目标入口观察、原 runtime 接入与自然使用回填连起来。当前贯通离线对照与显式材料链，不用合成结果替代实际请求或相处体验。
 
-目前交付是**有出处的研究库、Context Atlas、可复现 A/B 实验、本地请求观察与比较、贯通多阶段输入的 context case，以及 CC-specific source candidate**。观察器能保真读取 Anthropic Messages / OpenAI Responses body；这不是对使用这些格式的所有 harness 提供适配或兼容承诺。尚未提供可直接部署的 context manager/persona/profile 或经真实请求验证的完整剥离方案。当前证据见 [current state](docs/current-state.md)。
+目前交付是**有出处的研究库、Context Atlas、可复现 A/B 实验、本地请求观察与比较、显式 CC run 导入与固定 snapshot、贯通多阶段输入的 context case，以及 CC-specific source candidate**。观察器能保真读取 Anthropic Messages / OpenAI Responses body；这不是对使用这些格式的所有 harness 提供适配或兼容承诺。尚未提供可直接部署的 context manager/persona/profile 或经真实请求验证的完整剥离方案。当前证据见 [current state](docs/current-state.md)。
 
 ## 架构与边界
 
@@ -22,10 +22,12 @@ flowchart TB
     REF["来源与版本<br/>references"]
     FIX["合成情境与假设<br/>fixtures"]
     CAP["本地 capture<br/>仅显式导入"]
+    RAW["选定的 CC 材料<br/>request / response / index / event"]
   end
   subgraph LAB["Lab：可复现研究与观察"]
     ENGINE["情境实验<br/>scenarios / A–B"]
     OBS["请求观察<br/>observations.py"]
+    RUN["CC run 导入<br/>关联、scope 与缺口"]
     CASE["Context case<br/>阶段与检查"]
     ATLAS["Context Atlas<br/>比较与保存"]
     CC["CC-specific candidate<br/>Mods / offline"]
@@ -34,6 +36,9 @@ flowchart TB
   OWNER["原 runtime owner<br/>接入与恢复"]
   FIX --> ENGINE
   CAP --> OBS
+  RAW --> RUN
+  RUN -->|"生成 captures"| OBS
+  RUN -->|"sidecar 与固定 snapshot"| ATLAS
   ENGINE -->|"合成研究"| CASE
   OBS -->|"阶段输入"| CASE
   CASE -->|"原值、检查与缺口"| ATLAS
@@ -57,6 +62,7 @@ flowchart TB
 | 围绕同一问题重跑多阶段输入、检查保留条件与缺口 | [Context case](docs/context-cases.md) |
 | 交互查看全景、合成回放、来源与配置变更准备 | [Context Atlas](workbench/README.md) |
 | 固定同一材料，比较 A/B 的当下、历史与来源轨迹并重跑 | [Context study](experiments/companion-input/STUDIES.md)、[Atlas 对照研究](workbench/README.md#对照研究与重跑) |
+| 导入明确选定的 CC request / response / index / event，保留关联并重开固定材料 | [CC runs](docs/cc-runs.md) |
 | 检查本地 request 的 instructions/messages/tools、格式与条件差异 | [Request observation](docs/request-observation.md)、[通用观察模块](context_lab/observations.py) |
 | 理解伴侣语境中的心跳、ambient、环境 hooks、自动召回与输入头尾 | [Companion context](docs/companion-context.md) |
 | 比较心跳节律、事件、自配速与醒来时的输入包 | [心跳的不同跳法](docs/heartbeat-patterns.md)、[离线实验](experiments/companion-input/README.md) |
@@ -82,6 +88,18 @@ flowchart TB
 | 比较心跳、定时任务、入站消息和外部交付 | [Heartbeat / channels](docs/heartbeat-and-channels.md) |
 
 从伴侣交互出发先读 companion context；定位 CC 输入面再读 context map，把 official controls 与对应 source dossier 并排看。官方合同、社区实际实现和目标版本实测分别提供证据。
+
+## 显式 CC run 的材料路径
+
+先把选定文件导入为旧 reader 可读的 captures 与 run sidecar，再进入 Atlas。下面只使用合成材料：
+
+```sh
+python3 scripts/import_cc_run.py --selection experiments/cc-runs/fixtures/selection.json --out .cache/cc-run-example
+python3 scripts/build_context_atlas.py --run .cache/cc-run-example/run.json \
+  --pair synthetic-file-mode:request-main synthetic-file-mode:request-partial --out .cache/cc-run-atlas
+```
+
+打开生成页的 CC Run，查看已关联、未索引和 partial requests，再选择单份观察或明确 pair。默认不生成全组合比较。缺少某组比较时可下载选择并重建；run snapshot 可以重新打开，JSON/Markdown 与 brief 保留 sidecar 的损失和证据边界。完整操作、selection 合同与错误含义见 [CC runs](docs/cc-runs.md)。这是已实现的离线材料链，native log 格式、实际生命周期与模型行为仍未验收；本轮继续优先 CC，保留跨 harness 范围。
 
 ## 日常安静的可迁移对照
 

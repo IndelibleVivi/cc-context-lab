@@ -2,6 +2,20 @@
 
 更新：2026-11-01（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，[现有仓库](https://github.com/IndelibleVivi/cc-context-lab)已公开，provider与匿名HTTPS读取均已核对。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
 
+## 2026-11-01 CC run 的离线材料链
+
+本轮优先完成 CC 主线，保留跨 harness 的产品范围与现有名字。[CC runs](cc-runs.md) 已贯通明确 selection → 原值 captures / run sidecar → Atlas Run → 单份 / 指定 pair → 固定 snapshot 与 brief。新增 source 采用同一 reader/writer，不启动 CC、发现 logs 或打开材料中的引用。
+
+统一输出政策已收敛到 `context_lab/io_policy.py`，覆盖 inspector、case runner、Atlas 和 importer；mkdir/staging 前核 resolved 目录与每个目标。仓库内必须 ignored 且未 tracked，synthetic 声明不能绕过；macOS 标准临时目录 alias 可用，自定义 symlink 路由拒绝。原值、坏输入/编码保留旧报告、alias 与逐文件 atomic replace 继续验证。
+
+Atlas 不再默认为所有 captures（含自身）生成 n² 比较。独立 run/captures 默认单份，case 默认只准备声明的比较，CLI 可选择唯一有向 pair；缺少某 pair 会清空旧证据并给出固定输入/选择重建。8 份各含64 KiB合成消息、7组明确相邻pair的观察投影为3,812,003 bytes；同一输入在fda9acb基线的旧函数中复现全组合64组、87,253,498 bytes。测的是观察投影，不能当成真实会话性能或整个HTML体积。
+
+Importer 保留未索引请求、重复/冲突关联、响应材料存在性、未知index原值、response-only、event-only及各process自己的sequence；不按时间或相似内容猜retry/child。v2可声明target与content losses，fingerprint仍是操作员字符串，不等于完整target-generated tuple。完整/partial scope、大整数、null与缺失保留。sidecar随请求导出，snapshot固定captures，可重开且核digest/identity/runtime/scope。旧v1入口兼容。
+
+本轮统一 `python3 scripts/check_offline.py` exit 0：285项Python/Node cases与5项JS syntax。独立review发现的prototype-key pair lookup、study重建丢输入模式、run brief漏captures均已用反例修复；完整run附件与selected observation导出分别保留所需范围。原生日志format、实际compact/resume/child、provider呈现和模型行为仍未验收。实际浏览器核对了1440×1000与390×844的Run/单份/partial比较、未准备pair、键盘焦点和下载；两种宽度无页面横向溢出，console未见warn/error。下载的run snapshot经CLI重开原值相同，实际brief中提取的完整snapshot也可重放，README架构图已渲染检查。来源与合成检查条件见[CC run evidence](../references/cc-runs.json)。
+
+当前完成P0–P2离线材料链及Run查看/导出；P3–P7的共享机制索引、跨阶段谓词/receipt、完整recipes与升级复验未由本轮冒充完成，准确状态见[programme](development-programme.md#cc-材料主线2026-11-01)。
+
 ## 2026-11-01 日常 presentation 与部分证据对照
 
 新增 [Daily quiet](../experiments/daily-quiet/README.md)：canonical纯规则、standalone Mods接线、13项Node合成检查、三项native test-kit fixture及可重跑case。来源为已审原生话术片段的digest与project-authored变换，不收录原厂全文或私人context。规则不按CC版本开关；未知片段、新功能事实与schema保留，严格恢复资格继续由runtime owner独立管理。
@@ -10,7 +24,7 @@ Linux CC2.1.314/2.1.316分别通过native validation（含catalog warnings）和
 
 合成case真实调用纯规则与既有case引擎：7项结构要求PASS，未知history、真实resume、模型体验和交付4项NOT_ASSESSED；没有整体readiness结论。新增system/tools-only阶段，只声明这两个顶层字段，不伪造messages。通用capture可选`evidence_scope`，旧完整v1仍兼容；未知字段和partial body root不评估，比较区分known absence与null，跨格式也不把未知写成删除。报告、Atlas与下载都保留scope。
 
-本轮`python3 scripts/check_offline.py`通过224项顶层/Node cases与四项JS syntax；Daily quiet合成case经CLI与Atlas重建，0项结构失败。独立review的四项partial边界已修复并复核。本节不声称provider请求或自然相处验收。受管消费者的安装与运行状态由原runtime独立维护，不作为本Lab合成结果。公开候选只包含authored source、synthetic fixtures和public-safe evidence。
+Daily quiet阶段`python3 scripts/check_offline.py`通过224项顶层/Node cases与四项JS syntax；Daily quiet合成case经CLI与Atlas重建，0项结构失败。独立review的四项partial边界已修复并复核。本节不声称provider请求或自然相处验收。受管消费者的安装与运行状态由原runtime独立维护，不作为本Lab合成结果。公开候选只包含authored source、synthetic fixtures和public-safe evidence。
 
 实际浏览器已核对partial阶段、messages为unobserved的比较、A完整/B部分body标题；下载JSON与同次canonical比较相等。1440×1000/390×844无页面横向溢出，console未见warn/error。英文README是同步入口，中文README保留完整阅读地图。
 
@@ -26,15 +40,16 @@ Linux CC2.1.314/2.1.316分别通过native validation（含catalog warnings）和
 | --- | --- |
 | [研究库与版本依据](research-evidence.md) | 十六项公开上游、官方合同、逐项提醒映射和有界 source 阅读；日期/版本/覆盖分开记录，不自动升级 pin |
 | [可复现 A/B 研究](../experiments/companion-input/STUDIES.md) | 固定完整合成 fixture snapshot，比较 trigger/placement/history，CLI 重跑、逐来源 current/history/排除/轮后轨迹、保存/恢复与固定 brief 附件；复用 canonical run_session |
+| [CC run 材料链](cc-runs.md) | 明确选材、保真capture/sidecar、关联冲突、content losses、Run查看与固定snapshot；本轮纯合成离线验收 |
 | [本地请求观察](request-observation.md) | Anthropic Messages / OpenAI Responses 的 strict capture、完整或显式partial body/section原值与未知参数、scope-aware条件/位置比较、CLI和Atlas请求观察视图、JSON/Markdown与固定brief附件；默认只含合成示例 |
 | [贯通阶段的 context case](context-cases.md) | 固定同一个问题/要求、合成 study snapshot、内嵌多阶段 captures 与显式比较；CLI 重跑、局部结构检查、失败/未评估、完整报告与固定 brief，阶段关联由研究者声明 |
 | [CC candidate 与升级检查](maintenance.md#检查指定-cc-版本的-candidate) | 可审阅 source 和隔离的官方 offline checker；既往 2.1.289 验证、types 与一次 composition 观察保留 10/05 条件，本轮没有重跑 binary 或 runtime probe |
 
-通用观察器按 wire format 读取，不承诺所有使用这些格式的 harness 兼容。同格式按 JSON pointer 比较位置，跨格式不自动配对。origin/lifecycle 保持 unknown，服务端历史/prompt 引用不展开；captured_request 是导入者声明，模型使用和外部交付仍为 NOT_ASSESSED。真实 capture 只通过显式 `--capture` 进入本机 ignored 或 Git 外的产物，不扫描 logs，也不进入 private remote。
+通用观察器按 wire format 读取，不承诺所有使用这些格式的 harness 兼容。同格式按 JSON pointer 比较位置，跨格式不自动配对。origin/lifecycle 保持 unknown，服务端历史/prompt 引用不展开；captured_request 是导入者声明，模型使用和外部交付仍为 NOT_ASSESSED。真实 capture 只通过显式 `--capture` 或 `--run` 进入本机 ignored 或 Git 外的产物，不扫描 logs，也不进入 private remote。
 
 ## 本轮验证与可靠性
 
-10/28 `python3 scripts/check_offline.py`的197项结果是此前snapshot；11/01当前224项结果见上节。既有行为继续由统一gate覆盖，native CC检查独立记录，不混入offline总数。此前版本证据保留原观察日期。
+10/28 `python3 scripts/check_offline.py`的197项、11/01 Daily quiet阶段的224项是此前snapshot；当前CC run阶段285项结果见首节。既有行为继续由统一gate覆盖，native CC检查独立记录，不混入offline总数。此前版本证据保留原观察日期。
 
 case 的 pointer 检查分开 present / 明确的最终缺失 / 遍历阻断；null 与缺失不同，错索引、缺祖先或缺 capture 不给 absence 假阳性。字面的 `#` / `*`、`~0/~1`、纯空白子串和极大数组索引有回归。原值与报告沿用 Python canonical 文本；不安全整数不会进入关联 study 的启动恢复、case 恢复按钮或可编辑 scenario registry；普通 study 视图会明确显示独立情境提示。报告使用随 payload 调整的 code fence，保留原始 backticks。输入/输出 alias、坏输入、输出限制和旧报告保留继续受共享 writer 保护。
 

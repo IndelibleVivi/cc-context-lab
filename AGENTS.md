@@ -13,9 +13,12 @@
 - workbench/ 拥有研究视图和人工关系模型；不覆盖 docs/references 的技术证据。scripts/build_context_atlas.py 从 canonical references 与 companion-input 引擎生成忽略的 .cache/context-atlas/；不手改派生数据，不复制第二套引擎。Atlas 导出的 brief 只准备变更，不授予运行或部署权限。
 - `experiments/companion-input/context_study.py` 拥有离线 A/B plan 校验、canonical 执行和逐来源观察投影；`scripts/run_context_study.py` 是重跑入口。plan 固定完整合成 fixture snapshot，不能按同名情境静默换材料。Atlas 展示同一投影；多轴比较不写单因果结论，current/history/excluded/轮后产生分别保留。整体 programme 见 `docs/development-programme.md`。
 - `context_lab/cases.py` 拥有 self-contained case 的阶段/要求/检查与报告；只检查显式 request body 的位置，模型行为与交付不自动通过。study snapshot 仍交 canonical study runner；阶段关联由研究者声明，不冒充真实 tracing。`--case` 同样受私人输出和输入保护约束。
-- `context_lab/observations.py` 拥有跨 harness 的 capture 合同、strict JSON reader、保真结构投影和位置比较；wire format 不等于 harness 全链路支持。导入者的 captured_request 声明不升级为独立观察，origin/lifecycle 保持 unknown。`context_lab/artifacts.py` 是 Atlas 与两个报告 CLI 的本地写入 owner：先完整编码与预检，再暂存并逐文件 atomic replace，不是多文件事务。
+- `context_lab/observations.py` 拥有跨 harness 的 capture 合同、strict JSON reader、保真结构投影和位置比较；wire format 不等于 harness 全链路支持。导入者的 captured_request 声明不升级为独立观察，origin/lifecycle 保持 unknown。`context_lab/artifacts.py` 是 Atlas、报告 CLI 与 CC importer 的本地写入 owner：先完整编码与预检，再暂存并逐文件 atomic replace，不是多文件事务。
+- `context_lab/cc_runs.py` 拥有显式 CC selection、原始材料校验和 run sidecar；`context_lab/cc_run_view.py` 只读取该 sidecar 生成的同目录 capture 或固定 snapshot 并核 digest/identity/runtime/scope。index、event 和 body_ref 中的路径/URL不打开，不按相似正文或时间猜 retry、child 或全局时序。
+- `context_lab/io_policy.py` 统一 inspector、case runner、Atlas 与 CC importer 的私人输出政策，mkdir/staging 前核 resolved 目录及每个目标；仓库内必须 ignored 且未 tracked，`synthetic_fixture` 不能绕过。writer 继续拥有逐文件 atomic replace，不是多文件事务。
+- Atlas 的 request projection 默认不做全组合或自比较；case 使用显式 comparisons，独立 run/captures 仅准备 `--pair`/`--pairs`。pair 引用共享的 Python canonical 文本，JS只拼接导出、不重算比较或重编码原值。缺 pair 明示未准备并提供固定输入/选择重建。run caveats 随单份、pair、snapshot与brief传递。
 - partial capture 必须通过 `evidence_scope` 明确声明已观察的顶层字段并覆盖所有 body keys；未观察字段不补空、不判断 absence，partial body root 不评估。完整 v1 capture 保持兼容；比较与下载保留每侧 scope，known absence 与显式 null 分开。
-- Atlas 默认只读合成 case / capture fixtures；仅 `--capture` 明确提供的文件可进入私人观察页，不自动发现 logs、不跟随 body_ref/URL/服务端引用。私人 capture 输出限 Git 外或 worktree 的 ignored 路径。显示和下载用 Python canonical 字符串，不将原值经过 JS Number 再序列化。
+- Atlas 默认只读合成 case / capture fixtures；仅 `--capture` 明确提供的文件或 `--run` 明确选定的已导入包可进入私人观察页，不自动发现 logs、不跟随 body_ref/URL/服务端引用。私人 capture 输出限 Git 外或 worktree 的 ignored 路径。显示和下载用 Python canonical 字符串，不将原值经过 JS Number 再序列化。
 - Forge / Swap 按实际操作定义；会话续接、Memory curation 与数据库回滚分开。历史继承不产生新授权或独立确认。
 - 心跳、定时唤醒、thread 状态、context 保留和 external channels 属研究范围；liveness、模型 turn、外部交付与历史清理分别验收，研究不授权启用 scheduler 或发送消息。
 - 伴侣语境中的自主轮次、ambient/present state、时间/天气/location hooks、channel/bridge 输入头尾与非主模型主动调用的记忆召回都属 context 研究。不要自动窄化为工程任务调度、系统提示词裁剪或 Mods 单一路径；外部 Memory/state 的内部 authority 仍归原项目。
@@ -43,6 +46,8 @@ Daily quiet 的纯规则测试为 `node --test experiments/daily-quiet/tests/rul
 Atlas 的生成/接线检查为 `python3 scripts/test_build_context_atlas.py`，JS syntax 为 `node --check workbench/app.js`；界面改动须打开生成页核主路径和响应布局，不能以构建代替。
 对照研究验证为 `python3 scripts/test_context_study.py`、`node --check workbench/study.js` 与 `node --test scripts/test_study_ui.cjs`；保存/恢复、fixture 漂移拒绝、来源历史与轮后结果、带入 brief 的固定附件和桌面/窄屏使用需核对。`build_context_atlas.py --study plan.json` 只投影 plan 的 snapshot，不修改源 fixture，不执行 plan 中的命令。
 case 验证为 `python3 scripts/test_context_cases.py`、`python3 scripts/test_context_case_atlas.py`、`node --test scripts/test_case_ui.cjs` 与 `node --check workbench/cases.js`，统一入口包含它们。输入原值、无检查不通过、缺材料/非法 pointer 不通过 absence、显式阶段关系、固定附件与私人输出都需验证。
+CC run / IO / 选择性投影验证为 `python3 scripts/test_cc_runs.py`、`python3 scripts/test_io_policy.py`、`python3 scripts/test_atlas_pairs.py`、`python3 scripts/test_cc_run_view.py`、`node --test scripts/test_run_ui.cjs` 与 `node --check workbench/runs.js`，均纳入统一 gate；真实 native 格式仍需明确材料独立验收。
+
 请求观察验证为 `python3 scripts/test_context_observations.py`、`python3 scripts/test_atlas_output_safety.py`、`node --test scripts/test_observation_ui.cjs` 和 `node --check workbench/observations.js`，统一入口须包含它们。原值、证据层、跨格式不对齐、大整数与异常输出保留都需保护；界面改动仍要浏览器验收。README 的 Mermaid block 是架构图 source，临时渲染留 cache，不引入运行时 Mermaid 依赖。
 `python3 experiments/companion-input/run_lab.py --check` 是自主轮次输入包的纯离线验证入口；输出留 `.cache/companion-input/`。它比较显式 trigger/placement/history 假设，不模拟真实 CC scheduler，不检测现实聊天状态，不授予模型调用、消息发送或服务启用。
 `experiments/companion-input/decision_*` 与 `run_decisions.py` 拥有 typed heartbeat 任务与合成回答 replay，复用 `run_session.py` 的准入/来源选择，不另建 scheduler。任务、provider body 与真实推理分别记录；shadow 注记不改变后续 ledger。`scripts/prepare_heartbeat_requests.py` 只序列化原生 Clef-Flash / OpenAI Decisions 请求，验证入口为 `python3 scripts/test_prepare_heartbeat_requests.py`；没有 transport、凭据读取或真实回答 adapter。API 机制研究参照 Decisions Lab，心跳语义与 CC 接点归本 repo。

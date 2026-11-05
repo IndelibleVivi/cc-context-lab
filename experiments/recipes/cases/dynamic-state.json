@@ -1,0 +1,297 @@
+{
+  "schema": "harness-context-case/1",
+  "case_id": "recipe-dynamic-state-synthetic",
+  "title": "状态 revision、纠正与历史保留",
+  "question": "新状态和纠正进入后，当前 revision 与旧版本原文分别留在什么位置？",
+  "requirements": [
+    {
+      "id": "req_current_revision",
+      "text": "修复阶段显式包含最新的状态 revision。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_correction",
+      "text": "纠正原文在所需的历史与摘要位置中得到保留。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_history",
+      "text": "被取代的状态原文在声明的历史中保留，重写阶段刻意失败。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_behavior",
+      "text": "请求结构不能证明模型正确理解、选择并使用指导。",
+      "level": "model_behavior"
+    }
+  ],
+  "study_plan": null,
+  "steps": [
+    {
+      "id": "baseline",
+      "label": "初始 ambient 状态",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "dynamic-state-baseline",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "baseline"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: keep source labels attached to dynamic facts."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Where is the synthetic reading lamp?"
+            },
+            {
+              "role": "assistant",
+              "content": "Ambient state revision 1: the reading lamp is beside the north desk."
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "dynamic-state",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "stale",
+      "label": "注入 revision 2，旧 revision 1 留在历史",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "dynamic-state-stale",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "new-injection"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: keep source labels attached to dynamic facts."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Where is the synthetic reading lamp?"
+            },
+            {
+              "role": "assistant",
+              "content": "Ambient state revision 1: the reading lamp is beside the north desk."
+            },
+            {
+              "role": "user",
+              "content": "Synthetic ambient snapshot revision 2: the reading lamp is beside the west alcove."
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "dynamic-state",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "history_dropped",
+      "label": "反例：新状态覆盖旧历史",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "dynamic-state-history-dropped",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "history-rewritten"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: keep source labels attached to dynamic facts."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Where is the synthetic reading lamp?"
+            },
+            {
+              "role": "assistant",
+              "content": "Ambient state revision 2: the reading lamp is beside the west alcove."
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "dynamic-state",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed",
+      "label": "保留两个旧版本与纠正，注入 revision 3",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "dynamic-state-fixed",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "resumed"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: keep source labels attached to dynamic facts."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Where is the synthetic reading lamp?"
+            },
+            {
+              "role": "assistant",
+              "content": "Ambient state revision 1: the reading lamp is beside the north desk."
+            },
+            {
+              "role": "user",
+              "content": "Synthetic ambient snapshot revision 2: the reading lamp is beside the west alcove."
+            },
+            {
+              "role": "user",
+              "content": "Correction: revision 2 said west alcove, but the movable lamp was moved again."
+            },
+            {
+              "role": "user",
+              "content": "Synthetic ambient snapshot revision 3: the reading lamp is on the east shelf."
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "dynamic-state",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "baseline_to_stale",
+      "baseline": "baseline",
+      "candidate": "stale"
+    },
+    {
+      "id": "stale_to_fixed",
+      "baseline": "stale",
+      "candidate": "fixed"
+    }
+  ],
+  "checks": [
+    {
+      "id": "revision_2_injected",
+      "requirement_id": "req_current_revision",
+      "step_id": "stale",
+      "pointer": "/messages/2/content",
+      "operator": "contains_text",
+      "expected": "revision 2"
+    },
+    {
+      "id": "revision_3_is_current",
+      "requirement_id": "req_current_revision",
+      "step_id": "fixed",
+      "pointer": "/messages/4/content",
+      "operator": "contains_text",
+      "expected": "snapshot revision 3"
+    },
+    {
+      "id": "correction_exact",
+      "requirement_id": "req_correction",
+      "step_id": "fixed",
+      "pointer": "/messages/3/content",
+      "operator": "equals",
+      "expected": "Correction: revision 2 said west alcove, but the movable lamp was moved again."
+    },
+    {
+      "id": "revision_2_retained_in_fixed_history",
+      "requirement_id": "req_history",
+      "step_id": "fixed",
+      "pointer": "/messages/2/content",
+      "operator": "equals",
+      "expected": "Synthetic ambient snapshot revision 2: the reading lamp is beside the west alcove."
+    },
+    {
+      "id": "old_state_retained_in_history",
+      "requirement_id": "req_history",
+      "step_id": "stale",
+      "pointer": "/messages/1/content",
+      "operator": "contains_text",
+      "expected": "north desk"
+    },
+    {
+      "id": "history_dropped_counterexample",
+      "requirement_id": "req_history",
+      "step_id": "history_dropped",
+      "pointer": "/messages/1/content",
+      "operator": "contains_text",
+      "expected": "north desk"
+    },
+    {
+      "id": "old_state_retained_after_correction",
+      "requirement_id": "req_history",
+      "step_id": "fixed",
+      "pointer": "/messages/1/content",
+      "operator": "contains_text",
+      "expected": "north desk"
+    }
+  ]
+}

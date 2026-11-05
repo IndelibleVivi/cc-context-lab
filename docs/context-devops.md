@@ -2,13 +2,13 @@
 
 本仓库要持续服务实际的 context 运维：理解一个版本/配置的输入，比较替代机制，知道改动会波及哪里，并把有证据的变更交给原 runtime 项目接入。伴侣相处的当下感、自主时间与连续性是实际需求；工程手段要能够保留和解释这些行为。
 
-范围已扩展到跨 harness 的 context engineering。CC 的具体控制面仍保留为独立研究线；共通的 [请求观察](request-observation.md) 开始接住 Anthropic Messages / OpenAI Responses 的显式本地材料。它比较输入原值和版本/入口条件，不推断 block 来源、隐藏历史或模型行为，也不把格式读取扩展成所有 harness 的兼容承诺。
+当前产品范围为 CC-only；其他 harness 只提供比较参考。既有 [请求观察](request-observation.md) 开始接住 Anthropic Messages / OpenAI Responses 的显式本地材料。它比较输入原值和版本/入口条件，不推断 block 来源、隐藏历史或模型行为，也不把格式读取扩展成所有 harness 的兼容承诺。
 
 研究成果因此需要连成整体：**来源与事实 → 输入装配 → session 生命周期 → 自主活动与外部交付 → 配置变更与观察**。不以单个 fixture 或一个新工具的存在代替整条链路。
 
-[Context Atlas](../workbench/README.md) 是这些材料的本地交互研究入口。它把 canonical references、机制关系和同一引擎的合成回放组合起来；对照研究固定同一材料的 A/B，逐来源查看 current/history/excluded/轮后产生，能保存、重跑并把实际观察带入变更 brief。图表示研究关系，不表示已部署的服务架构。现有专题继续拥有技术结论，原 runtime 的 renderer/runbook 继续拥有配置和接入。愿景与阶段连接见 [development programme](development-programme.md)。
+[CC Context Workbench](../workbench/README.md) 是这些材料的本地交互研究入口。它把 canonical references、机制关系和同一引擎的合成回放组合起来；对照研究固定同一材料的 A/B，逐来源查看 current/history/excluded/轮后产生，能保存、重跑并把实际观察带入变更 brief。图表示研究关系，不表示已部署的服务架构。现有专题继续拥有技术结论，原 runtime 的 renderer/runbook 继续拥有配置和接入。愿景与阶段连接见 [development programme](development-programme.md)。
 
-2026-11-01 的 CC 主线已接入 [显式 run 材料链](cc-runs.md)：从选定 request/response/index/event 到 captures/sidecar、单份/指定 pair、固定 snapshot与brief。该入口不采集或执行runtime；它保留未索引、关联矛盾、content losses和声明的target条件。跨 harness 范围保留，当前只优先打通 CC；共享机制/recipe/升级复验仍按programme标明未完成部分。
+2026-11-01 的 CC 主线已接入 [显式 run 材料链](cc-runs.md)：从选定 request/response/index/event 到 captures/sidecar、单份/指定 pair、固定 snapshot与brief。该入口不采集或执行runtime；它保留未索引、关联矛盾、content losses和声明的target条件。当前按 CC-only 建设机制、recipe 与问题工作流；升级复验及 native 证据仍按 programme 标明未完成部分。
 
 ## 一个持续可用的研究对象
 

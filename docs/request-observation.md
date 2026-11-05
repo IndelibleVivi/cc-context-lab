@@ -1,4 +1,4 @@
-# 本地 request 观察与跨 harness 比较
+# CC 本地 request 观察与结构比较
 
 更新：2026-11-01。此页拥有通用观察入口、证据与私人数据边界。`context_lab/observations.py` 拥有结构投影合同；Claude Code 的 Mods、来源开关和实际生命周期仍归各自专题。支持一种 wire format 不代表已经验证使用该格式的所有 harness。
 
@@ -148,7 +148,7 @@ Responses 的 `previous_response_id`、`conversation` 或 `prompt` 引用会进�
 
 ## 在 Atlas 检查与交接
 
-默认 `python3 scripts/build_context_atlas.py` 展示合成 context case 及其阶段 captures；独立 `--capture` 页面仍只包含明确提供的文件，不混入默认案例。打开“请求观察”，先查看单份，或选择已明确准备的 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
+默认 `python3 scripts/build_context_atlas.py` 从问题入口打开 owned-core 合成 recipe 及其阶段 captures；独立 `--capture` 页面仍只包含明确提供的文件，不混入默认案例。打开“请求观察”，先查看单份，或选择已明确准备的 A/B、查看条件变化与原值、检索 section、导出 canonical JSON/Markdown，或固定带入 change brief。
 
 使用明确提供的材料：
 

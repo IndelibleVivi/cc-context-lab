@@ -11,7 +11,7 @@ python3 scripts/run_context_case.py --demo --out .cache/context-case
 python3 scripts/build_context_atlas.py --case .cache/context-case/case.json
 ```
 
-示例有意保留 FAIL 和 NOT_ASSESSED，首条命令会返回 **1** 并生成完整报告。这是可检查的反例，不是命令损坏；如果写成 shell pipeline，不要因预期的 1 丢掉报告。默认 Atlas 也提供同一案例的源码生成示例。所有 captures 是手工构造的合成输入；关联的 study 仍由 canonical companion 引擎执行，不能把两者的关联说成真实 tracing 或引擎生成的请求。
+示例有意保留 FAIL 和 NOT_ASSESSED，首条命令会返回 **1** 并生成完整报告。这是可检查的反例，不是命令损坏；如果写成 shell pipeline，不要因预期的 1 丢掉报告。Workbench 默认使用三条 recipe 中的 owned-core 案例；上述旧 demo 继续可通过显式 `--case` 打开。所有 captures 是手工构造的合成输入；关联的 study 仍由 canonical companion 引擎执行，不能把两者的关联说成真实 tracing 或引擎生成的请求。
 
 打开“研究案例”可以查看每项要求、声明的阶段、完整 request body 和检查原值，按 PASS / FAIL / NOT_ASSESSED 筛选；显式比较可跳到“请求观察”。关联的 study 可恢复到“对照研究”，会替换当前未保存的 study 编辑，应先下载需要保留的 plan；case snapshot 不变。如果 study snapshot 含超出浏览器安全整数范围的值，恢复入口禁用，也不会自动恢复或进入普通 study 的可编辑情境列表；该视图会提示当前使用独立情境。使用 canonical case 在 CLI 重跑。
 

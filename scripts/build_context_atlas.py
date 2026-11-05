@@ -20,6 +20,7 @@ import run_session as rs
 import context_study as study
 from context_lab import observations as request_observation
 from context_lab import cases, io_policy
+from context_lab.recipes import RECIPE_IDS, load_catalog, load_recipe_case
 from context_lab.cc_run_view import load_run, project_run
 from context_lab.case_demo import make_demo_case
 from context_lab.artifacts import paths_alias, write_reports
@@ -143,10 +144,23 @@ def build_case_projection(manifest):
                 study_markdown=study.render_markdown(report['study']) if report['study'] else None)
 
 
-def build_data(study_plan=None, capture_paths=(), case_plan=None, pairs=None, run_bundle=None):
-    explicit_case = case_plan is not None
-    if case_plan is None and study_plan is None and not capture_paths and run_bundle is None:
-        case_plan = make_demo_case(read_json('experiments/companion-input/fixtures/common_scenario.json'))
+def recipe_bundle(recipe_id):
+    projection = build_case_projection(load_recipe_case(recipe_id))
+    prepared = [row['comparison'] for row in projection['report']['comparisons'] if row['comparison']]
+    selected = [(r['baseline']['capture_id'], r['candidate']['capture_id']) for r in prepared]
+    captures = [s['observation'] for s in projection['report']['steps'] if s['observation']]
+    observations = build_request_observations(normalized=captures, pairs=selected, prepared=prepared)
+    observations['rebuild_command'] = 'python3 scripts/build_context_atlas.py --case context-case.json --pairs comparison-pairs.json --out .cache/cc-context-workbench'
+    return dict(context_case=projection, request_observations=observations)
+
+
+def build_data(study_plan=None, capture_paths=(), case_plan=None, pairs=None, run_bundle=None, recipe_id=None):
+    recipe_examples = {r['id']: recipe_bundle(r['id']) for r in load_catalog()['recipes']}
+    if case_plan is None and study_plan is None and not capture_paths and run_bundle is None and recipe_id is None:
+        recipe_id = 'owned-core'
+    if recipe_id is not None:
+        case_plan = load_recipe_case(recipe_id)
+    explicit_case = case_plan is not None and recipe_id is None
     case_projection = build_case_projection(case_plan) if case_plan is not None else None
     if case_projection and case_projection['report']['study']:
         # Unsafe case plans remain canonical report data only: do not feed
@@ -206,6 +220,8 @@ def build_data(study_plan=None, capture_paths=(), case_plan=None, pairs=None, ru
                 study_plan=study_plan, request_observations=observations,
                 cc_run=run_projection, open_run=bool(run_bundle),
                 context_case=case_projection, open_case=explicit_case,
+                recipes=load_catalog()['recipes'], recipe_examples=recipe_examples,
+                active_recipe_id=recipe_id,
                 open_observation=bool(capture_paths), scenarios=scenarios)
 
 
@@ -222,6 +238,7 @@ def compose_html(data):
     parts['<!-- ATLAS_CASE_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/cases.js').read_text(encoding='utf-8') + '</script>'
     parts['<!-- ATLAS_OBSERVATION_SCRIPT -->'] = '<script>' + (ROOT / 'workbench' / 'observations.js').read_text(encoding='utf-8') + '</script>'
     parts['<!-- ATLAS_RUN_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/runs.js').read_text(encoding='utf-8') + '</script>'
+    parts['<!-- ATLAS_JOURNEY_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/journeys.js').read_text(encoding='utf-8') + '</script>'
     for marker, replacement in parts.items():
         if html.count(marker) != 1:
             raise ValueError('Expected one template marker: ' + marker)
@@ -238,11 +255,14 @@ def main():
                     help='project only these explicit local capture JSON files (repeatable); output must stay private')
     ap.add_argument('--case', type=Path, help='open a self-contained harness-context-case/1; exclusive with --study/--capture')
     ap.add_argument('--run', type=Path, help='open one explicit imported run sidecar or frozen cc-run-snapshot/1')
+    ap.add_argument('--recipe', choices=RECIPE_IDS, help='open an authored CC recipe and its synthetic case')
     ap.add_argument('--pair', nargs=2, action='append', default=[], metavar=('BASELINE', 'CANDIDATE'),
                     help='prepare one directed comparison (repeatable); no implicit all-pairs')
     ap.add_argument('--pairs', type=Path, help='JSON array of [baseline, candidate] capture ID pairs')
     args = ap.parse_args()
     try:
+        if args.recipe and (args.run or args.case or args.study or args.capture):
+            raise ValueError('--recipe owns its synthetic inputs; do not combine with --run/--case/--study/--capture')
         if args.run and (args.case or args.study or args.capture):
             raise ValueError('--run owns its selected captures; do not combine with --case/--study/--capture')
         if args.case and (args.study or args.capture):
@@ -263,7 +283,7 @@ def main():
                 for target in outputs:
                     if paths_alias(target, source):
                         raise ValueError('input aliases generated output: ' + target.name)
-        data = build_data(plan, args.capture, case_plan, pairs=pairs if args.pair or args.pairs else None, run_bundle=run_bundle)
+        data = build_data(plan, args.capture, case_plan, pairs=pairs if args.pair or args.pairs else None, run_bundle=run_bundle, recipe_id=args.recipe)
         rebuild = ['python3', 'scripts/build_context_atlas.py']
         if args.run:
             rebuild += ['--run', str(args.run)]

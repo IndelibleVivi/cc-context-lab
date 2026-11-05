@@ -1,6 +1,6 @@
-# Harness Context Engineering Lab — Agent Guide
+# Claude Code Context Lab — Agent Guide
 
-范围已扩展为跨 harness 的 context engineering；Claude Code 是目前研究最深入的一条线。现有 repo / 路径仍为 `cc-context-lab`，正式名称与 slug 迁移尚未定案。
+产品范围为 Claude Code context engineering；名称为 Claude Code Context Lab，repo / slug 保持 `cc-context-lab`。其他 harness 仅作比较参考，通用 wire reader 不构成非 CC 支持。
 先读 README.md、docs/current-state.md，再按主题读 docs/context-map.md 和 docs/upstreams.md。
 
 ## Authority
@@ -13,7 +13,7 @@
 - workbench/ 拥有研究视图和人工关系模型；不覆盖 docs/references 的技术证据。scripts/build_context_atlas.py 从 canonical references 与 companion-input 引擎生成忽略的 .cache/context-atlas/；不手改派生数据，不复制第二套引擎。Atlas 导出的 brief 只准备变更，不授予运行或部署权限。
 - `experiments/companion-input/context_study.py` 拥有离线 A/B plan 校验、canonical 执行和逐来源观察投影；`scripts/run_context_study.py` 是重跑入口。plan 固定完整合成 fixture snapshot，不能按同名情境静默换材料。Atlas 展示同一投影；多轴比较不写单因果结论，current/history/excluded/轮后产生分别保留。整体 programme 见 `docs/development-programme.md`。
 - `context_lab/cases.py` 拥有 self-contained case 的阶段/要求/检查与报告；只检查显式 request body 的位置，模型行为与交付不自动通过。study snapshot 仍交 canonical study runner；阶段关联由研究者声明，不冒充真实 tracing。`--case` 同样受私人输出和输入保护约束。
-- `context_lab/observations.py` 拥有跨 harness 的 capture 合同、strict JSON reader、保真结构投影和位置比较；wire format 不等于 harness 全链路支持。导入者的 captured_request 声明不升级为独立观察，origin/lifecycle 保持 unknown。`context_lab/artifacts.py` 是 Atlas、报告 CLI 与 CC importer 的本地写入 owner：先完整编码与预检，再暂存并逐文件 atomic replace，不是多文件事务。
+- `context_lab/observations.py` 拥有供 CC 研究复用的 capture 合同、strict JSON reader、保真结构投影和位置比较；wire format 不等于 harness 全链路支持。导入者的 captured_request 声明不升级为独立观察，origin/lifecycle 保持 unknown。`context_lab/artifacts.py` 是 Atlas、报告 CLI 与 CC importer 的本地写入 owner：先完整编码与预检，再暂存并逐文件 atomic replace，不是多文件事务。
 - `context_lab/cc_runs.py` 拥有显式 CC selection、原始材料校验和 run sidecar；`context_lab/cc_run_view.py` 只读取该 sidecar 生成的同目录 capture 或固定 snapshot 并核 digest/identity/runtime/scope。index、event 和 body_ref 中的路径/URL不打开，不按相似正文或时间猜 retry、child 或全局时序。
 - `context_lab/io_policy.py` 统一 inspector、case runner、Atlas 与 CC importer 的私人输出政策，mkdir/staging 前核 resolved 目录及每个目标；仓库内必须 ignored 且未 tracked，`synthetic_fixture` 不能绕过。writer 继续拥有逐文件 atomic replace，不是多文件事务。
 - Atlas 的 request projection 默认不做全组合或自比较；case 使用显式 comparisons，独立 run/captures 仅准备 `--pair`/`--pairs`。pair 引用共享的 Python canonical 文本，JS只拼接导出、不重算比较或重编码原值。缺 pair 明示未准备并提供固定输入/选择重建。run caveats 随单份、pair、snapshot与brief传递。
@@ -26,6 +26,8 @@
 - 私人 log、身份正文、真实配置、raw requests/transcripts、机器路径与 handoff 留在 Git 外。
 - 原 repo 的 candidate renderer / runbook 继续拥有生产配置。这里的研究结论不会自动成为 live 配置。
 
+- `references/recipes.json` 拥有 recipe catalog，`context_lab/recipes.py` 拥有离线 recipe 校验与 canonical case 投影；`docs/handbook/` 拥有学习路径。Workbench 的本地 recipe bundles 只投影 canonical 材料，不另算检查；显式加载的 run/case/capture/study 必须保留。既有 v1 capture/case/wire API 与 IO policy 继续有效。
+
 ## Work boundaries
 
 按 section、origin、context source 与生命周期研究；不得把字串相同当作可改写权限。
@@ -37,6 +39,8 @@
 完成本 repo 的 source/test/docs 后，默认正常 commit/push 到现有 origin；owner 明确要求不提交时除外。每次只 stage 已检查的明确路径，私人 continuity、身份、真实 capture/request/transcript、账号资料与 cache 不上传。visibility变更、安装、真实模型调用与部署仍需对应授权。
 
 ## Verification / docs
+
+Recipe 验证入口为 `python3 scripts/test_recipes.py`、`python3 scripts/test_recipe_atlas.py` 与 `node --test scripts/test_journey_ui.cjs`；native protocols 未执行不得写成通过。
 
 Daily quiet 的纯规则测试为 `node --test experiments/daily-quiet/tests/rules.test.mjs`，已纳入统一 gate；native `claude plugin test` 单独验证指定可信 build，不在 offline gate 自动执行。
 

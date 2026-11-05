@@ -388,10 +388,10 @@ function levelTag(level) {
   return el('span', { cls: cls, text: level || 'unspecified' });
 }
 
-function sourceLink(source) {
+function sourceLink(source, label) {
   var path = safeHref(source);
   var wrap = el('div', {cls:'src-links'});
-  if (path) wrap.appendChild(el('a', {cls:'linklike', text:source,
+  if (path) wrap.appendChild(el('a', {cls:'linklike', text:label || source,
     attrs:{href:/^https?:/.test(path) ? path : (safeHref(getData().repo_base)||'../..')+'/'+path, target:'_blank',rel:'noopener noreferrer'}}));
   else wrap.appendChild(el('span', {text:source}));
   return wrap;
@@ -1341,6 +1341,8 @@ function renderSourceRows() {
 /* =================================================================== TABS */
 
 function activateTab(name, focusTab) {
+  if (['run','study','replay','overview','sources'].includes(name)) setResearchTools(true);
+  renderJourneyContext(name);
   var tabs = document.querySelectorAll('#atlas-tabbar [role="tab"]');
   for (var i = 0; i < tabs.length; i++) {
     var on = tabs[i].getAttribute('data-tab') === name;
@@ -1350,6 +1352,7 @@ function activateTab(name, focusTab) {
   }
   var panels = document.querySelectorAll('[data-panel]');
   for (var j = 0; j < panels.length; j++) panels[j].hidden = panels[j].getAttribute('data-panel') !== name;
+  if (name === 'home') renderJourney();
   if (name === 'overview') requestAnimationFrame(drawGraphEdges);
   if (name === 'replay') renderReplay();
   if (name === 'case') renderCase();
@@ -1367,7 +1370,7 @@ function wireTabs() {
     if (t) activateTab(t.getAttribute('data-tab'), false);
   });
   tabbar.addEventListener('keydown', function (e) {
-    var tabs = Array.prototype.slice.call(tabbar.querySelectorAll('[role="tab"]'));
+    var tabs = Array.prototype.slice.call(tabbar.querySelectorAll('[role="tab"]')).filter(t => !t.closest('[hidden]'));
     var idx = tabs.indexOf(document.activeElement);
     if (idx === -1) return;
     var next = null;
@@ -1411,6 +1414,7 @@ function wireTabs() {
 function renderMasthead() {
   var d=getData();
   $('atlas-date-chip').textContent='快照 · '+(d.generated_on||'未知日期');
+  $('atlas-snapshot-chip').textContent=d.open_run||d.open_case||d.open_observation||d.study_plan?'显式本地材料 · 只读':'合成案例 · 离线检查';
   if(d.__parse_error) $('atlas-snapshot-chip').textContent='数据解析失败：'+d.__parse_error;
 }
 
@@ -1418,13 +1422,14 @@ function boot() {
   getData();
   renderMasthead();
   wireTabs();
+  wireJourney();
   wireStudy();
   wireObservation();
   wireRun();
   wireCase();
   renderOverview();
   new ResizeObserver(()=>requestAnimationFrame(drawGraphEdges)).observe($('overview-canvas'));
-  activateTab(getData().open_run ? 'run' : getData().open_case ? 'case' : getData().open_observation ? 'observation' : getData().study_plan && !getData().context_case ? 'study' : 'overview', false);
+  activateTab(getData().active_recipe_id ? 'home' : getData().open_run ? 'run' : getData().open_case ? 'case' : getData().open_observation ? 'observation' : getData().study_plan && !getData().context_case ? 'study' : 'home', false);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

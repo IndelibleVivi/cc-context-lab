@@ -18,6 +18,10 @@ def main():
         print('Offline checks require Node.js; no installation attempted.', file=sys.stderr)
         return 2
     checks = [
+        ('CC recipe contracts', [sys.executable, 'scripts/test_recipes.py']),
+        ('recipe integration and toolkit dispatch', [sys.executable, 'scripts/test_recipe_atlas.py']),
+        ('question workflow and loaded materials', [node, '--test', 'scripts/test_journey_ui.cjs']),
+        ('question workflow syntax', [node, '--check', 'workbench/journeys.js']),
         ('companion input and typed decision contracts', [sys.executable, 'experiments/companion-input/run_lab.py', '--check', '--no-run']),
         ('context study and CLI', [sys.executable, 'scripts/test_context_study.py']),
         ('shared private output policy', [sys.executable, 'scripts/test_io_policy.py']),

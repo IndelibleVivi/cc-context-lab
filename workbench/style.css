@@ -3,9 +3,9 @@
    No external fonts, no CDN. Editorial mixed Chinese/Latin typography. */
 
 :root {
-  --paper:        #f7f3ea;
-  --paper-2:      #f1ebdd;
-  --paper-3:      #e9e1cf;
+  --paper:        #f4f7f9;
+  --paper-2:      #eaf0f3;
+  --paper-3:      #dce5eb;
   --ink:          #1c2a2e;
   --ink-soft:     #3d4f52;
   --ink-mute:     #6b7876;
@@ -17,8 +17,8 @@
   --teal:         #2f7d78;
   --teal-soft:    #79a8a2;
   --amber:        #a9822f;
-  --line:         #d9d0bc;
-  --line-strong:  #c4b99f;
+  --line:         #d0dbe2;
+  --line-strong:  #abbec8;
   --danger:       #9c4a3c;
   --ok:           #3f6b52;
 
@@ -29,7 +29,7 @@
   --mono: "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
   --sans: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC",
           -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, "Times New Roman", serif;
+  --serif: var(--sans);
 }
 
 /* A/B study: the sources are the primary objects; controls remain compact. */
@@ -139,9 +139,7 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background:
-    radial-gradient(1200px 600px at 12% -8%, #fbf8f1 0%, transparent 60%),
-    linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
@@ -150,32 +148,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* subtle paper grain via repeating gradient (no image asset) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .5;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(28,42,46,.018) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(28,42,46,.014) 0 1px, transparent 1px 4px);
-  mix-blend-mode: multiply;
-}
-
 /* ---------- focus: strong, visible, integrated (copper, offset) ---------- */
 :focus-visible {
-  outline: 2.5px solid var(--focus);
+  outline: 2px solid var(--teal);
   outline-offset: 2px;
   border-radius: 3px;
 }
 .node-card:focus-visible,
 .tl-marker:focus-visible,
 .pick__item:focus-visible {
-  outline: 2.5px solid var(--focus);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(180,102,58,.16);
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .skip-link {
@@ -256,12 +240,15 @@ body::before {
 }
 
 /* ============================= tabs ============================= */
-.tabbar { margin-top: 20px; }
+.tabbar { margin-top: 24px; display:flex; align-items:flex-start; gap:16px; border-bottom:1px solid var(--line-strong); }
+.tabbar__secondary { display:contents; }
+.tabbar__secondary[hidden] { display:none; }
+.tools-toggle { margin-left:auto; white-space:nowrap; border:0; background:transparent; color:var(--teal); padding:11px 4px; cursor:pointer; font:inherit; font-size:13px; }
 .tabbar__tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-  border-bottom: 1.5px solid var(--line-strong);
+  border-bottom: 0;
 }
 .tab {
   appearance: none;
@@ -1312,3 +1299,41 @@ select:hover, input:hover { border-color: var(--copper-soft); }
 
 #panel-case .section-kicker { display:block; color:var(--teal); font:11px var(--mono); letter-spacing:.1em; margin-bottom:12px; }
 #case-limits summary { cursor:pointer; font-size:12px; color:var(--petrol); }
+
+/* Question workspace. Context objects stay in their canonical presenters. */
+.journey-heading { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:48px; align-items:center; padding:8px 0 34px; border-bottom:1px solid var(--line); }
+.journey-heading h2 { font-size:clamp(28px,3.3vw,43px); line-height:1.35; letter-spacing:-.04em; margin:12px 0 16px; font-weight:650; color:var(--petrol); }
+.journey-heading p { color:var(--ink-soft); max-width:52ch; }
+.context-stack { display:grid; gap:1px; background:var(--line); border:1px solid var(--line); transform:rotate(-2deg); }
+.context-stack span { display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff; padding:14px 18px; font:12px var(--mono); color:var(--teal); }
+.context-stack b { font:500 14px var(--sans); color:var(--petrol); }
+.context-stack small { background:var(--petrol); color:#e2edf0; padding:12px 18px; font-size:12px; }
+.journey-workspace { display:grid; grid-template-columns:minmax(240px,.65fr) minmax(0,1.35fr); gap:44px; padding:30px 0; }
+.journey-workspace > * { min-width:0; }
+.journey-recipes { display:grid; gap:0; }
+.recipe-choice { display:block; width:100%; padding:20px 14px; border:0; border-bottom:1px solid var(--line); border-left:3px solid transparent; color:var(--ink); background:transparent; cursor:pointer; text-align:left; }
+.recipe-choice small { display:block; color:var(--ink-mute); font:11px var(--mono); margin-bottom:6px; }
+.recipe-choice strong { display:block; font:600 17px/1.5 var(--sans); }
+.recipe-choice:hover { background:#e3edf1; }
+.recipe-choice[aria-pressed=true] { border-left-color:var(--teal); background:#e1edf1; }
+.journey-detail { border-top:3px solid var(--petrol); padding:22px 0; }
+.journey-detail h3 { font-size:25px; line-height:1.45; margin:0 0 14px; font-weight:600; }
+.journey-detail > p { color:var(--ink-soft); }
+.recipe-mechanism { padding:16px 0; border-bottom:1px solid var(--line); }
+.recipe-mechanism h4 { margin:0 0 8px; font-size:16px; }
+.recipe-mechanism p { font-size:14px; margin:0 0 8px; line-height:1.85; }
+.recipe-procedure { padding-left:22px; font-size:14px; line-height:1.9; }
+.recipe-results { display:flex; flex-wrap:wrap; gap:8px 20px; margin:18px 0; font:12px var(--mono); color:var(--ink-soft); }
+.recipe-results strong { color:var(--petrol); }
+.journey-actions { display:flex; flex-wrap:wrap; gap:10px; margin:22px 0 12px; }
+.journey-reading { margin-top:26px; padding-top:18px; border-top:1px solid var(--line-strong); font-size:13px; }
+.journey-reading .src-links { display:block; margin:10px 0; }
+.journey-context { max-width:1468px; margin-left:auto; margin-right:auto; padding-left:clamp(14px,4vw,46px); padding-right:clamp(14px,4vw,46px); display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; border-bottom:1px solid var(--line); padding-top:0; padding-bottom:16px; margin-bottom:24px; font-size:13px; }
+.journey-context strong { color:var(--petrol); }
+.journey-context .btn { margin-left:auto; }
+.journey-context[hidden] { display:none; }
+.recipe-caveat { padding:12px 15px; border-left:2px solid var(--copper); background:#e9eef1; font-size:13px; }
+@media(max-width:760px) { .journey-heading { grid-template-columns:1fr; gap:18px; } .journey-heading h2 { font-size:29px; } .context-stack { transform:none; } .journey-workspace { grid-template-columns:1fr; gap:26px; } .recipe-choice { padding:14px 12px; } .tabbar { flex-wrap:wrap; gap:0; } .tools-toggle { margin-left:0; } .tab { font-size:13px; padding:10px 11px; } .journey-context .btn { margin-left:0; } }
+.runtime-details summary,.case-body-details summary { cursor:pointer; color:var(--teal); font-size:13px; padding:8px 0; }
+.runtime-details .observation-runtime { margin-top:10px; }
+.case-body-details { border-top:1px solid var(--line); margin-top:14px; }

@@ -1,0 +1,172 @@
+{
+  "schema": "cc-context-recipes/1",
+  "recipes": [
+    {
+      "id": "owned-core",
+      "title": "保留完整 core 与工具声明",
+      "question": "改了指导文字，完整 core、工具 schema 和使用说明分别保留了吗？",
+      "summary": "沿基线、剥离反例和恢复阶段，分别检查 core 原文、工具名称、完整 schema 与使用指导。",
+      "case_path": "experiments/recipes/cases/owned-core.json",
+      "guide_path": "docs/handbook/owned-core.md",
+      "mechanisms": [
+        {
+          "id": "owned-core-boundary",
+          "title": "Core 与工具声明的独立位置",
+          "explanation": "System 与 tools 是不同输入面。一个位置保留完整，不足以证明另一个位置也完整，更不能证明模型已正确使用。",
+          "sources": [
+            "docs/context-map.md",
+            "docs/profile-design.md",
+            "references/target-runtime-2.1.289.json"
+          ]
+        },
+        {
+          "id": "tool-schema-guidance",
+          "title": "工具 schema 与使用指导分别验收",
+          "explanation": "完整 input schema 和工具名可以仍在声明中，使用指导却已经丢失。发现、权限、执行和结果交付仍需独立观察。",
+          "sources": [
+            "docs/official-controls.md",
+            "docs/mods-migration.md",
+            "docs/target-runtime.md"
+          ]
+        }
+      ],
+      "procedure": [
+        "重跑 owned-core 固定案例，依次检查 baseline、stripped 与 fixed。",
+        "确认剥离反例的指导检查失败，同时完整 core 和工具声明检查通过。",
+        "打开两组显式比较，查看原文与 schema；恢复指导时保持 core、工具名和 schema。",
+        "下载固定 case 重跑或带入 brief；真实工具可用性与模型行为另行验收。"
+      ],
+      "expected_checks": {
+        "core_retained_after_strip": "PASS",
+        "core_retained_after_fix": "PASS",
+        "schema_retained_while_guidance_missing": "PASS",
+        "schema_retained_after_fix": "PASS",
+        "tool_name_retained_after_strip": "PASS",
+        "tool_name_retained_after_fix": "PASS",
+        "missing_guidance_counterexample": "FAIL",
+        "guidance_restored": "PASS"
+      },
+      "expected_requirements": {
+        "req_core_present": "PASS",
+        "req_tool_schema": "PASS",
+        "req_tool_guidance": "FAIL",
+        "req_behavior": "NOT_ASSESSED"
+      },
+      "native_status": "NOT_ASSESSED"
+    },
+    {
+      "id": "dynamic-state",
+      "title": "动态状态、纠正与历史",
+      "question": "新状态已注入，旧版本和纠正原文还怎样留在后续输入里？",
+      "summary": "检查 revision 1、revision 2 与纠正原文的保留位置，以 revision 3 作为当前注入；故意重写历史的阶段留下可见失败。",
+      "case_path": "experiments/recipes/cases/dynamic-state.json",
+      "guide_path": "docs/handbook/dynamic-state.md",
+      "mechanisms": [
+        {
+          "id": "revision-injection",
+          "title": "新注入与历史保留分别检查",
+          "explanation": "新快照能明确本轮采用的 revision；旧快照仍可能在 messages 历史中。需要逐位置核对，不能只看最新注入包。",
+          "sources": [
+            "docs/context-retention.md",
+            "docs/continuity-and-memory.md",
+            "docs/request-observation.md"
+          ]
+        },
+        {
+          "id": "correction-lineage",
+          "title": "保留纠正的原文与关联",
+          "explanation": "纠正要能与被纠正的状态区分。结构位置中出现纠正，只证明材料存在，模型是否采用新值仍未评估。",
+          "sources": [
+            "docs/context-cases.md",
+            "docs/companion-context.md",
+            "references/target-runtime-2.1.289.json"
+          ]
+        }
+      ],
+      "procedure": [
+        "重跑动态状态案例，查看初始状态、新注入、故意重写历史与修复阶段。",
+        "核对重写历史的反例失败，新 revision 与纠正原文的检查通过。",
+        "比较 baseline → stale 和 stale → fixed；阶段关系是声明的实验条件。",
+        "下载固定材料交给目标 runtime；注入时机、实际历史保留和模型采用情况分别验收。"
+      ],
+      "expected_checks": {
+        "revision_2_injected": "PASS",
+        "revision_3_is_current": "PASS",
+        "correction_exact": "PASS",
+        "old_state_retained_in_history": "PASS",
+        "history_dropped_counterexample": "FAIL",
+        "old_state_retained_after_correction": "PASS",
+        "revision_2_retained_in_fixed_history": "PASS"
+      },
+      "expected_requirements": {
+        "req_current_revision": "PASS",
+        "req_correction": "PASS",
+        "req_history": "FAIL",
+        "req_behavior": "NOT_ASSESSED"
+      },
+      "native_status": "NOT_ASSESSED"
+    },
+    {
+      "id": "compact-resume",
+      "title": "Compact、纠正保留与 resume",
+      "question": "摘要和恢复后，旧指导与纠正怎样保留？部分材料究竟能判断什么？",
+      "summary": "有损摘要刻意丢掉纠正；修复阶段保留纠正与续接提示。仅观察 system/tools 的材料仍将 messages 保持为未知。",
+      "case_path": "experiments/recipes/cases/compact-resume.json",
+      "guide_path": "docs/handbook/compact-resume.md",
+      "mechanisms": [
+        {
+          "id": "compact-retention",
+          "title": "摘要投影与信息损失",
+          "explanation": "摘要可能保留早期指导，却省略后来的纠正。两者要分别检查，语义使用留给后续验收。",
+          "sources": [
+            "docs/compact-control.md",
+            "docs/context-retention.md",
+            "docs/target-runtime.md"
+          ]
+        },
+        {
+          "id": "resume-reload",
+          "title": "恢复后的输入独立核对",
+          "explanation": "续接提示可以存在，旧的错误指导也可能仍然存在。需要分别观察摘要与恢复后的实际请求。",
+          "sources": [
+            "docs/official-controls.md",
+            "docs/continuity-and-memory.md",
+            "docs/context-map.md"
+          ]
+        },
+        {
+          "id": "partial-absence",
+          "title": "未观察字段保持未知",
+          "explanation": "只观察 system/tools 的 capture 无法判断 messages 是否已退出；不能把未观察当成已删除。",
+          "sources": [
+            "docs/request-observation.md",
+            "docs/context-cases.md",
+            "context_lab/observations.py"
+          ]
+        }
+      ],
+      "procedure": [
+        "重跑 compact-resume 案例，查看压缩前、有损摘要、修复续接与部分观察阶段。",
+        "核对有损摘要的纠正检查失败，修复检查通过，部分材料的 absence 检查仍未评估。",
+        "打开两组比较，尤其检查 partial 一侧的消息行显示未观察，而非 removed。",
+        "先准备纠正保留与续接候选，再按指定 build 的实际生命周期验证和恢复。"
+      ],
+      "expected_checks": {
+        "old_guidance_retained": "PASS",
+        "correction_exact": "PASS",
+        "summary_correction_counterexample": "FAIL",
+        "summary_retains_correction": "PASS",
+        "resume_prompt_present": "PASS",
+        "partial_messages_absence_unproven": "NOT_ASSESSED"
+      },
+      "expected_requirements": {
+        "req_old_guidance": "PASS",
+        "req_correction": "FAIL",
+        "req_resume": "PASS",
+        "req_partial_scope": "NOT_ASSESSED",
+        "req_behavior": "NOT_ASSESSED"
+      },
+      "native_status": "NOT_ASSESSED"
+    }
+  ]
+}

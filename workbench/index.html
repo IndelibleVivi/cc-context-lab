@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Context Atlas · Harness Context Engineering Lab</title>
+<title>CC Context Workbench · Claude Code Context Lab</title>
 <link rel="icon" href="data:,">
 <!-- ATLAS_STYLE -->
 </head>
@@ -15,9 +15,9 @@
   <div class="masthead__rule" aria-hidden="true"></div>
   <div class="masthead__row">
     <div class="masthead__brand">
-      <span class="masthead__kicker">Harness Context Engineering Lab · 本地研究视图</span>
-      <h1 class="masthead__title" id="atlas-title">Context Atlas</h1>
-      <p class="masthead__sub" id="atlas-intro">把 context 的来源、装配、生命周期与交付放在一起读。</p>
+      <span class="masthead__kicker">Claude Code Context Lab · local workbench</span>
+      <h1 class="masthead__title" id="atlas-title">CC Context Workbench</h1>
+      <p class="masthead__sub" id="atlas-intro">从一个具体问题，追到 Claude Code 的输入、变化与证据。</p>
     </div>
     <div class="masthead__meta" id="atlas-meta" aria-label="数据快照信息">
       <span class="chip chip--snapshot" id="atlas-snapshot-chip">本地快照 · 合成回放数据</span>
@@ -25,28 +25,29 @@
     </div>
   </div>
   <nav class="tabbar" id="atlas-tabbar" aria-label="视图切换">
-    <div class="tabbar__tabs" role="tablist" aria-orientation="horizontal">
-      <button class="tab" role="tab" id="tab-overview" data-tab="overview"
-              aria-controls="panel-overview" aria-selected="true" tabindex="0">全景</button>
-      <button class="tab" role="tab" id="tab-replay" data-tab="replay"
-              aria-controls="panel-replay" aria-selected="false" tabindex="-1">回放</button>
-      <button class="tab" role="tab" id="tab-case" data-tab="case"
-              aria-controls="panel-case" aria-selected="false" tabindex="-1">研究案例</button>
-      <button class="tab" role="tab" id="tab-study" data-tab="study"
-              aria-controls="panel-study" aria-selected="false" tabindex="-1">对照研究</button>
-      <button class="tab" role="tab" id="tab-observation" data-tab="observation"
-              aria-controls="panel-observation" aria-selected="false" tabindex="-1">请求观察</button>
-      <button class="tab" role="tab" id="tab-run" data-tab="run"
-              aria-controls="panel-run" aria-selected="false" tabindex="-1">CC Run</button>
-      <button class="tab" role="tab" id="tab-change" data-tab="change"
-              aria-controls="panel-change" aria-selected="false" tabindex="-1">变更推演</button>
-      <button class="tab" role="tab" id="tab-sources" data-tab="sources"
-              aria-controls="panel-sources" aria-selected="false" tabindex="-1">来源</button>
+    <div class="tabbar__tabs" role="tablist" aria-label="问题工作流" aria-orientation="horizontal">
+      <button class="tab" role="tab" id="tab-home" data-tab="home" aria-controls="panel-home" aria-selected="true" tabindex="0">问题与做法</button>
+      <button class="tab" role="tab" id="tab-case" data-tab="case" aria-controls="panel-case" aria-selected="false" tabindex="-1">阶段与检查</button>
+      <button class="tab" role="tab" id="tab-observation" data-tab="observation" aria-controls="panel-observation" aria-selected="false" tabindex="-1">请求原值</button>
+      <button class="tab" role="tab" id="tab-change" data-tab="change" aria-controls="panel-change" aria-selected="false" tabindex="-1">变更 brief</button>
+      <span class="tabbar__secondary" id="atlas-research-tabs" hidden>
+        <button class="tab" role="tab" id="tab-run" data-tab="run" aria-controls="panel-run" aria-selected="false" tabindex="-1">CC Run</button>
+        <button class="tab" role="tab" id="tab-study" data-tab="study" aria-controls="panel-study" aria-selected="false" tabindex="-1">对照研究</button>
+        <button class="tab" role="tab" id="tab-replay" data-tab="replay" aria-controls="panel-replay" aria-selected="false" tabindex="-1">自主轮次回放</button>
+        <button class="tab" role="tab" id="tab-overview" data-tab="overview" aria-controls="panel-overview" aria-selected="false" tabindex="-1">机制全景</button>
+        <button class="tab" role="tab" id="tab-sources" data-tab="sources" aria-controls="panel-sources" aria-selected="false" tabindex="-1">来源</button>
+      </span>
     </div>
+    <button type="button" id="atlas-tools-toggle" class="tools-toggle" aria-controls="atlas-research-tabs" aria-expanded="false">研究工具 +</button>
   </nav>
 </header>
 
 <main id="atlas-main" class="atlas-main">
+  <div id="journey-context" class="journey-context" hidden aria-live="polite"></div>
+  <section class="panel" id="panel-home" role="tabpanel" aria-labelledby="tab-home" data-panel="home" tabindex="-1">
+    <div class="journey-heading"><div><span class="section-kicker">OBSERVE / CHANGE / VERIFY</span><h2>想让 CC 的哪一部分<br>真正按你的意思运行？</h2><p>选择一个问题。先理解机制，再沿同一份材料检查变化、反例和未证实的部分。</p></div><div class="context-stack" aria-label="观察的三个输入面"><span>system <b>主提示与 core</b></span><span>tools <b>说明、schema 与发现</b></span><span>messages <b>动态输入与历史</b></span><small>同一个改动，可能留在不止一个位置。</small></div></div>
+    <div class="journey-workspace"><aside><h3 class="subhead">从问题开始</h3><div id="journey-recipes" class="journey-recipes"></div><button type="button" id="journey-loaded" class="btn" hidden>回到我带入的材料</button><div class="journey-reading" id="journey-reading"></div></aside><article id="journey-detail" class="journey-detail" aria-live="polite"></article></div>
+  </section>
 
   <!-- ============================= 全景 ============================= -->
   <section class="panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" data-panel="overview" tabindex="-1">
@@ -376,6 +377,7 @@
 <!-- ATLAS_OBSERVATION_SCRIPT -->
 <!-- ATLAS_RUN_SCRIPT -->
 <!-- ATLAS_CASE_SCRIPT -->
+<!-- ATLAS_JOURNEY_SCRIPT -->
 <!-- ATLAS_SCRIPT -->
 </body>
 </html>

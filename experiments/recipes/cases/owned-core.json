@@ -1,0 +1,351 @@
+{
+  "schema": "harness-context-case/1",
+  "case_id": "recipe-owned-core-synthetic",
+  "title": "完整 core、工具声明与指导丢失",
+  "question": "工具指导被剥离后，完整 core 和工具声明是否保留？恢复指导的阶段又改变了什么？",
+  "requirements": [
+    {
+      "id": "req_core_present",
+      "text": "剥离与恢复阶段完整保留 authored core。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_tool_schema",
+      "text": "剥离与恢复阶段保留工具名称和完整 input schema。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_tool_guidance",
+      "text": "所选阶段保留工具使用指导；剥离阶段刻意构成反例。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_behavior",
+      "text": "请求结构不能证明模型正确理解、选择并使用指导。",
+      "level": "model_behavior"
+    }
+  ],
+  "study_plan": null,
+  "steps": [
+    {
+      "id": "baseline",
+      "label": "基线：完整 core、schema 与指导",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "owned-core-baseline",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "baseline"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve exact evidence and separate structural checks from model behavior."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Use the synthetic archive lookup for this offline example."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_archive_lookup",
+              "description": "SYNTHETIC TOOL GUIDANCE: report the exact archive label and never infer a missing record.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "current",
+                      "archive"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "owned-core",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false,
+            "canonical_study_generation": false
+          }
+        }
+      }
+    },
+    {
+      "id": "stripped",
+      "label": "反例：schema 保留，使用指导丢失",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "owned-core-stripped",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "stripped"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve exact evidence and separate structural checks from model behavior."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Use the synthetic archive lookup for this offline example."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_archive_lookup",
+              "description": null,
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "current",
+                      "archive"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "owned-core",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false,
+            "canonical_study_generation": false
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed",
+      "label": "恢复：保持声明并还原指导",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "owned-core-fixed",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "fixed"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve exact evidence and separate structural checks from model behavior."
+            }
+          ],
+          "messages": [
+            {
+              "role": "user",
+              "content": "Use the synthetic archive lookup for this offline example."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_archive_lookup",
+              "description": "SYNTHETIC TOOL GUIDANCE: report the exact archive label and never infer a missing record.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "current",
+                      "archive"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "owned-core",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false,
+            "canonical_study_generation": false
+          }
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "baseline_to_stripped",
+      "baseline": "baseline",
+      "candidate": "stripped"
+    },
+    {
+      "id": "stripped_to_fixed",
+      "baseline": "stripped",
+      "candidate": "fixed"
+    }
+  ],
+  "checks": [
+    {
+      "id": "core_retained_after_strip",
+      "requirement_id": "req_core_present",
+      "step_id": "stripped",
+      "pointer": "/system/0/text",
+      "operator": "equals",
+      "expected": "SYNTHETIC OWNED CORE: preserve exact evidence and separate structural checks from model behavior."
+    },
+    {
+      "id": "core_retained_after_fix",
+      "requirement_id": "req_core_present",
+      "step_id": "fixed",
+      "pointer": "/system/0/text",
+      "operator": "equals",
+      "expected": "SYNTHETIC OWNED CORE: preserve exact evidence and separate structural checks from model behavior."
+    },
+    {
+      "id": "schema_retained_while_guidance_missing",
+      "requirement_id": "req_tool_schema",
+      "step_id": "stripped",
+      "pointer": "/tools/0/input_schema",
+      "operator": "equals",
+      "expected": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "current",
+              "archive"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "scope"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "id": "schema_retained_after_fix",
+      "requirement_id": "req_tool_schema",
+      "step_id": "fixed",
+      "pointer": "/tools/0/input_schema",
+      "operator": "equals",
+      "expected": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "current",
+              "archive"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "scope"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "id": "tool_name_retained_after_strip",
+      "requirement_id": "req_tool_schema",
+      "step_id": "stripped",
+      "pointer": "/tools/0/name",
+      "operator": "equals",
+      "expected": "synthetic_archive_lookup"
+    },
+    {
+      "id": "tool_name_retained_after_fix",
+      "requirement_id": "req_tool_schema",
+      "step_id": "fixed",
+      "pointer": "/tools/0/name",
+      "operator": "equals",
+      "expected": "synthetic_archive_lookup"
+    },
+    {
+      "id": "missing_guidance_counterexample",
+      "requirement_id": "req_tool_guidance",
+      "step_id": "stripped",
+      "pointer": "/tools/0/description",
+      "operator": "contains_text",
+      "expected": "never infer a missing record"
+    },
+    {
+      "id": "guidance_restored",
+      "requirement_id": "req_tool_guidance",
+      "step_id": "fixed",
+      "pointer": "/tools/0/description",
+      "operator": "contains_text",
+      "expected": "never infer a missing record"
+    }
+  ]
+}

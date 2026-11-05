@@ -1,73 +1,46 @@
-# Harness Context Engineering Lab
+# Claude Code Context Lab
 
 [中文 (canonical documentation)](README.md) · [English](README.en.md)
 
-Research, compare and maintain the sources, assembly and lifecycle of context in agent harnesses. Claude Code is the most deeply studied harness; the existing repository slug remains `cc-context-lab`. Long-running companion interaction is a primary use case, including an owned core, present context, automatic memory recall, autonomous turns, channels and continuity. Fewer tokens are not a substitute for better interaction.
+Understand where Claude Code context comes from, how it is assembled and how it changes across turns and resumed sessions. **Handbook, Workbench and Toolkit** connect explanations with fixed, reproducible material. The repository slug remains `cc-context-lab`. Other harnesses are comparative references; reusable wire readers do not constitute non-CC product support.
 
-The repository currently provides a sourced research library, Context Atlas, reproducible synthetic A/B studies, local request observation, explicit CC run imports and frozen snapshots, multi-stage context cases and CC-specific source candidates. The [project repository](https://github.com/IndelibleVivi/cc-context-lab) uses SUL-1.0 for original functional material and CC BY-NC-SA 4.0 for original research content; see the [licensing map](LICENSING.md). It is not a deployed context manager, complete persona/profile or fully verified context-stripping solution. See the [current evidence and gaps](docs/current-state.md).
+The CC research scope includes a complete owned core, ambient/present state, automatic memory recall, autonomous turns, channel inputs and compact/resume continuity. Fewer tokens do not automatically mean better interaction.
 
-## Import an explicit CC run
+## Three ways to start
 
-The current development priority is the CC evidence path; the cross-harness scope and existing readers remain. This synthetic example needs Python 3.10+ and Node.js, with no installation or model calls:
-
-```sh
-python3 scripts/import_cc_run.py --selection experiments/cc-runs/fixtures/selection.json --out .cache/cc-run-example
-python3 scripts/build_context_atlas.py --run .cache/cc-run-example/run.json \
-  --pair synthetic-file-mode:request-main synthetic-file-mode:request-partial --out .cache/cc-run-atlas
-```
-
-Open the generated Atlas, select **CC Run**, and inspect its associated, unindexed and partial requests. The importer reads only selected request/response/index/event files. It keeps ambiguous links and content losses; it never discovers logs or follows recorded paths. Single-request viewing is independent of comparison. Only explicit directed pairs are prepared; an unavailable pair shows a rebuild selection rather than an empty diff.
-
-Download a frozen run snapshot to reopen with `--run`. Observation exports and fixed briefs retain the run sidecar and caveats. All concrete output targets inside the worktree must be ignored and untracked, including outputs declared synthetic. This is an offline evidence workflow, not newly verified native logging, lifecycle behavior or provider acceptance. See [CC run contracts and usage](docs/cc-runs.md).
-
-## Run the daily quiet comparison
-
-Requires Python 3.10+ and Node.js. No dependency installation, network or model call is needed:
-
-```sh
-node --test experiments/daily-quiet/tests/rules.test.mjs
-mkdir -p .cache/daily-quiet
-node experiments/daily-quiet/demo.mjs > .cache/daily-quiet/input.json
-python3 scripts/run_context_case.py .cache/daily-quiet/input.json --out .cache/daily-quiet/result
-python3 scripts/build_context_atlas.py --case .cache/daily-quiet/result/case.json
-```
-
-The [Daily quiet experiment](experiments/daily-quiet/README.md) supplies portable pure rules, a thin opt-in Mods entry, native test-kit fixtures and a synthetic case. Reviewed engine prose is identified by fragment digests; unknown text, new facts and tool schemas survive. There is no binary-version gate for presentation filtering. Exact recovery and authorization stay with each runtime owner.
-
-The case exercises baseline, candidate, changed native text and a partial system/tools-only shape. Seven structural requirements pass; four requirements remain `NOT_ASSESSED`, including unknown history, resume, model behavior and delivery. Linux CC 2.1.314 and 2.1.316 passed three synthetic native event tests each; validation passed with catalog warnings. These results do not establish complete provider requests or conversation quality. See [portable evidence](references/daily-quiet.json).
-
-## Inspect, compare and prepare a change
-
-| Reader goal | Entry |
+| Goal | Start here |
 | --- | --- |
-| Understand source, trust and runtime-owner boundaries | [Chinese README architecture](README.md#架构与边界), [Context DevOps](docs/context-devops.md) |
-| Reproduce multi-stage context checks | [Context cases](docs/context-cases.md) |
-| Import selected CC request / response / index / event material and reopen snapshots | [CC runs](docs/cc-runs.md) |
-| Inspect explicit Anthropic Messages / OpenAI Responses captures | [Request observation](docs/request-observation.md) |
-| Browse sources, cases, comparisons and fixed change briefs | [Context Atlas](workbench/README.md) |
-| Compare current/history, placement and source selection | [Context studies](experiments/companion-input/STUDIES.md) |
-| Study companion context, autonomous turns and continuity | [Companion context](docs/companion-context.md), [development programme](docs/development-programme.md) |
-| Check CC-specific source candidates and target evidence | [Maintenance](docs/maintenance.md), [target runtime](docs/target-runtime.md) |
-| Trace sources and dated coverage | [Context map](docs/context-map.md), [research evidence](docs/research-evidence.md), [upstreams](docs/upstreams.md) |
+| Learn mechanisms and change methods | [Handbook](docs/handbook/index.md): owned core, dynamic state and compact/resume |
+| Reproduce a synthetic example | Run the command below and inspect requirements, original values, failures and evidence gaps in Workbench |
+| Inspect an explicitly selected CC run | [CC runs](docs/cc-runs.md): selection → captures/sidecar → single request or explicit pair → frozen snapshot |
 
-The observer preserves explicit request values and unknown parameters. The wire format does not imply support for every harness using it. Same-format comparisons align JSON pointers; cross-format comparisons do not infer semantic equivalence. Origin and lifecycle remain `unknown`. Partial captures must declare the observed top-level fields; unobserved history is unknown rather than empty, absent or deleted. Unexpanded server-side references remain gaps. Imported manifests are declarations, not independently verified runtime provenance.
-
-Build the default synthetic Atlas with `python3 scripts/build_context_atlas.py`. Import real local captures only through explicit `--capture` or `--run` inputs and keep generated output outside Git or in ignored paths. The builder does not discover logs or follow external references. Its downloadable brief prepares evidence; it grants no installation, deployment or messaging authority.
-
-## Verification and operational boundary
-
-Run the authored offline gate from the repository root:
+Requires Python 3.10+ and Node.js. Reading alone requires no dependency installation.
 
 ```sh
-python3 scripts/check_offline.py
+python3 scripts/build_context_atlas.py --recipe owned-core --out .cache/cc-context-workbench
 ```
 
-It checks the engines, CLI, presenters, synthetic candidates and request preparation without downloading dependencies, executing a CC binary, contacting upstreams or calling models. [Upstream checks](docs/maintenance.md), native plugin checks, local composition probes and real model experiments remain separate operations with their own prerequisites. The default case deliberately includes a structural failure; its runner exits 1 and still writes the report. The Daily quiet case above exits 0 with explicit unassessed requirements.
+Open `index.html` in the output directory. The three recipes use fixed synthetic material, including satisfied structural checks, intentional FAIL examples and unassessed requirements. They are not installed configurations. Existing Toolkit scripts run cases, studies, request inspection and explicit CC imports; Workbench presents the same canonical results. See [Workbench usage](workbench/README.md).
 
-Runtime source repositories, candidate renderers and operator runbooks own real configuration, installation, recovery and delivery. Lab code does not automatically modify deployments, start schedulers, call models or send messages. A managed consumer's installed state is separate from Lab's synthetic results. See [runtime integration](docs/runtime-integration.md).
+## Evidence and boundaries
 
-## Privacy, provenance and rights
+Synthetic structural checks, public source inspection, offline checks against a specified native build, actual requests and model behavior are separate evidence layers. Recipe native protocols are `NOT_EXECUTED`; actual lifecycle and behavior remain `NOT_ASSESSED`. Historical native results retain their original dates, versions and scope. See [current state](docs/current-state.md) and [historical research evidence](docs/research-evidence.md).
 
-The repository contains project-authored research, transformations, synthetic fixtures and public source links. It does not vendor complete third-party implementations or native prompt texts. Private discussions, identity, account configuration, real requests, transcripts, machine mappings and continuity remain outside Git, including private remotes. `.cache/`, `.local/` and `artifacts/` are local-only output locations.
+Lab does not discover private logs, follow paths or URLs in captures, install candidates, start schedulers, call models or send messages. Private captures enter local views only through explicit input. Outputs must be outside Git or in ignored, untracked worktree paths. Actual requests, identities, configuration, transcripts and private continuity must remain outside Git, including private remotes. External Memory/state, production integration and recovery remain with the original runtime owner.
 
-Original code, scripts, tests and executable experiment materials use [SUL-1.0](LICENSE), a source-available license with use restrictions. Original documentation, diagrams and research arrangement use [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md). Third-party sources and externally loaded checkouts retain their original rights. This is not a single OSI open-source grant for the whole repository. Include the applicable notices and [path map](LICENSING.md) when copying a plugin directory. [AGENTS.md](AGENTS.md) records maintenance authority and verification rules; the Chinese README is the canonical full documentation map.
+The [architecture diagram](README.md#架构与边界) distinguishes local evidence paths from separately authorized runtime integration. A request alone cannot establish origin or lifecycle: unknown stays unknown. Unobserved partial-capture fields are not empty or deleted. Different wire formats are not automatically paired.
+
+## Documentation map
+
+| Content | Entry |
+| --- | --- |
+| Three complete offline learning paths | [Handbook](docs/handbook/index.md) |
+| Local views, fixed inputs, comparisons and exports | [Workbench](workbench/README.md), [Context cases](docs/context-cases.md), [CC runs](docs/cc-runs.md) |
+| Sources, controls and version evidence | [Context map](docs/context-map.md), [Official controls](docs/official-controls.md), [Upstreams](docs/upstreams.md) |
+| Personalization and autonomous turns | [Companion context](docs/companion-context.md), [Continuity and Memory](docs/continuity-and-memory.md) |
+| Experiments, integration and upgrades | [Experiments](experiments/README.md), [Runtime integration](docs/runtime-integration.md), [Maintenance](docs/maintenance.md) |
+| Current status and remaining gates | [Current state](docs/current-state.md), [Programme](docs/development-programme.md) |
+
+Run `python3 scripts/check_offline.py` after authored source changes. This gate does not execute official binaries, network checks, runtime probes or models. Native checks and actual observations have separate preconditions; offline success does not establish installation, deployment or interaction quality.
+
+Original functional material uses [SUL-1.0](LICENSE); original documentation, diagrams and research composition use [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md). Third-party material retains its original rights. This is layered source-available licensing, not a repository-wide OSI open-source license. Plugin directory copies must carry the applicable license files. See [LICENSING](LICENSING.md) and the [agent contract](AGENTS.md).

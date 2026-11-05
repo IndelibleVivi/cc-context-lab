@@ -97,7 +97,7 @@ function renderObservation(){
     var list=el('dl',{cls:'observation-runtime'});
     Object.entries(Object.assign({wire_format:capture.wire_format},capture.runtime)).forEach(function(pair){
       list.appendChild(el('dt',{text:pair[0]}));list.appendChild(el('dd',{text:pair[1]===null?'未记录':String(pair[1])}));
-    });panel.appendChild(list);identity.appendChild(panel);
+    });panel.appendChild(el('details',{cls:'runtime-details'},[el('summary',{text:'Runtime 条件与入口'}),list]));identity.appendChild(panel);
   });
   $('observation-summary').textContent=comparison.single?'单份 request 观察 · 证据范围与原值独立保留；未生成自身比较。':(comparison.alignment==='cross_format_unaligned'?
     '跨 wire format · 不自动配对。相似原文不证明同一来源或输入等价。':

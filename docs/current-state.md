@@ -1,10 +1,18 @@
 # 当前研究状态
 
-更新：2026-11-01（Asia/Singapore）。范围已扩展为 **Harness Context Engineering Lab**；Claude Code 是研究最深入的一条线。现有 repo / slug 仍为 `cc-context-lab`，`main` 管理 source，[现有仓库](https://github.com/IndelibleVivi/cc-context-lab)已公开，provider与匿名HTTPS读取均已核对。当前是**可使用的研究、离线实验和本地请求观察与案例工作台**；不是已部署的 context manager 或完整 persona/profile。
+更新：2026-11-06（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
+
+三条路径提供机制说明、固定输入、成功/反例/回退与证据缺口；native protocols 为 `NOT_EXECUTED`，真实请求、生命周期与模型行为为 `NOT_ASSESSED`。这不代表完整机制书、已部署 manager 或完整 persona/profile。既有 reader、case、study 和显式 CC run 材料链继续保留。
+
+本轮 `python3 scripts/check_offline.py` exit 0：241 项 Python tests、64 项 Node tests，共 305 项；另有 6 项 JS syntax 检查。三条 recipe 经 canonical case runner 重跑，均按预期返回 1 并保留报告：owned-core、dynamic-state 为 2 PASS / 1 FAIL / 1 NOT_ASSESSED 要求，compact-resume 为 2 / 1 / 2。完整 core、完整工具 schema/名称、revision 2 历史保留均有改变值后失败的检查。
+
+本地浏览器在 1440×1000 与 390×844 核对了问题入口、阶段/显式比较、partial scope、brief、下载与显式 Run → recipe → 原材料恢复；未见页面横向溢出，应用 console 未见 warn/error。实际下载 case 与比较 JSON 等于 Python canonical 值，下载 case 经 CLI 重跑保留预期结构反例；brief 保留固定的 revision 与纠正材料。README Mermaid 已渲染检查。它们不是用户研究、owner 审美接受或 native 运行证据。
+
+索引中的 mechanism IDs 与相关文档只服务当前三条学习/诊断路径；尚未构成绑定具体 revision/symbol 的完整 claim graph、来源 identity/transform receipts、真实 trace 或升级影响分析。native protocol 已准备，未执行。统一工具入口为 `python3 -m context_lab`，具体动作继续调用既有 canonical scripts。
 
 ## 2026-11-01 CC run 的离线材料链
 
-本轮优先完成 CC 主线，保留跨 harness 的产品范围与现有名字。[CC runs](cc-runs.md) 已贯通明确 selection → 原值 captures / run sidecar → Atlas Run → 单份 / 指定 pair → 固定 snapshot 与 brief。新增 source 采用同一 reader/writer，不启动 CC、发现 logs 或打开材料中的引用。
+以下为 2026-11-01 的历史交付记录；其跨 harness 产品范围已由 2026-11-06 CC-only 决定取代。[CC runs](cc-runs.md) 已贯通明确 selection → 原值 captures / run sidecar → Atlas Run → 单份 / 指定 pair → 固定 snapshot 与 brief。新增 source 采用同一 reader/writer，不启动 CC、发现 logs 或打开材料中的引用。
 
 统一输出政策已收敛到 `context_lab/io_policy.py`，覆盖 inspector、case runner、Atlas 和 importer；mkdir/staging 前核 resolved 目录与每个目标。仓库内必须 ignored 且未 tracked，synthetic 声明不能绕过；macOS 标准临时目录 alias 可用，自定义 symlink 路由拒绝。原值、坏输入/编码保留旧报告、alias 与逐文件 atomic replace 继续验证。
 

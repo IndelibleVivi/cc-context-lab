@@ -54,10 +54,11 @@ function renderCaseStep(){
     '完整 request body 文件对象'}));
   root.appendChild(el('p',{cls:'field__note',text:'observed_at：'+(o.evidence.observed_at||'未记录')+'；origin/lifecycle unknown；顺序不证明真实继承。'}));
   var runtime=el('dl',{cls:'observation-runtime'});
-  Object.entries(o.runtime).forEach(([k,v])=>{runtime.appendChild(el('dt',{text:k}));runtime.appendChild(el('dd',{text:v===null?'未记录':v}));});root.appendChild(runtime);
+  Object.entries(o.runtime).forEach(([k,v])=>{runtime.appendChild(el('dt',{text:k}));runtime.appendChild(el('dd',{text:v===null?'未记录':v}));});root.appendChild(el('details',{cls:'runtime-details'},[el('summary',{text:'Runtime 条件与入口'}),runtime]));
   o.unresolved_context.forEach(text=>root.appendChild(el('p',{cls:'observation-limits',text:text})));
-  root.appendChild(el('h4',{text:o.evidence_scope?.request_body==='partial'?'声明的部分原始 request body（不是完整请求）':'完整原始 request body'}));
-  root.appendChild(el('pre',{text:data.display.steps[step.id]}));
+  root.appendChild(el('details',{cls:'case-body-details'},[
+    el('summary',{text:o.evidence_scope?.request_body==='partial'?'声明的部分原始 request body（不是完整请求）':'完整原始 request body'}),
+    el('pre',{text:data.display.steps[step.id]})]));
 }
 function renderCaseChecks(){
   var report=caseResult(),root=$('case-checks');clear(root);

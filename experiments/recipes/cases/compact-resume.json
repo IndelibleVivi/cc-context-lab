@@ -1,0 +1,351 @@
+{
+  "schema": "harness-context-case/1",
+  "case_id": "recipe-compact-resume-synthetic",
+  "title": "Compact 与 resume 的指导承接",
+  "question": "旧指导和纠正能否在摘要与续接中同时保留？部分材料能否判断 messages 是否退出？",
+  "requirements": [
+    {
+      "id": "req_old_guidance",
+      "text": "较早指导在声明的历史中仍可找到。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_correction",
+      "text": "纠正原文在所需的历史与摘要位置中得到保留。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_resume",
+      "text": "续接请求包含合成 continuation 提示。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_partial_scope",
+      "text": "部分材料不能证明未观察的 messages 缺失。",
+      "level": "request_structure"
+    },
+    {
+      "id": "req_behavior",
+      "text": "请求结构不能证明模型正确理解、选择并使用指导。",
+      "level": "model_behavior"
+    }
+  ],
+  "study_plan": null,
+  "steps": [
+    {
+      "id": "baseline",
+      "label": "压缩前：指导与后续纠正",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "compact-resume-baseline",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "pre-compact"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve supplied corrections across lifecycle transitions."
+            }
+          ],
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "Original synthetic guidance: require a dry-run before applying a production change."
+            },
+            {
+              "role": "user",
+              "content": "Correction: require a dry-run before both staging and production changes."
+            },
+            {
+              "role": "user",
+              "content": "Continue the synthetic maintenance checklist."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_change_plan",
+              "description": "Prepare a synthetic change plan without applying it.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "environment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "environment"
+                ]
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "compact-resume",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "compacted_stale",
+      "label": "反例：摘要省略纠正",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "compact-resume-compacted-stale",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "compact"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve supplied corrections across lifecycle transitions."
+            }
+          ],
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "Original synthetic guidance: require a dry-run before applying a production change."
+            },
+            {
+              "role": "assistant",
+              "content": "Compact summary: continue the synthetic maintenance checklist with a dry-run."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_change_plan",
+              "description": "Prepare a synthetic change plan without applying it.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "environment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "environment"
+                ]
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "compact-resume",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "compacted_fixed",
+      "label": "修复：摘要保留纠正与续接提示",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "compact-resume-compacted-fixed",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "compact-then-resume"
+        },
+        "wire_format": "anthropic-messages",
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve supplied corrections across lifecycle transitions."
+            }
+          ],
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "Original synthetic guidance: require a dry-run before applying a production change."
+            },
+            {
+              "role": "user",
+              "content": "Correction: require a dry-run before both staging and production changes."
+            },
+            {
+              "role": "assistant",
+              "content": "Compact summary: dry-run applies to staging and production; the synthetic maintenance checklist is still active."
+            },
+            {
+              "role": "user",
+              "content": "Resume: continue the synthetic maintenance checklist without applying changes."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_change_plan",
+              "description": "Prepare a synthetic change plan without applying it.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "environment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "environment"
+                ]
+              }
+            }
+          ],
+          "synthetic_case_association": {
+            "recipe_id": "compact-resume",
+            "authorship": "project-authored synthetic fixture",
+            "actual_observed_trace": false
+          }
+        }
+      }
+    },
+    {
+      "id": "partial_system_tools",
+      "label": "部分观察：仅有 system/tools，messages 未知",
+      "capture": {
+        "schema": "harness-context-capture/1",
+        "capture_id": "compact-resume-partial-system-tools",
+        "evidence": {
+          "kind": "synthetic_fixture",
+          "observed_at": null
+        },
+        "runtime": {
+          "harness": "synthetic-claude-code-recipe",
+          "version": "synthetic",
+          "entrypoint": "offline-authored-case",
+          "mode": "offline",
+          "candidate": "NOT_INSTALLED",
+          "session_path": "resume-partial-shape"
+        },
+        "wire_format": "anthropic-messages",
+        "evidence_scope": {
+          "request_body": "partial",
+          "observed_fields": [
+            "model",
+            "system",
+            "tools"
+          ]
+        },
+        "body": {
+          "model": "synthetic-model-placeholder",
+          "system": [
+            {
+              "type": "text",
+              "text": "SYNTHETIC OWNED CORE: preserve supplied corrections across lifecycle transitions."
+            }
+          ],
+          "tools": [
+            {
+              "name": "synthetic_change_plan",
+              "description": "Prepare a synthetic change plan without applying it.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "environment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "environment"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "stale_to_fixed",
+      "baseline": "compacted_stale",
+      "candidate": "compacted_fixed"
+    },
+    {
+      "id": "fixed_to_partial_shape",
+      "baseline": "compacted_fixed",
+      "candidate": "partial_system_tools"
+    }
+  ],
+  "checks": [
+    {
+      "id": "old_guidance_retained",
+      "requirement_id": "req_old_guidance",
+      "step_id": "compacted_fixed",
+      "pointer": "/messages/0/content",
+      "operator": "contains_text",
+      "expected": "Original synthetic guidance"
+    },
+    {
+      "id": "correction_exact",
+      "requirement_id": "req_correction",
+      "step_id": "compacted_fixed",
+      "pointer": "/messages/1/content",
+      "operator": "equals",
+      "expected": "Correction: require a dry-run before both staging and production changes."
+    },
+    {
+      "id": "summary_correction_counterexample",
+      "requirement_id": "req_correction",
+      "step_id": "compacted_stale",
+      "pointer": "/messages/1/content",
+      "operator": "contains_text",
+      "expected": "staging and production"
+    },
+    {
+      "id": "summary_retains_correction",
+      "requirement_id": "req_correction",
+      "step_id": "compacted_fixed",
+      "pointer": "/messages/2/content",
+      "operator": "contains_text",
+      "expected": "staging and production"
+    },
+    {
+      "id": "resume_prompt_present",
+      "requirement_id": "req_resume",
+      "step_id": "compacted_fixed",
+      "pointer": "/messages/3/content",
+      "operator": "contains_text",
+      "expected": "Resume: continue the synthetic maintenance checklist"
+    },
+    {
+      "id": "partial_messages_absence_unproven",
+      "requirement_id": "req_partial_scope",
+      "step_id": "partial_system_tools",
+      "pointer": "/messages/2",
+      "operator": "absent",
+      "expected": null
+    }
+  ]
+}

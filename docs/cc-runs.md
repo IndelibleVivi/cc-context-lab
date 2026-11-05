@@ -1,6 +1,6 @@
 # 显式导入 CC run，再选择请求比较
 
-更新：2026-11-01。此页拥有 CC 材料导入和 Atlas run 的使用路径。项目仍是跨 harness 的 Context Engineering Lab；CC 是当前优先打通的主线。通用 capture 与 case v1 继续可用。
+更新：2026-11-06。此页拥有 Claude Code Context Lab 的显式材料导入和 Workbench Run 使用路径。产品范围为 CC-only；既有 capture 与 case v1 保持兼容。
 
 这条路径读取你明确选定的 request、response、index 和 event 文件，生成可供既有 observer 使用的 captures，并用 `run.json` 保留关联、来源声明、内容损失与缺口。它不启动 CC、不采集日志、不读账号、不跟随 `body_ref` / URL / index 里的路径，也不执行材料中的命令。
 

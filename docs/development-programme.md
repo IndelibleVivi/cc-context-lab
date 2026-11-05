@@ -1,6 +1,12 @@
+# Claude Code Context Lab：建设 programme
+
+2026-11-06：用户已选择 CC-only，名称为 Claude Code Context Lab，保留 slug。Handbook + Workbench + Toolkit 围绕 owned-core、dynamic-state、compact-resume 三条完整离线路径组织。其他 harness 仅作比较参考；两个 wire readers、case v1 与现有公开研究保留，不广告为非 CC 支持。
+
+当前交付包含固定合成输入、成功/失败/回退、canonical 检查与本地视图；native protocols 尚未执行。完整机制索引、跨阶段关系/receipts、native request/lifecycle、独立行为证据与升级复验仍各有门槛，不能由三条离线 guide 自动推导完成。完整个人化、ambient、自动 recall、自主轮次、channel 与 compact continuity 保持研究范围。以下记录保留 programme 理由及历史阶段，冲突的范围决定以上述现行选择为准。
+
 # 愿景、能力结构与连续建设
 
-2026-10-25 校准并扩大范围为 Harness Context Engineering Lab；2026-11-01 确认保留跨 harness 范围，当前先完成 CC 材料主线。现有 slug 仍为 `cc-context-lab`。本文维护产品方向和阶段之间的关系；当前已证事实归 [current state](current-state.md)，各技术结论仍归专题与 `references/`。阶段描述不授予真实模型调用、安装或生产操作权限。
+2026-10-25 曾校准并扩大范围为 Harness Context Engineering Lab（历史决定，已由 2026-11-06 CC-only 选择取代）；2026-11-01 确认保留跨 harness 范围，当前先完成 CC 材料主线。现有 slug 仍为 `cc-context-lab`。本文维护产品方向和阶段之间的关系；当前已证事实归 [current state](current-state.md)，各技术结论仍归专题与 `references/`。阶段描述不授予真实模型调用、安装或生产操作权限。
 
 ## 为什么存在
 
@@ -54,7 +60,7 @@
 
 2026-10-25 查阅 [Inspect Log Viewer](https://inspect.aisi.org.uk/log-viewer.html)、[Inspect Log Files](https://inspect.aisi.org.uk/eval-logs.html) 和 [Promptfoo Web Viewer](https://www.promptfoo.dev/docs/usage/web-ui/)。可借鉴的是保存可计算的实验记录、深入样本事件/历史以及并排比较条件。本文采用这一机制方向，不声称运行或审计了这些框架；本 repo 不新增这些依赖，也不把模型分数当作伴侣体验的替代物。
 
-## 跨 harness 的建设边界
+## 比较参考与复用边界（历史 programme）
 
 共享的是研究对象和证据合同：什么来源、什么输入位置、什么时刻与版本条件、如何承接、实际观察到哪层。各 harness 的来源开关、事件、工具池、compact/subagent、权限与恢复继续由专属接点拥有，不能把 CC Mods 的可用事件推广成所有 harness 的能力。
 
@@ -66,17 +72,17 @@
 
 ## CC 材料主线（2026-11-01）
 
-本轮把下一阶段研究中可复用的 IO、选择性比较与显式导入接到 canonical modules；不采用收回 CC 专属产品范围的建议。原 studies、两个 wire readers、case v1、完整个人化语境与原 runtime ownership 继续保留。独立导入成功只关闭离线材料边界，不关闭整条 programme。
+本轮把下一阶段研究中可复用的 IO、选择性比较与显式导入接到 canonical modules；当时未采用收回 CC 专属产品范围的建议（已由 2026-11-06 决定取代）。原 studies、两个 wire readers、case v1、完整个人化语境与原 runtime ownership 继续保留。独立导入成功只关闭离线材料边界，不关闭整条 programme。
 
 | 工作包 | 当前结果 | 仍需什么 |
 | --- | --- | --- |
-| P0 输出政策与范围 | 共享 IO policy 接入 inspector / case / Atlas / importer；所有具体目标检查 ignored/untracked；跨 harness 范围保留 | 不授予 native/生产操作 |
+| P0 输出政策与范围 | 共享 IO policy 接入 inspector / case / Atlas / importer；所有具体目标检查 ignored/untracked；现行产品范围为 CC-only | 不授予 native/生产操作 |
 | P1 选择性比较 | 单份观察独立可用；只算明确 pairs；case 默认自身 comparisons；共享 canonical 文本、缺 pair 重建、精确导出 | 大规模真实材料的实际使用证据 |
 | P2 CC run 材料链 | request/response/index/event 显式选材、关联冲突、target声明与content losses、sidecar、Atlas run、固定 snapshot 重开 | 实际目标 build 的显式原生日志格式验收；完整 target fingerprint 仍待发展 |
-| P3 共享机制索引与 Handbook | 规划中；既有 docs/references 继续拥有事实 | 稳定 claim IDs、机制/recipe 导航、共享校验与表格投影 |
+| P3 共享机制索引与 Handbook | 三条 recipe 的本地机制导航、中文 Handbook 与共享校验已接入；专题仍拥有事实 | 完整的 revision/symbol 绑定 claim IDs 与生成证据表 |
 | P4 跨阶段关系与 receipts | 规划中；旧四类 pointer 检查保留 | 来源 identity、受限关系谓词、witnesses、scope-aware absence 与 adapter reachability |
-| P5 三套完整 recipes | owned core / 动态 state / compact-resume 的完整方向保留 | 固定输入、成功/失败/回退、native request/lifecycle 与独立行为证据 |
-| P6 用户路径 | Run 的查看、单份/pair、固定导出已接入现有 Atlas | recipe/claim/source/receipt 的联动入口，不能以当前 Run 页冒充完成 |
+| P5 三套完整 recipes | owned core / 动态 state / compact-resume 的固定离线输入、成功/反例、诊断/恢复与待执行 protocol 已可用 | native request/lifecycle 与独立行为证据 |
+| P6 用户路径 | 问题 → recipe 机制/做法 → 阶段/检查 → 显式请求比较 → 固定 brief 已接入 Workbench；原始材料可恢复 | 完整 claim/source identity/receipt 联动仍待 P3/P4 |
 | P7 升级复验 | 规划中；原只读 upstream checker 和 candidate checker 保留各自意义 | 两个固定 run/fingerprint 的影响分析、适用 claims/recipes、真实复验与 owner 恢复材料 |
 
 下一接点先建立主线使用到的共享机制/claim/recipe 依据，并把已有 case 的保留要求绑定到显式 run 和来源 identity。可以继续离线准备 source 与反例；native acquisition、模型任务、安装与原 runtime 接入另按相应授权进行。未知/未执行项继续 `NOT_ASSESSED`，不把历史报告、文档合同或合成通过升级为本轮真实验证。当前可运行链路见 [CC runs](cc-runs.md)。

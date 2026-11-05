@@ -1,6 +1,6 @@
-# Context Atlas
+# CC Context Workbench
 
-本地交互式研究入口：把 context 的来源、装配、生命周期、自主活动和运维准备放在一起读。目标与职责见 [Context DevOps](../docs/context-devops.md)；它连接现有研究，不替代技术专题或生产 runtime。
+Claude Code 的本地问题工作台：从机制与做法进入同一案例的阶段、检查、请求原值与变更 brief。目标与职责见 [Context DevOps](../docs/context-devops.md)；它连接现有研究，不替代技术专题或生产 runtime。
 
 ## 生成与打开
 
@@ -16,7 +16,29 @@ python3 scripts/build_context_atlas.py
 
 `--out <local-output-directory>` 可选择本地输出位置；保持输出在 Git 外。`--data-only` 只生成研究数据，不组合界面。生成后，若 canonical docs/references 或 fixture 改动，重新运行同一个入口；页面是一个有日期的本地快照，没有后台自动更新。
 
-## 阅读与研究动作
+## 从问题走到结果
+
+默认打开「问题与做法」，选择 owned-core、dynamic-state 或 compact-resume。机制依据和步骤来自同一 [recipe 索引](../references/recipes.json)，三个固定合成案例均在 Python 端计算；「打开案例」接到「阶段与检查」，显式比较再接到「请求原值」，固定结果可带入「变更 brief」。案例有意含 FAIL；它不是一次未完成的导入。完整解释与 native 待执行方案见 [Handbook](../docs/handbook/index.md)。
+
+也可直接 `python3 scripts/build_context_atlas.py --recipe dynamic-state`。`--recipe` 与 `--case` / `--run` / `--study` / `--capture` 互斥。显式导入仍优先打开对应视图；从问题页切入合成示例后，用「回到我带入的材料」恢复本页原始材料。切换仅选择预先生成的 bundle，不执行检查、不访问文件；已固定到 brief 的附件仍保留原值。A/B 研究是独立编辑空间，切换 recipe 不改写其 fixture、条件或未保存编辑；其视图明确标为独立研究，只有显式恢复 plan 才改变输入。
+
+「研究工具 +」展开 CC Run、对照研究、自主轮次回放、机制全景与来源；键盘方向键在当前可见 tabs 之间移动。关闭当前工具时回到问题页。完整学习入口与查看原值都无需网络。
+
+Toolkit 也有统一入口，转交已有 canonical 脚本，不新增引擎：
+
+```sh
+python3 -m context_lab recipes
+python3 -m context_lab workbench --recipe owned-core
+python3 -m context_lab case case.json --out .cache/my-case
+python3 -m context_lab inspect --help
+python3 -m context_lab import-run --help
+python3 -m context_lab study --help
+python3 -m context_lab check
+```
+
+运行 recipe 的原始 case 时返回1表示有意保留的结构反例，2才是非法输入或IO错误；报告仍写出。检查模型行为与native运行需另按guide执行。
+
+## 研究工具与材料动作
 
 - **全景**：选择一个 context 环节，看来源/入口、owner、已有证据、关联问题和限制。图的箭头表达研究关系，不表示生产依赖自动扫描结果。
 - **回放**：选择合成情境、trigger、placement 与 history，点击实际 wake 查看 current input、历史、排除原因和轮后 scripted results。主聊天的活跃窗口与一轮执行的 busy 窗口分别显示。
@@ -59,7 +81,7 @@ Run 页可按提交材料的 session/process/agent 分组；未知身份保持�
 
 ## 研究案例与重跑
 
-默认页新增“研究案例”：把同一个问题、保留要求、合成 study snapshot、多阶段 capture 和明确结构检查放在一起。可检查失败与缺口、选择阶段原值、跳到显式请求比较、恢复关联 study，并将完整报告固定带入 brief。JSON/Markdown 全部来自同次 Python 计算，浏览器不重新执行检查。
+「阶段与检查」展示当前案例：把同一个问题、保留要求、合成 study snapshot、多阶段 capture 和明确结构检查放在一起。可检查失败与缺口、选择阶段原值、跳到显式请求比较、恢复关联 study，并将完整报告固定带入 brief。JSON/Markdown 全部来自同次 Python 计算，浏览器不重新执行检查。
 
 ```sh
 python3 scripts/run_context_case.py --demo --out .cache/context-case

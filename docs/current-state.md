@@ -8,6 +8,8 @@
 
 本地浏览器在 1440×1000 与 390×844 核对了问题入口、阶段/显式比较、partial scope、brief、下载与显式 Run → recipe → 原材料恢复；未见页面横向溢出，应用 console 未见 warn/error。实际下载 case 与比较 JSON 等于 Python canonical 值，下载 case 经 CLI 重跑保留预期结构反例；brief 保留固定的 revision 与纠正材料。README Mermaid 已渲染检查。它们不是用户研究、owner 审美接受或 native 运行证据。
 
+2026-11-06 Workbench 完成一轮纯呈现层的 quiet-paper / Claudish 视觉重整：暖纸环境光、serif 阅读层级、陶土主操作与苔绿证据色覆盖问题、case、观察、brief、研究、回放、全景和来源视图；新增装饰性双-c 标记，并针对中文平衡换行、窄屏、键盘焦点与 reduced-motion 调整。未改变 canonical 数据、JS 状态或导出合同。最终 `python3 scripts/check_offline.py` exit 0；浏览器实际走通 recipe → case → FAIL 筛选 → 指定比较 → brief 附件与标题预览，1440×1000 / 390×844 主视图无页面横向溢出，console 无 warn/error。视觉结果仍待 owner 审美验收，不构成 native 或生产状态证据。
+
 索引中的 mechanism IDs 与相关文档只服务当前三条学习/诊断路径；尚未构成绑定具体 revision/symbol 的完整 claim graph、来源 identity/transform receipts、真实 trace 或升级影响分析。native protocol 已准备，未执行。统一工具入口为 `python3 -m context_lab`，具体动作继续调用既有 canonical scripts。
 
 ## 2026-11-01 CC run 的离线材料链

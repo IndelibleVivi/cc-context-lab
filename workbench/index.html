@@ -20,9 +20,12 @@
       <h1 class="masthead__title" id="atlas-title">CC Context Workbench</h1>
       <p class="masthead__sub" id="atlas-intro">从一个具体问题，追到 Claude Code 的输入、变化与证据。</p>
     </div>
-    <div class="masthead__meta" id="atlas-meta" aria-label="数据快照信息">
-      <span class="chip chip--snapshot" id="atlas-snapshot-chip">本地快照 · 合成回放数据</span>
-      <span class="chip" id="atlas-date-chip">日期 —</span>
+    <div class="masthead__utility">
+      <a class="repo-link" href="https://github.com/IndelibleVivi/cc-context-lab" target="_blank" rel="noopener noreferrer"><span>Source on GitHub</span><span aria-hidden="true">↗</span></a>
+      <div class="masthead__meta" id="atlas-meta" aria-label="数据快照信息">
+        <span class="chip chip--snapshot" id="atlas-snapshot-chip">本地快照 · 合成回放数据</span>
+        <span class="chip" id="atlas-date-chip">日期 —</span>
+      </div>
     </div>
   </div>
   <nav class="tabbar" id="atlas-tabbar" aria-label="视图切换">
@@ -46,7 +49,7 @@
 <main id="atlas-main" class="atlas-main">
   <div id="journey-context" class="journey-context" hidden aria-live="polite"></div>
   <section class="panel" id="panel-home" role="tabpanel" aria-labelledby="tab-home" data-panel="home" tabindex="-1">
-    <div class="journey-heading"><div><span class="section-kicker">OBSERVE / CHANGE / VERIFY</span><h2>想让 CC 的哪一部分<br>真正按你的意思运行？</h2><p>选择一个问题。先理解机制，再沿同一份材料检查变化、反例和未证实的部分。</p></div><div class="context-stack" aria-label="观察的三个输入面"><span>system <b>主提示与 core</b></span><span>tools <b>说明、schema 与发现</b></span><span>messages <b>动态输入与历史</b></span><small>同一个改动，可能留在不止一个位置。</small></div></div>
+    <div class="journey-heading"><div><span class="section-kicker">OBSERVE / CHANGE / VERIFY</span><h2>想让 CC 的哪一部分<br>真正按你的意思运行？</h2><p>用固定合成材料，看清 Claude Code 的输入从哪里来、如何变化、什么尚未被证明。选择一个问题，沿同一份材料走完观察与检查。</p></div><div class="context-stack" aria-label="观察的三个输入面"><span>system <b>主提示与 core</b></span><span>tools <b>说明、schema 与发现</b></span><span>messages <b>动态输入与历史</b></span><small>同一个改动，可能留在不止一个位置。</small></div></div>
     <div class="journey-workspace"><aside><h3 class="subhead">从问题开始</h3><div id="journey-recipes" class="journey-recipes"></div><button type="button" id="journey-loaded" class="btn" hidden>回到我带入的材料</button><div class="journey-reading" id="journey-reading"></div></aside><article id="journey-detail" class="journey-detail" aria-live="polite"></article></div>
   </section>
 
@@ -370,7 +373,21 @@
 </main>
 
 <footer class="atlas-foot">
-  <p>这是本地离线研究视图：数据来自本仓库的投影快照，回放是合成 fixture 的规则输出。candidate 与 check 不代表已安装、已部署或真实模型行为；研究的 authority 在仓库文档本身。</p>
+  <div class="atlas-foot__top">
+    <div class="atlas-foot__identity">
+      <span class="atlas-foot__sig" aria-hidden="true">cc</span>
+      <div><strong>Claude Code Context Lab</strong><p>看见输入，也看见证据的边界。</p></div>
+    </div>
+    <nav class="atlas-foot__links" aria-label="项目与文档">
+      <a href="../../docs/handbook/index.md">Handbook</a>
+      <a href="../../docs/current-state.md">Current state</a>
+      <a href="https://github.com/IndelibleVivi/cc-context-lab" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+  <div class="atlas-foot__bottom">
+    <p>这是本地离线研究视图：数据来自本仓库的投影快照，回放是合成 fixture 的规则输出。candidate 与 check 不代表已安装、已部署或真实模型行为；研究的 authority 在仓库文档本身。</p>
+    <span>LOCAL · OFFLINE · NO MODEL CALLS</span>
+  </div>
 </footer>
 
 <!-- ATLAS_DATA -->

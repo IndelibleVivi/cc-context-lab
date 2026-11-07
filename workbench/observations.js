@@ -47,8 +47,11 @@ function observationDisplay(){
   return {bodies:values,sections:view.sections.map(row=>Object.fromEntries(['baseline','candidate'].map(side=>
     [side,row[side]?values[side].sections[row[side].pointer]:null])))};
 }
-function observationMissingPair(){
+function clearObservationEvidence(){
   ['observation-identity','observation-limits','observation-sections','observation-detail','observation-bodies'].forEach(id=>clear($(id)));
+}
+function observationMissingPair(){
+  clearObservationEvidence();
   $('observation-summary').textContent='未准备此比较。选择单份观察，或下载比较选择后重新构建；这不表示没有变化。';
   var root=$('observation-detail');
   root.appendChild(el('button',{cls:'btn',attrs:{type:'button'},text:'下载这组比较选择',on:{click:function(){
@@ -71,6 +74,11 @@ function renderObservation(){
   var data=observationData(),captures=data.captures;
   var buttons=['observation-download-json','observation-download-markdown','observation-to-brief'];
   if(!captures.length){
+    observationState.baselineId=null;observationState.candidateId=null;
+    ['baseline','candidate'].forEach(side=>{
+      var select=$('observation-'+side);clear(select);select.value='';select.disabled=true;
+    });
+    clearObservationEvidence();
     $('observation-summary').textContent='没有请求观察。生成页面时可用 --capture 明确指定本地 capture；默认仅使用合成示例。';
     buttons.forEach(id=>$(id).disabled=true);return;
   }
@@ -78,9 +86,10 @@ function renderObservation(){
   if(observationState.candidateId!==null&&!captures.some(c=>c.capture_id===observationState.candidateId)) observationState.candidateId=null;
   ['baseline','candidate'].forEach(function(side){
     var select=$('observation-'+side);
-    if(select.options.length!==captures.length+(side==='candidate'?1:0)){
-      clear(select);if(side==='candidate')select.appendChild(el('option',{text:'单份观察 · 不比较',attrs:{value:''}}));captures.forEach(c=>select.appendChild(el('option',{text:observationLabel(c),attrs:{value:c.capture_id}})));
-    }
+    // A different material bundle can have the same number of captures.
+    clear(select);select.disabled=false;
+    if(side==='candidate')select.appendChild(el('option',{text:'单份观察 · 不比较',attrs:{value:''}}));
+    captures.forEach(c=>select.appendChild(el('option',{text:observationLabel(c),attrs:{value:c.capture_id}})));
     select.value=observationState[side+'Id']||'';
   });
   var comparison=observationView();

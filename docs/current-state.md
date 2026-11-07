@@ -1,14 +1,16 @@
 # 当前研究状态
 
-更新：2026-11-06（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
+更新：2026-11-07（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
 
 三条路径提供机制说明、固定输入、成功/反例/回退与证据缺口；native protocols 为 `NOT_EXECUTED`，真实请求、生命周期与模型行为为 `NOT_ASSESSED`。这不代表完整机制书、已部署 manager 或完整 persona/profile。既有 reader、case、study 和显式 CC run 材料链继续保留。
 
-本轮 `python3 scripts/check_offline.py` exit 0：241 项 Python tests、64 项 Node tests，共 305 项；另有 6 项 JS syntax 检查。三条 recipe 经 canonical case runner 重跑，均按预期返回 1 并保留报告：owned-core、dynamic-state 为 2 PASS / 1 FAIL / 1 NOT_ASSESSED 要求，compact-resume 为 2 / 1 / 2。完整 core、完整工具 schema/名称、revision 2 历史保留均有改变值后失败的检查。
+2026-11-06 `python3 scripts/check_offline.py` exit 0：241 项 Python tests、64 项 Node tests，共 305 项；另有 6 项 JS syntax 检查。三条 recipe 经 canonical case runner 重跑，均按预期返回 1 并保留报告：owned-core、dynamic-state 为 2 PASS / 1 FAIL / 1 NOT_ASSESSED 要求，compact-resume 为 2 / 1 / 2。完整 core、完整工具 schema/名称、revision 2 历史保留均有改变值后失败的检查。
 
 本地浏览器在 1440×1000 与 390×844 核对了问题入口、阶段/显式比较、partial scope、brief、下载与显式 Run → recipe → 原材料恢复；未见页面横向溢出，应用 console 未见 warn/error。实际下载 case 与比较 JSON 等于 Python canonical 值，下载 case 经 CLI 重跑保留预期结构反例；brief 保留固定的 revision 与纠正材料。README Mermaid 已渲染检查。它们不是用户研究、owner 审美接受或 native 运行证据。
 
-2026-11-06 Workbench 完成一轮纯呈现层的 quiet-paper / Claudish 视觉重整：暖纸环境光、serif 阅读层级、陶土主操作与苔绿证据色覆盖问题、case、观察、brief、研究、回放、全景和来源视图；新增装饰性双-c 标记，并针对中文平衡换行、窄屏、键盘焦点与 reduced-motion 调整。未改变 canonical 数据、JS 状态或导出合同。最终 `python3 scripts/check_offline.py` exit 0；浏览器实际走通 recipe → case → FAIL 筛选 → 指定比较 → brief 附件与标题预览，1440×1000 / 390×844 主视图无页面横向溢出，console 无 warn/error。Owner 同日明确认可该视觉语言。随后第二轮重整公共 frame：页眉区分品牌、GitHub source 与快照状态，四个主步骤提供 01–04 序列，首页说明对陌生访客独立成立；页脚组织 Handbook、current state、GitHub 与证据边界。第二轮 `python3 scripts/check_offline.py` exit 0；桌面/手机案例与展开研究工具状态无页面横向溢出，键盘焦点正常，console 无 warn/error，本地文档链接可读。新 frame 仍待 owner 审美验收；本轮未启用 GitHub Pages 或部署，也不构成 native 或生产状态证据。
+2026-11-06 Workbench 完成一轮纯呈现层的 quiet-paper / Claudish 视觉重整：暖纸环境光、serif 阅读层级、陶土主操作与苔绿证据色覆盖问题、case、观察、brief、研究、回放、全景和来源视图；新增装饰性双-c 标记，并针对中文平衡换行、窄屏、键盘焦点与 reduced-motion 调整。未改变 canonical 数据、JS 状态或导出合同。最终 `python3 scripts/check_offline.py` exit 0；浏览器实际走通 recipe → case → FAIL 筛选 → 指定比较 → brief 附件与标题预览，1440×1000 / 390×844 主视图无页面横向溢出，console 无 warn/error。Owner 同日明确认可该视觉语言。随后第二轮重整公共 frame：页眉区分品牌、GitHub source 与快照状态，四个主步骤提供 01–04 序列，首页说明对陌生访客独立成立；页脚组织 Handbook、current state、GitHub 与证据边界。第二轮 `python3 scripts/check_offline.py` exit 0；桌面/手机案例与展开研究工具状态无页面横向溢出，键盘焦点正常，console 无 warn/error，本地文档链接可读。该视觉方向与公共 frame 已于 2026-11-07 确认；未启用 GitHub Pages 或部署，也不构成 native 或生产状态证据。
+
+2026-11-07 接续验收修复请求观察的材料切换：下拉框按当前 captures 重建，不再以数量相同推断选项未变；切回没有请求的显式 run 时清空旧证据并禁用选择与导出，重新打开 recipe 后恢复，已固定的 brief 附件保留。新增三项回归在旧实现均失败；最终统一 offline gate exit 0：241 项 Python + 67 项 Node，共 308 项，另有 6 项 JS syntax 检查。浏览器在 1440×1000 / 390×844 核对九视图布局、同数量 recipe 来回切换、response-only run 的空态与恢复、折叠/展开 tabs 的键盘导航、来源搜索和 reduced-motion；未见页面横向溢出。三条 recipe 实际下载的 case / 比较 JSON 与 Python canonical 字符串完全一致，brief 包含完整案例与观察 Markdown，下载案例经 CLI 重跑均返回预期 1。视觉样式未改；以上仍是合成材料和本地浏览器证据。
 
 索引中的 mechanism IDs 与相关文档只服务当前三条学习/诊断路径；尚未构成绑定具体 revision/symbol 的完整 claim graph、来源 identity/transform receipts、真实 trace 或升级影响分析。native protocol 已准备，未执行。统一工具入口为 `python3 -m context_lab`，具体动作继续调用既有 canonical scripts。
 
@@ -59,7 +61,7 @@ Daily quiet阶段`python3 scripts/check_offline.py`通过224项顶层/Node cases
 
 ## 本轮验证与可靠性
 
-10/28 `python3 scripts/check_offline.py`的197项、11/01 Daily quiet阶段的224项是此前snapshot；当前CC run阶段285项结果见首节。既有行为继续由统一gate覆盖，native CC检查独立记录，不混入offline总数。此前版本证据保留原观察日期。
+10/28 `python3 scripts/check_offline.py`的197项、11/01 Daily quiet阶段的224项与CC run阶段的285项是此前snapshot；当前总数见首节。既有行为继续由统一gate覆盖，native CC检查独立记录，不混入offline总数。此前版本证据保留原观察日期。
 
 case 的 pointer 检查分开 present / 明确的最终缺失 / 遍历阻断；null 与缺失不同，错索引、缺祖先或缺 capture 不给 absence 假阳性。字面的 `#` / `*`、`~0/~1`、纯空白子串和极大数组索引有回归。原值与报告沿用 Python canonical 文本；不安全整数不会进入关联 study 的启动恢复、case 恢复按钮或可编辑 scenario registry；普通 study 视图会明确显示独立情境提示。报告使用随 payload 调整的 code fence，保留原始 backticks。输入/输出 alias、坏输入、输出限制和旧报告保留继续受共享 writer 保护。
 

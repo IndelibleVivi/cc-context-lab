@@ -22,6 +22,8 @@ python3 scripts/build_context_atlas.py
 
 也可直接 `python3 scripts/build_context_atlas.py --recipe dynamic-state`。`--recipe` 与 `--case` / `--run` / `--study` / `--capture` 互斥。显式导入仍优先打开对应视图；从问题页切入合成示例后，用「回到我带入的材料」恢复本页原始材料。切换仅选择预先生成的 bundle，不执行检查、不访问文件；已固定到 brief 的附件仍保留原值。A/B 研究是独立编辑空间，切换 recipe 不改写其 fixture、条件或未保存编辑；其视图明确标为独立研究，只有显式恢复 plan 才改变输入。
 
+请求原值页的 A/B 选项随当前材料更新，包括 capture 数量相同的 recipe 切换。恢复的显式材料若没有 request captures，页面清空旧原值并禁用请求选择、观察导出与带入 brief；再次打开有请求的材料后恢复操作，已固定的 brief 附件不受影响。
+
 「研究工具 +」展开 CC Run、对照研究、自主轮次回放、机制全景与来源；键盘方向键在当前可见 tabs 之间移动。关闭当前工具时回到问题页。完整学习入口与查看原值都无需网络。
 
 Toolkit 也有统一入口，转交已有 canonical 脚本，不新增引擎：

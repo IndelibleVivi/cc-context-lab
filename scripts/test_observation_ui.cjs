@@ -218,6 +218,55 @@ test('missing comparison clears prior values and supplies a rebuild selection',(
   assert.match(get('observation-detail').textContent,/comparison-pairs.json/);
 });
 
+test('capture selectors follow replacement materials even when the count is unchanged',()=>{
+  const {context,data,get}=setup();context.renderObservation();
+  data.captures=data.captures.map((capture,index)=>({...capture,capture_id:['C','D'][index]}));
+  data.serializations.C=data.serializations.A;data.serializations.D=data.serializations.B;
+  data.display_values.C=data.display_values.A;data.display_values.D=data.display_values.B;
+  context.renderObservation();
+  assert.deepEqual(get('observation-baseline').options.map(option=>option.attrs.value),['C','D']);
+  assert.deepEqual(get('observation-candidate').options.map(option=>option.attrs.value),['','C','D']);
+  assert.equal(get('observation-baseline').value,'C');
+  assert.equal(get('observation-candidate').value,'');
+  assert.match(get('observation-identity').textContent,/A \/ C/);
+  assert.equal(context.observationJson(),data.serializations.C.json+'\n');
+});
+
+test('capture selector labels refresh while preserving a valid selected pair',()=>{
+  const {context,data,get,jsonText}=setup();context.renderObservation();
+  data.captures[0]={...data.captures[0],evidence:{kind:'captured_request',observed_at:null}};
+  context.renderObservation();
+  assert.match(get('observation-baseline').options[0].textContent,/captured_request/);
+  assert.equal(get('observation-baseline').value,'A');
+  assert.equal(get('observation-candidate').value,'B');
+  assert.equal(context.observationJson(),jsonText);
+});
+
+test('empty materials clear old evidence and recover without changing frozen attachments',()=>{
+  const {context,data,get,jsonText}=setup();context.renderObservation();context.attachObservation();
+  const captures=data.captures;data.captures=[];
+  context.renderObservation();
+  for(const side of ['baseline','candidate']){
+    assert.equal(get('observation-'+side).options.length,0);
+    assert.equal(get('observation-'+side).value,'');
+    assert.equal(get('observation-'+side).disabled,true);
+  }
+  for(const id of ['observation-identity','observation-limits','observation-sections','observation-detail','observation-bodies'])
+    assert.equal(get(id).textContent,'',id);
+  for(const id of ['observation-download-json','observation-download-markdown','observation-to-brief'])
+    assert.equal(get(id).disabled,true);
+  assert.match(get('observation-summary').textContent,/没有请求观察/);
+  assert.equal(context.observationView(),null);
+  assert.equal(context.observationAttachment.jsonText,jsonText);
+  data.captures=captures;context.renderObservation();
+  assert.equal(get('observation-baseline').disabled,false);
+  assert.equal(get('observation-candidate').disabled,false);
+  assert.equal(get('observation-baseline').value,'A');
+  assert.equal(get('observation-candidate').value,'');
+  assert.equal(get('observation-download-json').disabled,false);
+  assert.equal(context.observationAttachment.jsonText,jsonText);
+});
+
 test('single request renders independently and never needs a self comparison',()=>{
   const {context,data,get}=setup();context.observationState.candidateId=null;
   context.renderObservation();

@@ -154,6 +154,64 @@ a { text-underline-offset: 3px; }
 .masthead__meta .chip--snapshot { color: var(--teal); }
 .masthead__meta .chip--snapshot::before { content: ""; width: 5px; height: 5px; margin-right: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 3px rgba(104, 124, 104, .09); }
 .masthead__meta .chip + .chip { margin-left: 3px; padding-left: 12px; border-left: 1px solid var(--line); }
+
+/* A small, optional specimen beside the snapshot, outside the research state. */
+.spinner-egg {
+  position: relative;
+  width: 260px;
+  max-width: 100%;
+  color: var(--ink-soft);
+  font: 11px/1.6 var(--mono);
+}
+.spinner-egg summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  border-bottom: 1px dotted var(--line-strong);
+}
+.spinner-egg summary::-webkit-details-marker { display: none; }
+.spinner-egg summary:hover { color: var(--copper); }
+.spinner-egg .cc-spinner-glyph { width: 1.25em; height: 1.25em; color: var(--copper); font-size: 16px; line-height: 1; }
+.spinner-egg__word { min-width: 0; overflow-wrap: anywhere; }
+.spinner-egg__hint { margin-left: auto; flex-shrink: 0; color: var(--ink-mute); font: 10px var(--sans); }
+.spinner-egg[open] .spinner-egg__hint { color: var(--copper); }
+.spinner-egg__hint > span { display: inline-block; }
+.spinner-egg[open] .spinner-egg__hint > span { transform: rotate(45deg); }
+.spinner-egg__body {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(20rem, calc(100vw - 3rem));
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+}
+.spinner-egg__body p { margin: 0 0 10px; font-family: var(--sans); font-size: 12px; }
+.spinner-egg__body .spinner-egg__title { color: var(--ink); font: 20px/1.3 var(--serif); }
+.spinner-egg__controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.spinner-egg__controls button {
+  min-height: 44px;
+  padding: 8px 12px;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  font: 12px var(--sans);
+}
+.spinner-egg__controls button:hover { border-color: var(--copper); color: var(--copper); }
+.spinner-egg__body a { display: flex; min-height: 44px; align-items: center; gap: 4px; padding: 7px 0; color: var(--petrol); font: 12px/1.6 var(--sans); }
+.spinner-egg__body a:hover { color: var(--copper); }
+.spinner-egg__body small { display: block; margin-top: 10px; color: var(--ink-mute); font-size: 9px; }
+@media (max-width: 720px) {
+  .spinner-egg__body { right: auto; left: 0; }
+}
 .chip {
   display: inline-flex;
   align-items: center;

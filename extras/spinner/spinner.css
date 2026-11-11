@@ -1,0 +1,111 @@
+/* Reusable Claude Code spinner specimen. Authored for CC Context Lab. */
+
+.cc-spinner {
+  --cc-spinner-paper: #f7f4ed;
+  --cc-spinner-surface: #fffdf8;
+  --cc-spinner-ink: #312e29;
+  --cc-spinner-soft: #615b52;
+  --cc-spinner-mute: #857c6f;
+  --cc-spinner-line: #dfd8cc;
+  --cc-spinner-line-strong: #c9bfb0;
+  --cc-spinner-terracotta: #b86143;
+  --cc-spinner-terracotta-dark: #9e4f35;
+  --cc-spinner-focus: #b86143;
+  color: var(--cc-spinner-ink);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.cc-spinner *,
+.cc-spinner *::before,
+.cc-spinner *::after {
+  box-sizing: border-box;
+}
+
+.cc-spinner button {
+  font: inherit;
+}
+
+.cc-spinner :focus-visible,
+.cc-spinner button:focus-visible {
+  outline: 2px solid var(--cc-spinner-focus);
+  outline-offset: 3px;
+}
+
+.cc-spinner-glyph {
+  display: inline-grid;
+  width: 1.4em;
+  height: 1.2em;
+  place-items: center;
+  color: var(--cc-spinner-terracotta);
+  font-family: "SFMono-Regular", "Menlo", "Consolas", "Liberation Mono", monospace;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.cc-spinner-glyph::before {
+  content: "✻";
+  animation: cc-spinner-frames 1.2s step-end infinite;
+}
+
+[data-cc-spinner][data-paused="true"] .cc-spinner-glyph::before,
+.cc-spinner[data-paused="true"] .cc-spinner-glyph::before {
+  content: "✻";
+  animation: none;
+}
+
+@keyframes cc-spinner-frames {
+  0% { content: "·"; }
+  16.6667% { content: "✢"; }
+  33.3333% { content: "✳"; }
+  50% { content: "✶"; }
+  66.6667% { content: "✻"; }
+  83.3333% { content: "✽"; }
+  100% { content: "·"; }
+}
+
+.cc-spinner__button {
+  appearance: none;
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 17px;
+  border: 1px solid var(--cc-spinner-line-strong);
+  border-radius: 8px;
+  background: var(--cc-spinner-surface);
+  color: var(--cc-spinner-ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease;
+}
+
+.cc-spinner__button:hover {
+  border-color: var(--cc-spinner-terracotta);
+  color: var(--cc-spinner-terracotta-dark);
+}
+
+.cc-spinner__button:active {
+  background: #f5ece5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-spinner-glyph::before {
+    content: "✻";
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .cc-spinner-glyph {
+    color: ButtonText;
+  }
+
+  .cc-spinner__button {
+    border-color: ButtonText;
+  }
+}

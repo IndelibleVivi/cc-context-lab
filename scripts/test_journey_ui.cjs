@@ -1,6 +1,22 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
+test('spinner sheet closes on Escape or outside clicks without stealing other focus',()=>{
+ const events={},sheetEvents={};let focusCount=0,prevented=0;
+ const inside={},outside={},summary={focus:()=>focusCount++};
+ const sheet={open:true,contains:target=>target===inside,querySelector:()=>summary,
+  addEventListener:(type,fn)=>sheetEvents[type]=fn};
+ const c=vm.createContext({document:{readyState:'loading',querySelector:()=>sheet,
+  addEventListener:(type,fn)=>events[type]=fn},console});
+ vm.runInContext(fs.readFileSync(path.join(root,'workbench/app.js'),'utf8'),c);
+ c.wireSpinnerEgg();
+ sheetEvents.keydown({key:'Escape',preventDefault:()=>prevented++,stopPropagation:()=>{}});
+ assert.equal(sheet.open,false);assert.equal(focusCount,1);assert.equal(prevented,1);
+ sheet.open=true;events.click({target:inside});assert.equal(sheet.open,true);
+ events.click({target:outside});assert.equal(sheet.open,false);assert.equal(focusCount,1);
+ sheetEvents.keydown({key:'Escape',preventDefault:()=>prevented++,stopPropagation:()=>{}});
+ assert.equal(prevented,1);
+});
 class Node {
  constructor(tag='div',o={},children=[]){this.tagName=tag;this.attrs=o.attrs||{};this.children=[];this.listeners=o.on||{};this.hidden=false;this.value='';this._text=o.text||'';children.forEach(c=>this.appendChild(c));}
  appendChild(c){this.children.push(typeof c==='string'?{textContent:c}:c);return c;}

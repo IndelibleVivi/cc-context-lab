@@ -7,6 +7,7 @@
 <title>CC Context Workbench · Claude Code Context Lab</title>
 <link rel="icon" href="data:,">
 <!-- ATLAS_STYLE -->
+<!-- ATLAS_SPINNER_STYLE -->
 </head>
 <body>
 <a class="skip-link" href="#atlas-main">跳到主内容</a>
@@ -26,6 +27,24 @@
         <span class="chip chip--snapshot" id="atlas-snapshot-chip">本地快照 · 合成回放数据</span>
         <span class="chip" id="atlas-date-chip">日期 —</span>
       </div>
+      <details class="spinner-egg" data-cc-spinner>
+        <summary aria-label="While Claude Works · 打开星星彩蛋">
+          <span class="cc-spinner-glyph" data-spinner-glyph aria-hidden="true"></span>
+          <span class="spinner-egg__word" data-spinner-word aria-live="polite">Thinking…</span>
+          <span class="spinner-egg__hint">小彩蛋 <span aria-hidden="true">＋</span></span>
+        </summary>
+        <div class="spinner-egg__body">
+          <p class="spinner-egg__title">While Claude Works</p>
+          <p>187 个等待词，和一颗忙着开花的小星星。</p>
+          <div class="spinner-egg__controls">
+            <button type="button" data-spinner-next>再抽一个</button>
+            <button type="button" data-spinner-pause data-label-pause="暂停动画" data-label-resume="继续动画" aria-pressed="false">暂停动画</button>
+          </div>
+          <a href="<!-- ATLAS_SPINNER_PAGE -->">带走这颗星星 <span aria-hidden="true">↗</span></a>
+          <a href="<!-- ATLAS_SPINNER_REFERENCE -->">词表与前端复用 reference <span aria-hidden="true">↗</span></a>
+          <small>CC 2.1.322 · 词表与动画展示</small>
+        </div>
+      </details>
     </div>
   </div>
   <nav class="tabbar" id="atlas-tabbar" aria-label="视图切换">
@@ -391,6 +410,8 @@
 </footer>
 
 <!-- ATLAS_DATA -->
+<!-- ATLAS_SPINNER_DATA -->
+<!-- ATLAS_SPINNER_SCRIPT -->
 <!-- ATLAS_STUDY_SCRIPT -->
 <!-- ATLAS_OBSERVATION_SCRIPT -->
 <!-- ATLAS_RUN_SCRIPT -->

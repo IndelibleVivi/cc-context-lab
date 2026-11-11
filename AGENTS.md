@@ -27,6 +27,7 @@
 - 原 repo 的 candidate renderer / runbook 继续拥有生产配置。这里的研究结论不会自动成为 live 配置。
 
 - `references/recipes.json` 拥有 recipe catalog，`context_lab/recipes.py` 拥有离线 recipe 校验与 canonical case 投影；`docs/handbook/` 拥有学习路径。Workbench 的本地 recipe bundles 只投影 canonical 材料，不另算检查；显式加载的 run/case/capture/study 必须保留。既有 v1 capture/case/wire API 与 IO policy 继续有效。
+- `extras/spinner/verbs.json`、`spinner.css`、`spinner.js` 与 `template.html` 拥有等待词及独立网页复现；`scripts/build_spinner.py` 生成有意 tracked 的单文件 `extras/spinner/index.html` 与版本化 TXT。不要手改生成物；根 `LICENSE` 更新时也重建独立 HTML。Workbench generator 直接内嵌相同 canonical assets，彩蛋不进入研究数据或工作状态。词表版本与来源、动画的独立复现身份见该目录 README；统一 offline gate 包含数据/生成物、控件与 JS syntax 检查。
 
 ## Work boundaries
 

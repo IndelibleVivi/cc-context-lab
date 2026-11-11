@@ -1411,6 +1411,22 @@ function wireTabs() {
 
 /* ==================================================================== BOOT */
 
+function wireSpinnerEgg() {
+  var egg = document.querySelector('.spinner-egg');
+  if (!egg) return;
+  egg.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && egg.open) {
+      egg.open = false;
+      egg.querySelector('summary').focus();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  });
+  document.addEventListener('click', function (event) {
+    if (egg.open && !egg.contains(event.target)) egg.open = false;
+  });
+}
+
 function renderMasthead() {
   var d=getData();
   $('atlas-date-chip').textContent='快照 · '+(d.generated_on||'未知日期');
@@ -1421,6 +1437,7 @@ function renderMasthead() {
 function boot() {
   getData();
   renderMasthead();
+  wireSpinnerEgg();
   wireTabs();
   wireJourney();
   wireStudy();

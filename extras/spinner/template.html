@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>While Claude Works · CC 2.1.322</title>
+<link rel="icon" href="data:,">
+<!-- CC_SPINNER_STYLE -->
+<style>
+:root {
+  --page-paper: #f7f4ed;
+  --page-paper-2: #f0ebe2;
+  --page-ink: #312e29;
+  --page-soft: #615b52;
+  --page-mute: #857c6f;
+  --page-line: #c9bfb0;
+  --page-surface: #fffdf8;
+  --page-terracotta: #b86143;
+  --page-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", "Noto Serif SC", serif;
+  --page-mono: "SFMono-Regular", "Menlo", "Consolas", "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--page-paper); }
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(ellipse 60% 38% at 92% -5%, rgba(224, 185, 143, .22), transparent 72%),
+    radial-gradient(ellipse 46% 34% at -10% 96%, rgba(168, 181, 151, .16), transparent 76%),
+    var(--page-paper);
+  color: var(--page-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: rgba(184, 97, 67, .18); }
+.page {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 52px 0 40px;
+}
+.topline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--page-line);
+  color: var(--page-mute);
+  font: 10px/1.5 var(--page-mono);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.topline strong { color: var(--page-terracotta); font-weight: 500; }
+.topline span:last-child { color: var(--page-soft); letter-spacing: .02em; }
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(270px, .8fr);
+  gap: 32px 64px;
+  align-items: end;
+  padding: 30px 0 32px;
+}
+.kicker {
+  margin: 0 0 12px;
+  color: var(--page-terracotta);
+  font: 10px/1.5 var(--page-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 {
+  max-width: 13ch;
+  margin: 0;
+  font: 500 clamp(38px, 4.5vw, 58px)/1.08 var(--page-serif);
+  letter-spacing: -.035em;
+}
+.intro-copy {
+  max-width: 36ch;
+  margin: 20px 0 0;
+  color: var(--page-soft);
+  font-size: 15px;
+  line-height: 1.85;
+}
+.intro-note {
+  align-self: end;
+  margin: 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--page-line);
+  color: var(--page-mute);
+  font: 11px/1.8 var(--page-mono);
+}
+.intro-note b { color: var(--page-ink); font-weight: 500; }
+.specimen {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 44px);
+  border: 1px solid rgba(201, 191, 176, .72);
+  border-radius: 22px;
+  background: rgba(255, 253, 248, .72);
+  box-shadow: 0 28px 64px rgba(62, 48, 34, .075);
+}
+.specimen::after {
+  position: absolute;
+  right: -46px;
+  bottom: -62px;
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(184, 97, 67, .09);
+  border-radius: 50%;
+  box-shadow: 0 0 0 28px rgba(184, 97, 67, .022), 0 0 0 58px rgba(184, 97, 67, .015);
+  content: "";
+  pointer-events: none;
+}
+.specimen-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: baseline;
+  justify-content: space-between;
+  color: var(--page-mute);
+  font: 10px/1.5 var(--page-mono);
+}
+.specimen-label span:first-child { color: var(--page-terracotta); }
+.word-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: clamp(13px, 2.2vw, 24px);
+  align-items: baseline;
+  min-width: 0;
+  margin: clamp(32px, 5vw, 58px) 0 14px;
+}
+#specimen { width: 100%; }
+#specimen .cc-spinner-glyph {
+  width: 1.15em;
+  flex: none;
+  color: var(--page-terracotta);
+  font-size: clamp(34px, 4vw, 52px);
+}
+.word {
+  min-width: 0;
+  color: var(--page-ink);
+  font: 500 clamp(16px, 3vw, 32px)/1.3 var(--page-mono);
+  overflow-wrap: anywhere;
+}
+.controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 34px;
+}
+.caption {
+  position: relative;
+  z-index: 1;
+  max-width: 68ch;
+  margin: 24px 0 0;
+  color: var(--page-mute);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.reference {
+  display: grid;
+  grid-template-columns: minmax(210px, .42fr) minmax(0, 1fr);
+  gap: 38px 48px;
+  margin-top: 52px;
+  padding-top: 30px;
+  border-top: 1px solid var(--page-line);
+}
+.reference h2 { margin: 0 0 14px; font: 500 25px/1.35 var(--page-serif); }
+.reference p { max-width: 38ch; margin: 0 0 10px; color: var(--page-soft); font-size: 13px; line-height: 1.85; }
+.reference small { display: block; color: var(--page-mute); font-size: 11px; line-height: 1.7; }
+.words-panel {
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid rgba(201, 191, 176, .62);
+  border-radius: 10px;
+  background: rgba(255, 253, 248, .52);
+}
+.words-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.words-panel h3 { margin: 0; color: var(--page-soft); font: 10px/1.5 var(--page-mono); letter-spacing: .08em; text-transform: uppercase; }
+.words-panel-head span { color: var(--page-mute); font: 10px/1.5 var(--page-mono); }
+.word-list {
+  columns: 3 148px;
+  column-gap: 24px;
+  max-height: 382px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+  color: var(--page-soft);
+  font: 11px/1.72 var(--page-mono);
+}
+.word-list li { break-inside: avoid; }
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  justify-content: space-between;
+  margin-top: 44px;
+  padding-top: 18px;
+  border-top: 1px solid var(--page-line);
+  color: var(--page-mute);
+  font: 10px/1.7 var(--page-mono);
+}
+.footer a { color: var(--page-soft); text-underline-offset: 3px; }
+.footer a:hover { color: var(--page-terracotta); }
+.footer :focus-visible, .topline :focus-visible { outline: 2px solid var(--page-terracotta); outline-offset: 3px; }
+@media (max-width: 700px) {
+  .page { width: min(100% - 32px, 620px); padding: 28px 0 30px; }
+  .intro { grid-template-columns: 1fr; gap: 24px; padding: 34px 0 32px; }
+  h1 { font-size: 44px; }
+  .intro-copy { font-size: 14px; }
+  .specimen { padding: 28px 22px 26px; border-radius: 18px; }
+  .word-row { gap: 11px; margin-top: 36px; }
+  #specimen .cc-spinner-glyph { font-size: 47px; }
+  .word { font-size: clamp(16px, 4.5vw, 22px); }
+  .controls { gap: 8px; }
+  .cc-spinner__button { flex: 1 1 auto; padding-inline: 11px; }
+  .reference { grid-template-columns: 1fr; gap: 25px; margin-top: 34px; padding-top: 25px; }
+  .words-panel { padding: 17px; }
+  .word-list { columns: 2 120px; max-height: 300px; column-gap: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+.license-note { margin-top: 18px; color: var(--page-soft); font-size: 11px; }
+.license-note summary { min-height: 44px; padding-block: 12px; cursor: pointer; }
+.license-note pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 11px/1.7 var(--page-mono); }
+.license-note a { color: inherit; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<main class="page cc-spinner">
+  <header class="topline">
+    <span><strong>Claude Code Context Lab</strong> / offline specimen</span>
+    <span>Claude Code 2.1.322 · checked 2026-11-11</span>
+  </header>
+
+  <section class="intro" aria-labelledby="page-title">
+    <div>
+      <p class="kicker">While Claude Works / 187 words</p>
+      <h1 id="page-title">While Claude Works</h1>
+      <p class="intro-copy">187 个等待词，一颗六帧小星星。抽一个词，看它慢慢开花。</p>
+    </div>
+    <p class="intro-note"><b>One HTML file.</b><br>All 187 words and the little star, ready to keep.</p>
+  </section>
+
+  <section class="specimen" aria-label="Spinner specimen">
+    <div class="specimen-label"><span>CC SPINNER / WEB RECREATION</span><span>01 — 187 VERBS</span></div>
+    <div id="specimen" data-cc-spinner>
+      <div class="word-row">
+        <span class="cc-spinner-glyph" data-spinner-glyph aria-hidden="true"></span>
+        <span class="word" data-spinner-word aria-live="polite">✻</span>
+      </div>
+      <div class="controls">
+        <button class="cc-spinner__button" type="button" data-spinner-next>New word</button>
+        <button class="cc-spinner__button" type="button" data-spinner-pause data-label-pause="Pause animation" data-label-resume="Resume animation" aria-pressed="false">Pause animation</button>
+        <button class="cc-spinner__button" type="button" data-spinner-download>Download TXT</button>
+      </div>
+    </div>
+    <p class="caption">The star blooms through six little frames. Pause it whenever you like; the word stays until your next draw.</p>
+  </section>
+
+  <section class="reference" aria-labelledby="words-title">
+    <div>
+      <h2 id="words-title">The full vocabulary.</h2>
+      <p>The 187 built-in verbs from Claude Code 2.1.322, with their original spelling, accents, and little oddities. Download the TXT to keep them all.</p>
+      <small>Web recreation · six frames · a 1.2-second cycle.</small>
+    </div>
+    <div class="words-panel">
+      <div class="words-panel-head"><h3>All words</h3><span>shown in source order</span></div>
+      <ol class="word-list" aria-label="All 187 spinner words">
+<!-- CC_SPINNER_WORDS -->
+      </ol>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>SUL-1.0 for original code and page · vocabulary remains attributed source material</span>
+    <span>Claude Code Context Lab · local / offline</span>
+  </footer>
+  <details class="license-note">
+    <summary>Source &amp; license</summary>
+    <p>Vocabulary: <a href="https://registry.npmjs.org/@anthropic-ai/claude-code-darwin-arm64/2.1.322">Anthropic official native package · 2.1.322</a>.
+    Independent web recreation by <a href="https://github.com/IndelibleVivi/cc-context-lab/tree/main/extras/spinner">Claude Code Context Lab</a>.</p>
+    <pre><!-- CC_SPINNER_LICENSE --></pre>
+  </details>
+</main>
+<!-- CC_SPINNER_DATA -->
+<!-- CC_SPINNER_SCRIPT -->
+</body>
+</html>

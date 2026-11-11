@@ -30,6 +30,19 @@ Lab does not discover private logs, follow paths or URLs in captures, install ca
 
 The [architecture diagram](README.md#架构与边界) distinguishes local evidence paths from separately authorized runtime integration. A request alone cannot establish origin or lifecycle: unknown stays unknown. Unobserved partial-capture fields are not empty or deleted. Different wire formats are not automatically paired.
 
+## ✻ While Claude Works
+
+The Workbench masthead has a small animated star with all 187 built-in waiting
+verbs from Claude Code 2.1.322. Open the easter egg to draw another word, pause
+the animation, or visit the sharing page. It is a playful display independent of research state.
+
+Download the [standalone HTML](extras/spinner/index.html) and open it offline;
+the words, styles and script are embedded. A [line-separated TXT](extras/spinner/spinner-verbs-2.1.322.txt)
+is also available. The [frontend reference](extras/spinner/README.en.md) provides
+official provenance, the original word list, reusable CSS/JS and integration instructions.
+The six-character animation is an independent web recreation; its 1.2-second
+cycle is a design choice, not a claim about exact native timing.
+
 ## Documentation map
 
 | Content | Entry |

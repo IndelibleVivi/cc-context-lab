@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Checks for the projection boundary, not a second copy of the wake engine."""
 import json
+import os
 from copy import deepcopy
 from pathlib import Path
 import subprocess
@@ -8,6 +9,7 @@ import sys
 import tempfile
 import unittest
 import build_context_atlas as atlas
+from build_spinner import load_spinner_assets
 
 
 class AtlasProjectionTests(unittest.TestCase):
@@ -68,6 +70,21 @@ class AtlasProjectionTests(unittest.TestCase):
         self.assertEqual(json.loads(body)['example'],data['example'])
         self.assertNotIn('<script>',body)
         self.assertNotIn('globalThis.BAD=1</script>',html)
+
+    def test_spinner_uses_the_shared_offline_assets_and_output_relative_links(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = (Path(directory) / 'nested' / 'viewer').resolve()
+            data = dict(self.data, repo_base=os.path.relpath(atlas.ROOT, output))
+            page = atlas.compose_html(data)
+            assets = load_spinner_assets(atlas.ROOT)
+            self.assertIn('<style>' + assets['css'] + '</style>', page)
+            self.assertIn('<script>' + assets['js'] + '</script>', page)
+            payload = page.split('<script id="cc-spinner-data" type="application/json">', 1)[1].split('</script>', 1)[0]
+            self.assertEqual(json.loads(payload), json.loads((atlas.ROOT / 'extras/spinner/verbs.json').read_text()))
+            for path in ('index.html', 'README.md'):
+                target = data['repo_base'] + '/extras/spinner/' + path
+                self.assertIn('href="' + target + '"', page)
+                self.assertEqual((output / target).resolve(), atlas.ROOT / 'extras/spinner' / path)
 
     def test_study_observations_use_the_same_canonical_run_and_snapshot(self):
         for scenario in self.data['scenarios']:

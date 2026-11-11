@@ -6,6 +6,7 @@ cwd; default output is the repo's ignored .cache/context-atlas directory.
 """
 import argparse
 from datetime import datetime
+from html import escape
 import json
 import os
 import shlex
@@ -24,6 +25,7 @@ from context_lab.recipes import RECIPE_IDS, load_catalog, load_recipe_case
 from context_lab.cc_run_view import load_run, project_run
 from context_lab.case_demo import make_demo_case
 from context_lab.artifacts import paths_alias, write_reports
+from build_spinner import load_spinner_assets
 
 
 def read_json(relative):
@@ -239,6 +241,13 @@ def compose_html(data):
     parts['<!-- ATLAS_OBSERVATION_SCRIPT -->'] = '<script>' + (ROOT / 'workbench' / 'observations.js').read_text(encoding='utf-8') + '</script>'
     parts['<!-- ATLAS_RUN_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/runs.js').read_text(encoding='utf-8') + '</script>'
     parts['<!-- ATLAS_JOURNEY_SCRIPT -->'] = '<script>' + (ROOT / 'workbench/journeys.js').read_text(encoding='utf-8') + '</script>'
+    spinner = load_spinner_assets(ROOT)
+    parts['<!-- ATLAS_SPINNER_STYLE -->'] = '<style>' + spinner['css'] + '</style>'
+    parts['<!-- ATLAS_SPINNER_DATA -->'] = '<script id="cc-spinner-data" type="application/json">' + spinner['data_json'] + '</script>'
+    parts['<!-- ATLAS_SPINNER_SCRIPT -->'] = '<script>' + spinner['js'] + '</script>'
+    repo_base = data.get('repo_base', '../..')
+    parts['<!-- ATLAS_SPINNER_PAGE -->'] = escape(repo_base + '/extras/spinner/index.html', quote=True)
+    parts['<!-- ATLAS_SPINNER_REFERENCE -->'] = escape(repo_base + '/extras/spinner/README.md', quote=True)
     for marker, replacement in parts.items():
         if html.count(marker) != 1:
             raise ValueError('Expected one template marker: ' + marker)

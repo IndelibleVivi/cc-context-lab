@@ -18,6 +18,9 @@ def main():
         print('Offline checks require Node.js; no installation attempted.', file=sys.stderr)
         return 2
     checks = [
+        ('portable spinner data and generated share files', [sys.executable, 'scripts/test_spinner.py']),
+        ('spinner controls and isolation', [node, '--test', 'scripts/test_spinner_ui.cjs']),
+        ('spinner script syntax', [node, '--check', 'extras/spinner/spinner.js']),
         ('CC recipe contracts', [sys.executable, 'scripts/test_recipes.py']),
         ('recipe integration and toolkit dispatch', [sys.executable, 'scripts/test_recipe_atlas.py']),
         ('question workflow and loaded materials', [node, '--test', 'scripts/test_journey_ui.cjs']),

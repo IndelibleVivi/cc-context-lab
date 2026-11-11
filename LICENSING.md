@@ -16,6 +16,9 @@ copyright in their own contributions; this map does not assign their rights.
 | Documentation, research prose and diagrams | Root Markdown files, `docs/**/*.md`, `experiments/**/*.md`, `workbench/README.md`, including diagrams authored in those documents | [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md) |
 | Research indexes and Atlas relationship model | Original selection, arrangement and analysis in `references/**/*.json` and `workbench/model.json` | [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md) |
 | Original executable examples embedded in documentation | Functional code and shell examples within the documentation above | [SUL-1.0](LICENSE); surrounding prose remains CC BY-NC-SA 4.0 |
+| Spinner web recreation and generated standalone page | Authored CSS, JS and HTML in `extras/spinner/`; its builder/tests follow the existing `scripts/` rule | [SUL-1.0](LICENSE); the third-party vocabulary exclusion below still applies to embedded words |
+| Spinner reference prose | `extras/spinner/README.md` and `extras/spinner/README.en.md` | [CC BY-NC-SA 4.0](LICENSE-DOCUMENTATION.md); executable examples follow the code rule |
+| Claude Code spinner vocabulary snapshot | `extras/spinner/verbs.json` and generated `spinner-verbs-2.1.322.txt`, including the same words embedded in HTML | Third-party source facts, attributed to the official Anthropic 2.1.322 release; not relicensed as project-original code or prose |
 | License texts and notices | `LICENSE`, `LICENSE-DOCUMENTATION.md`, `LICENSING.md` | The SUL text is reproduced unchanged from SPDX; the documentation notice and this map use CC BY-NC-SA 4.0. The standard licenses retain their own terms |
 
 Patterns include nested paths and hidden `.claude-plugin/` directories. The

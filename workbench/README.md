@@ -16,6 +16,16 @@ python3 scripts/build_context_atlas.py
 
 `--out <local-output-directory>` 可选择本地输出位置；保持输出在 Git 外。`--data-only` 只生成研究数据，不组合界面。生成后，若 canonical docs/references 或 fixture 改动，重新运行同一个入口；页面是一个有日期的本地快照，没有后台自动更新。
 
+## 页眉的小星星彩蛋
+
+快照信息下方的「小彩蛋」显示六帧星星与随机等待词。展开后可再抽一个、暂停或恢复动画，
+并进入独立分享页与 [frontend reference](../extras/spinner/README.md)。词只在初始化或主动抽取时变化，
+不代表实际研究、CC 或模型正在运行；动画遵循 reduced motion，符号不进入读屏播报。
+
+生成器直接内嵌 `extras/spinner/` 的同一份 CSS、JS 与词表，离线页不额外请求资源。
+修改词表或复用实现后，先运行 `python3 scripts/build_spinner.py` 更新独立 HTML 与 TXT，
+再重建 Workbench。独立分享页可以单文件带走；仓库 reference 链接需要原目录布局。
+
 ## 从问题走到结果
 
 默认打开「问题与做法」，选择 owned-core、dynamic-state 或 compact-resume。机制依据和步骤来自同一 [recipe 索引](../references/recipes.json)，三个固定合成案例均在 Python 端计算；「打开案例」接到「阶段与检查」，显式比较再接到「请求原值」，固定结果可带入「变更 brief」。案例有意含 FAIL；它不是一次未完成的导入。完整解释与 native 待执行方案见 [Handbook](../docs/handbook/index.md)。

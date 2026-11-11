@@ -69,6 +69,16 @@ flowchart TB
 
 实线表示本地材料与证据路径；虚线表示原 owner 另行授权的接入。单份 request 不足以证明 origin 或生命周期，未知保持 unknown；partial capture 未观察字段不能当作空值或已删除。跨 wire 格式不自动配对。
 
+## ✻ While Claude Works
+
+Workbench 页眉藏着一颗会跳帧的小星星，配上 Claude Code 2.1.322 的187个内置等待词。
+点开「小彩蛋」可以再抽一个词、暂停动画，或打开独立分享页。它是可以玩的展示，不接入研究状态。
+
+下载 [独立 HTML](extras/spinner/index.html) 后可离线打开，词表与动画均已内嵌；
+[逐行 TXT](extras/spinner/spinner-verbs-2.1.322.txt) 方便复制和导入。
+[Frontend reference](extras/spinner/README.md) 提供官方来源、原始词表、独立 CSS/JS 和接入方法。
+动画是六字符的网页复现；1.2秒循环为本实现的选择，不声称 native 精确时序。
+
 ## 文档地图
 
 | 内容 | 入口 |

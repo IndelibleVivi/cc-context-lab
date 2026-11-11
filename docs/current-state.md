@@ -1,8 +1,12 @@
 # 当前研究状态
 
-更新：2026-11-07（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
+更新：2026-11-11（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
 
 三条路径提供机制说明、固定输入、成功/反例/回退与证据缺口；native protocols 为 `NOT_EXECUTED`，真实请求、生命周期与模型行为为 `NOT_ASSESSED`。这不代表完整机制书、已部署 manager 或完整 persona/profile。既有 reader、case、study 和显式 CC run 材料链继续保留。
+
+2026-11-11 新增 **✻ While Claude Works**：Workbench 页眉的小星星彩蛋可展开、抽词、暂停，Escape 返回 summary，点击外部关闭；独立 [分享页](../extras/spinner/index.html) 与 [Frontend reference](../extras/spinner/README.md) 复用同一份 CSS/JS/187词。词表为官方 Claude Code 2.1.322 的版本快照；六帧/1.2秒是独立网页复现，不声称 native 精确时序。生成 HTML 已内嵌数据、脚本、样式、来源与完整 SUL 正文；可下载逐行 TXT。canonical 与生成边界见 AGENTS，授权分类沿用既有 LICENSING。
+
+本轮完整 `python3 scripts/check_offline.py` exit 0：253项 Python、76项 Node tests，共329项；另有7项 JS syntax。受支持浏览器经本地 HTTP 验证手机390px及桌面布局、星星跳帧、抽词/暂停/reduced-motion、实际TXT下载187词逐项一致、浮层焦点与原 recipe→case→返回路径，无横向溢出或 warn/error。浏览器工具禁止 `file://`，单文件直接打开未独立实测；生成物无外部资源依赖已由离线检查确认。没有启用 Pages、生产部署或 native/model 调用；物理设备与 owner 审美接受仍独立。
 
 2026-11-06 `python3 scripts/check_offline.py` exit 0：241 项 Python tests、64 项 Node tests，共 305 项；另有 6 项 JS syntax 检查。三条 recipe 经 canonical case runner 重跑，均按预期返回 1 并保留报告：owned-core、dynamic-state 为 2 PASS / 1 FAIL / 1 NOT_ASSESSED 要求，compact-resume 为 2 / 1 / 2。完整 core、完整工具 schema/名称、revision 2 历史保留均有改变值后失败的检查。
 

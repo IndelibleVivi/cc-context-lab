@@ -6,7 +6,7 @@
 
 compact 的新投影可能保留旧规则，却漏掉稍后的纠正。resume prompt 的出现也不会自动修复 summary。这个例子分别保留旧指导、精确 correction、summary 与续接输入，并增加只观察 model/system/tools 的 partial capture，检验未知 messages 不会被误判为删除。
 
-机制相关阅读：[Compact 控制](../compact-control.md)、[连续性与 Memory](../continuity-and-memory.md)、[请求观察](../request-observation.md) 与 [Context case](../context-cases.md)。这些链接帮助理解输入面与边界，不是本 recipe 的逐 claim 版本绑定。
+机制相关阅读：[Compact 控制](../compact-control.md)、[连续性与 Memory](../continuity-and-memory.md)、[请求观察](../request-observation.md) 与 [Context case](../context-cases.md)。本 recipe 的逐 claim 版本、具体来源位置、证据层与限制见 [机制证据表](mechanism-evidence.md)；相关阅读仍负责更广的解释，不等于本轮真实运行。
 
 ## 重跑与阅读
 

@@ -1,12 +1,18 @@
 # 当前研究状态
 
-更新：2026-11-11（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
+更新：2026-11-13（Asia/Singapore）。当前产品为 **Claude Code Context Lab**，slug 保持 `cc-context-lab`。用户已选择 CC-only，取代先前跨 harness 产品范围；其他 harness 保留为比较材料。Handbook + Workbench + Toolkit 提供三条固定合成 recipe 路径：owned-core、dynamic-state、compact-resume。本轮 source/offline 与本地界面验收已完成；这仍是源码与离线使用路径，不代表原 runtime 已安装或生产激活。
 
 三条路径提供机制说明、固定输入、成功/反例/回退与证据缺口；native protocols 为 `NOT_EXECUTED`，真实请求、生命周期与模型行为为 `NOT_ASSESSED`。这不代表完整机制书、已部署 manager 或完整 persona/profile。既有 reader、case、study 和显式 CC run 材料链继续保留。
 
+2026-11-13 接通当前七机制的 **24 条 claim / 28 条 source records**：共享 registry 记录固定 revision、具体 JSON pointer / Python symbol / Markdown heading、证据层、观察日期与限制；Python 生成同一 canonical JSON/Markdown、[Handbook 证据表](handbook/mechanism-evidence.md)、CLI 和 Workbench 视图。相关阅读与逐 claim 依据独立保留，机制标题/解释仍归 recipe catalog。28 条引用承载于 17 个文件，本轮逐份对照固定 `34bc41a` 的 Git blob，内容一致；这是来源身份核对，没有重新执行历史 native 观察。官方文档条目固定的是项目研究记录，不捏造官网版本；artifact/version、报告 Git pin 与观察日期分别阅读。
+
+Workbench 可展开判断与来源、下载依据，或在不勾选 capability 的情况下将它单独固定到 brief。切换/恢复其他材料不替换附件，移除后恢复相应空态；附件不表示当前 run 已通过这些判断。生成表由 `scripts/build_mechanism_evidence.py` 拥有，`--check` 拒绝漂移，`--write-handbook` 重建；统一 Toolkit 入口新增 `python3 -m context_lab evidence --recipe owned-core --format json`。页脚文档链接也已接到实际 `repo_base`，支持嵌套输出目录。
+
+最终 `python3 scripts/check_offline.py` exit 0：275 项 Python + 80 项 Node tests，共 **355 项**，另有 7 项 JS syntax 与生成表一致性检查。机制的 19 项窄测试覆盖七个 binding、重复/缺失/越界 source、证据层与 artifact/date 错绑、pin/URL 不一致、quoted Python 假定义、错误限定 symbol 和 code fence 中的伪 heading；四项新增 UI 场景在旧实现失败、新实现通过。实际浏览器经本地 HTTP 核对三条 recipe 在 1440×1000 / 390×844 的折叠/展开、长 revision/locator、键盘焦点与固定附件；无页面横向溢出，console warning/error 为 0。六份真实下载的 JSON/Markdown 逐字等于 Python canonical，切换材料后的固定 JSON 与完整 brief 也保留同一依据。README Mermaid 已渲染核对。以上不是 file URL、物理设备、owner 审美接受或 native/runtime 行为证据。
+
 2026-11-11 新增 **✻ While Claude Works**：Workbench 页眉的小星星彩蛋可展开、抽词、暂停，Escape 返回 summary，点击外部关闭；独立 [分享页](../extras/spinner/index.html) 与 [Frontend reference](../extras/spinner/README.md) 复用同一份 CSS/JS/187词。词表为官方 Claude Code 2.1.322 的版本快照；六帧/1.2秒是独立网页复现，不声称 native 精确时序。生成 HTML 已内嵌数据、脚本、样式、来源与完整 SUL 正文；可下载逐行 TXT。canonical 与生成边界见 AGENTS，授权分类沿用既有 LICENSING。
 
-本轮完整 `python3 scripts/check_offline.py` exit 0：253项 Python、76项 Node tests，共329项；另有7项 JS syntax。受支持浏览器经本地 HTTP 验证手机390px及桌面布局、星星跳帧、抽词/暂停/reduced-motion、实际TXT下载187词逐项一致、浮层焦点与原 recipe→case→返回路径，无横向溢出或 warn/error。浏览器工具禁止 `file://`，单文件直接打开未独立实测；生成物无外部资源依赖已由离线检查确认。没有启用 Pages、生产部署或 native/model 调用；物理设备与 owner 审美接受仍独立。
+2026-11-11 完整 `python3 scripts/check_offline.py` exit 0：253项 Python、76项 Node tests，共329项；另有7项 JS syntax。受支持浏览器经本地 HTTP 验证手机390px及桌面布局、星星跳帧、抽词/暂停/reduced-motion、实际TXT下载187词逐项一致、浮层焦点与原 recipe→case→返回路径，无横向溢出或 warn/error。浏览器工具禁止 `file://`，单文件直接打开未独立实测；生成物无外部资源依赖已由离线检查确认。没有启用 Pages、生产部署或 native/model 调用；物理设备与 owner 审美接受仍独立。
 
 2026-11-06 `python3 scripts/check_offline.py` exit 0：241 项 Python tests、64 项 Node tests，共 305 项；另有 6 项 JS syntax 检查。三条 recipe 经 canonical case runner 重跑，均按预期返回 1 并保留报告：owned-core、dynamic-state 为 2 PASS / 1 FAIL / 1 NOT_ASSESSED 要求，compact-resume 为 2 / 1 / 2。完整 core、完整工具 schema/名称、revision 2 历史保留均有改变值后失败的检查。
 
@@ -16,7 +22,7 @@
 
 2026-11-07 接续验收修复请求观察的材料切换：下拉框按当前 captures 重建，不再以数量相同推断选项未变；切回没有请求的显式 run 时清空旧证据并禁用选择与导出，重新打开 recipe 后恢复，已固定的 brief 附件保留。新增三项回归在旧实现均失败；最终统一 offline gate exit 0：241 项 Python + 67 项 Node，共 308 项，另有 6 项 JS syntax 检查。浏览器在 1440×1000 / 390×844 核对九视图布局、同数量 recipe 来回切换、response-only run 的空态与恢复、折叠/展开 tabs 的键盘导航、来源搜索和 reduced-motion；未见页面横向溢出。三条 recipe 实际下载的 case / 比较 JSON 与 Python canonical 字符串完全一致，brief 包含完整案例与观察 Markdown，下载案例经 CLI 重跑均返回预期 1。视觉样式未改；以上仍是合成材料和本地浏览器证据。
 
-索引中的 mechanism IDs 与相关文档只服务当前三条学习/诊断路径；尚未构成绑定具体 revision/symbol 的完整 claim graph、来源 identity/transform receipts、真实 trace 或升级影响分析。native protocol 已准备，未执行。统一工具入口为 `python3 -m context_lab`，具体动作继续调用既有 canonical scripts。
+当前七机制已具有逐 claim 的 revision/locator 绑定，仍只服务三条学习/诊断路径；尚未构成完整 CC 机制图、显式 run 的来源 instance/transform receipts、真实 trace 或升级影响分析。离线 validator 检查当前 checkout 的 locator、声明 pin 的格式/URL 一致性和 artifact/date 对应，不联网重取历史文件，也不认证任意 claim 的语义。native protocol 已准备，未执行。统一工具入口为 `python3 -m context_lab`，具体动作继续调用 canonical scripts。
 
 ## 2026-11-01 CC run 的离线材料链
 
@@ -55,6 +61,7 @@ Daily quiet阶段`python3 scripts/check_offline.py`通过224项顶层/Node cases
 | 现在可使用的路径 | 已具备的结果与边界 |
 | --- | --- |
 | [研究库与版本依据](research-evidence.md) | 十六项公开上游、官方合同、逐项提醒映射和有界 source 阅读；日期/版本/覆盖分开记录，不自动升级 pin |
+| [机制与 claim 依据](handbook/mechanism-evidence.md) | 七机制、24 条 claim、28 条固定来源记录；共享严格校验、生成表、CLI/Workbench 下载与固定 brief；不认证 claim 语义或真实 tracing |
 | [可复现 A/B 研究](../experiments/companion-input/STUDIES.md) | 固定完整合成 fixture snapshot，比较 trigger/placement/history，CLI 重跑、逐来源 current/history/排除/轮后轨迹、保存/恢复与固定 brief 附件；复用 canonical run_session |
 | [CC run 材料链](cc-runs.md) | 明确选材、保真capture/sidecar、关联冲突、content losses、Run查看与固定snapshot；本轮纯合成离线验收 |
 | [本地请求观察](request-observation.md) | Anthropic Messages / OpenAI Responses 的 strict capture、完整或显式partial body/section原值与未知参数、scope-aware条件/位置比较、CLI和Atlas请求观察视图、JSON/Markdown与固定brief附件；默认只含合成示例 |
@@ -81,6 +88,6 @@ case 的 pointer 检查分开 present / 明确的最终缺失 / 遍历阻断；n
 - 日常安装、Mods启用和生产状态由各受管runtime独立核实；Lab不发布私人部署receipt，也不以源码或合成检查代替消费者状态。10/05的独立2.1.289 artifact与零provider请求的composition探针保留原条件。
 - 未逐份深读的 named prompt/inline、未审目标 symbols、其它独立归档与多轮连续性分支保留各专题的覆盖限制；入口见 [研究证据](research-evidence.md)。
 
-当前 case 已连接研究问题、条件、阶段输入与结构结果；下一主线沿现有 capture 入口，将**同一个研究问题、条件和保留要求**带到指定 build/入口/candidate 的真实观察，再交回原 runtime 的接入、恢复和自然使用回填。主 system/tools/reminders、ambient、自动 recall、自主活动、channel 与 compact/Forge 始终保留在完整目标内；不另造 scheduler、Memory backend 或自动生产控制层。具体接点见 [Context DevOps](context-devops.md) 与 programme。
+当前 case 已连接研究问题、条件、阶段输入与结构结果，recipe 已接共享机制依据。下一离线接点是把 case 的保留要求关联到显式 run、来源 instance 与受限关系 witnesses；随后仍须将**同一个研究问题、条件和保留要求**带到获授权的指定 build/入口/candidate 真实观察，再交回原 runtime 的接入、恢复和自然使用回填。主 system/tools/reminders、ambient、自动 recall、自主活动、channel 与 compact/Forge 始终保留在完整目标内；不另造 scheduler、Memory backend 或自动生产控制层。具体接点见 [Context DevOps](context-devops.md) 与 programme。
 
 本轮source/test/docs正常commit/push至现有origin；私人continuity、身份、真实配置/capture/transcript和cache留在Git外。Lab没有新增模型推理、scheduler或消息发送入口；原runtime的接入授权与操作独立。公开visibility与读取结果以本页当前记录为准。

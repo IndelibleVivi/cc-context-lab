@@ -6,7 +6,7 @@
 
 主指导完整保留，并不自动意味着工具说明也保留。这个例子把 `/system` 中的 owned core、工具 name、完整 `input_schema` 与 description 拆开检查：stripped 阶段只移除使用说明，fixed 阶段恢复它。由此可定位损失发生在哪个输入面，不必先重写整套 profile。
 
-机制相关阅读：[Context 来源地图](../context-map.md)、[Profile 设计](../profile-design.md)、[官方控制面](../official-controls.md)、[Mods 迁移](../mods-migration.md) 与 [目标 runtime](../target-runtime.md)。这些链接帮助理解输入面与边界，不是本 recipe 的逐 claim 版本绑定。
+机制相关阅读：[Context 来源地图](../context-map.md)、[Profile 设计](../profile-design.md)、[官方控制面](../official-controls.md)、[Mods 迁移](../mods-migration.md) 与 [目标 runtime](../target-runtime.md)。本 recipe 的逐 claim 版本、具体来源位置、证据层与限制见 [机制证据表](mechanism-evidence.md)；相关阅读仍负责更广的解释，不等于本轮真实运行。
 
 ## 重跑与阅读
 

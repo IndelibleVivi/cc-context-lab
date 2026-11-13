@@ -464,6 +464,23 @@ a { text-underline-offset: 3px; }
 .journey-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 16px; }
 .journey-detail details { margin-top: 18px; }
 .journey-detail summary { color: var(--teal); font-size: 12px; cursor: pointer; }
+.recipe-evidence { margin: 14px 0 0; }
+.recipe-claim { margin: 17px 0 0; padding-left: 16px; border-left: 2px solid var(--line); }
+.recipe-claim__identity { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 9px; }
+.recipe-claim__identity code { color: var(--teal); font: 11px/1.6 var(--mono); overflow-wrap: anywhere; }
+.recipe-evidence-source { margin: 14px 0; padding: 13px 15px; border-radius: 8px; background: var(--paper-2); }
+.recipe-evidence-source strong { color: var(--ink); font-size: 12px; font-weight: 600; }
+.recipe-evidence-source .recipe-evidence-identity { margin-top: 6px; font: 10px/1.8 var(--mono); overflow-wrap: anywhere; }
+.recipe-evidence-source .field__note, .recipe-claim > .field__note { font-size: 11.5px; }
+.recipe-evidence-overview { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.recipe-evidence-overview .journey-actions { margin: 14px 0 0; }
+.recipe-evidence > summary, .recipe-evidence-overview > summary { padding: 4px 6px; }
+.recipe-evidence > summary:focus-visible, .recipe-evidence-overview > summary:focus-visible {
+  outline: none;
+  border-radius: 0;
+  background: var(--paper-2);
+  box-shadow: inset 0 -2px 0 var(--teal);
+}
 .journey-context {
   display: flex;
   flex-wrap: wrap;

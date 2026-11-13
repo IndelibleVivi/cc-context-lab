@@ -2,7 +2,7 @@
 
 2026-11-06：用户已选择 CC-only，名称为 Claude Code Context Lab，保留 slug。Handbook + Workbench + Toolkit 围绕 owned-core、dynamic-state、compact-resume 三条完整离线路径组织。其他 harness 仅作比较参考；两个 wire readers、case v1 与现有公开研究保留，不广告为非 CC 支持。
 
-当前交付包含固定合成输入、成功/失败/回退、canonical 检查与本地视图；native protocols 尚未执行。完整机制索引、跨阶段关系/receipts、native request/lifecycle、独立行为证据与升级复验仍各有门槛，不能由三条离线 guide 自动推导完成。完整个人化、ambient、自动 recall、自主轮次、channel 与 compact continuity 保持研究范围。以下记录保留 programme 理由及历史阶段，冲突的范围决定以上述现行选择为准。
+当前交付包含固定合成输入、成功/失败/回退、canonical 检查与本地视图；2026-11-13 将三条 recipe 使用的七个机制接到 24 条 claim 与 28 条固定来源记录，并贯通生成 Handbook 证据表、CLI、Workbench 展开/下载与固定 brief。native protocols 尚未执行。当前依据索引只覆盖这七个机制；更广的机制研究、跨阶段关系/receipts、native request/lifecycle、独立行为证据与升级复验仍各有门槛。完整个人化、ambient、自动 recall、自主轮次、channel 与 compact continuity 保持研究范围。以下记录保留 programme 理由及历史阶段，冲突的范围决定以上述现行选择为准。
 
 # 愿景、能力结构与连续建设
 
@@ -79,10 +79,10 @@
 | P0 输出政策与范围 | 共享 IO policy 接入 inspector / case / Atlas / importer；所有具体目标检查 ignored/untracked；现行产品范围为 CC-only | 不授予 native/生产操作 |
 | P1 选择性比较 | 单份观察独立可用；只算明确 pairs；case 默认自身 comparisons；共享 canonical 文本、缺 pair 重建、精确导出 | 大规模真实材料的实际使用证据 |
 | P2 CC run 材料链 | request/response/index/event 显式选材、关联冲突、target声明与content losses、sidecar、Atlas run、固定 snapshot 重开 | 实际目标 build 的显式原生日志格式验收；完整 target fingerprint 仍待发展 |
-| P3 共享机制索引与 Handbook | 三条 recipe 的本地机制导航、中文 Handbook 与共享校验已接入；专题仍拥有事实 | 完整的 revision/symbol 绑定 claim IDs 与生成证据表 |
+| P3 共享机制索引与 Handbook | 当前七机制的稳定 claim IDs、固定 revision/locator、证据层与限制；canonical JSON/Markdown、生成证据表、CLI/Workbench/brief 已接入。相关阅读独立保留，专题仍拥有技术事实 | 更广机制按具体研究扩展；pin 与 locator 校验不认证 claim 语义，也不代替 native 观察 |
 | P4 跨阶段关系与 receipts | 规划中；旧四类 pointer 检查保留 | 来源 identity、受限关系谓词、witnesses、scope-aware absence 与 adapter reachability |
 | P5 三套完整 recipes | owned core / 动态 state / compact-resume 的固定离线输入、成功/反例、诊断/恢复与待执行 protocol 已可用 | native request/lifecycle 与独立行为证据 |
-| P6 用户路径 | 问题 → recipe 机制/做法 → 阶段/检查 → 显式请求比较 → 固定 brief 已接入 Workbench；原始材料可恢复 | 完整 claim/source identity/receipt 联动仍待 P3/P4 |
+| P6 用户路径 | 问题 → recipe 机制/逐 claim 依据/做法 → 阶段/检查 → 显式请求比较 → 固定 brief 已接入 Workbench；原始材料可恢复。机制依据可单独固定并导出，不自动替换已有附件 | 显式 run/case 的来源 instance、关系 witnesses 与 receipt 联动仍待 P4 |
 | P7 升级复验 | 规划中；原只读 upstream checker 和 candidate checker 保留各自意义 | 两个固定 run/fingerprint 的影响分析、适用 claims/recipes、真实复验与 owner 恢复材料 |
 
-下一接点先建立主线使用到的共享机制/claim/recipe 依据，并把已有 case 的保留要求绑定到显式 run 和来源 identity。可以继续离线准备 source 与反例；native acquisition、模型任务、安装与原 runtime 接入另按相应授权进行。未知/未执行项继续 `NOT_ASSESSED`，不把历史报告、文档合同或合成通过升级为本轮真实验证。当前可运行链路见 [CC runs](cc-runs.md)。
+主线使用到的七机制/claim/recipe 依据已接好，见 [生成证据表](handbook/mechanism-evidence.md)。下一接点是把已有 case 的保留要求绑定到显式 run 与来源 instance，并用受限关系、witnesses 和 scope-aware absence 保留反例；不从文本相似度或本索引推断真实 tracing。可以继续离线准备 source 与反例；native acquisition、模型任务、安装与原 runtime 接入另按相应授权进行。未知/未执行项继续 `NOT_ASSESSED`，不把历史报告、文档合同或合成通过升级为本轮真实验证。当前可运行链路见 [CC runs](cc-runs.md)。

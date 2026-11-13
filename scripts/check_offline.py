@@ -22,6 +22,8 @@ def main():
         ('spinner controls and isolation', [node, '--test', 'scripts/test_spinner_ui.cjs']),
         ('spinner script syntax', [node, '--check', 'extras/spinner/spinner.js']),
         ('CC recipe contracts', [sys.executable, 'scripts/test_recipes.py']),
+        ('mechanism claim and source bindings', [sys.executable, 'scripts/test_mechanisms.py']),
+        ('generated Handbook evidence index', [sys.executable, 'scripts/build_mechanism_evidence.py', '--check']),
         ('recipe integration and toolkit dispatch', [sys.executable, 'scripts/test_recipe_atlas.py']),
         ('question workflow and loaded materials', [node, '--test', 'scripts/test_journey_ui.cjs']),
         ('question workflow syntax', [node, '--check', 'workbench/journeys.js']),

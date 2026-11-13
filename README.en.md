@@ -22,6 +22,8 @@ python3 scripts/build_context_atlas.py --recipe owned-core --out .cache/cc-conte
 
 Open `index.html` in the output directory. The three recipes use fixed synthetic material, including satisfied structural checks, intentional FAIL examples and unassessed requirements. They are not installed configurations. Existing Toolkit scripts run cases, studies, request inspection and explicit CC imports; Workbench presents the same canonical results. See [Workbench usage](workbench/README.md).
 
+Expand a mechanism's claim evidence to inspect stable claim IDs, evidence levels, precise source locators, fixed revisions and observation dates. The same [mechanism evidence index](docs/handbook/mechanism-evidence.md) is available in Handbook, as JSON/Markdown downloads and frozen brief attachments in Workbench, or through `python3 -m context_lab evidence --recipe owned-core --format json`. These bindings make the basis traceable; historical source, synthetic checks and native observations retain their individual scope and do not establish runtime behavior or compatibility.
+
 ## Evidence and boundaries
 
 Synthetic structural checks, public source inspection, offline checks against a specified native build, actual requests and model behavior are separate evidence layers. Recipe native protocols are `NOT_EXECUTED`; actual lifecycle and behavior remain `NOT_ASSESSED`. Historical native results retain their original dates, versions and scope. See [current state](docs/current-state.md) and [historical research evidence](docs/research-evidence.md).
@@ -47,7 +49,7 @@ cycle is a design choice, not a claim about exact native timing.
 
 | Content | Entry |
 | --- | --- |
-| Three complete offline learning paths | [Handbook](docs/handbook/index.md) |
+| Three complete offline learning paths and claim evidence | [Handbook](docs/handbook/index.md), [Mechanism evidence index](docs/handbook/mechanism-evidence.md) |
 | Local views, fixed inputs, comparisons and exports | [Workbench](workbench/README.md), [Context cases](docs/context-cases.md), [CC runs](docs/cc-runs.md) |
 | Sources, controls and version evidence | [Context map](docs/context-map.md), [Official controls](docs/official-controls.md), [Upstreams](docs/upstreams.md) |
 | Personalization and autonomous turns | [Companion context](docs/companion-context.md), [Continuity and Memory](docs/continuity-and-memory.md) |

@@ -12,6 +12,7 @@ COMMANDS = {
     'import-run': 'import_cc_run.py',
     'study': 'run_context_study.py',
     'check': 'check_offline.py',
+    'evidence': 'build_mechanism_evidence.py',
 }
 
 

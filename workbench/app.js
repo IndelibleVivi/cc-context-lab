@@ -909,6 +909,7 @@ function renderChange() {
   renderStudyAttachment();
   renderObservationAttachment();
   renderCaseAttachment();
+  renderRecipeEvidenceAttachment();
   renderChangeOutput();
 }
 
@@ -951,13 +952,14 @@ function renderChangeOutput() {
   var hint = $('change-summary-hint');
   clear(out);
   var selected = selectedCapabilities();
-  $('brief-download').disabled=!selected.length;
-  $('brief-status').textContent=selected.length?'':'先选择要改的范围';
+  $('brief-download').disabled=!hasBriefInputs();
+  $('brief-status').textContent=selected.length?'':hasBriefInputs()?'已附机制依据；可单独导出':'先选择要改的范围';
   if (!selected.length) {
-    hint.textContent = '未选择';
+    var evidenceOnly = hasBriefInputs();
+    hint.textContent = evidenceOnly ? '仅机制依据' : '未选择';
     out.appendChild(el('div', { cls: 'empty-state' }, [
-      el('p', { cls: 'empty-state__title', text: '选择改动范围' }),
-      el('p', { text: '先选一个改动意图，或勾选需要研究的环节。这里会整理相关检查、证据和交接问题。' })
+      el('p', { cls: 'empty-state__title', text: evidenceOnly ? '机制依据已固定' : '选择改动范围' }),
+      el('p', { text: evidenceOnly ? '可以直接下载包含该附件的 brief；需要检查与交接问题时，再选择改动意图或研究环节。' : '先选一个改动意图，或勾选需要研究的环节。这里会整理相关检查、证据和交接问题。' })
     ]));
     updateBriefPreview();
     return;
@@ -1091,6 +1093,11 @@ function checkCard(c, selectedCaps) {
 
 /* ----------------------------------------------------------- brief export */
 
+function hasBriefInputs() {
+  return selectedCapabilities().length > 0 ||
+    Boolean(typeof recipeEvidenceAttachment !== 'undefined' && recipeEvidenceAttachment);
+}
+
 function buildBriefMarkdown() {
   var sel = selectedCapabilities();
   var m = model();
@@ -1205,6 +1212,9 @@ function buildBriefMarkdown() {
   if (caseAttachment) {
     L.push('','## 附：完整 context case（带入时的固定快照）','',caseAttachment.markdown);
   }
+  if (typeof recipeEvidenceAttachment !== 'undefined' && recipeEvidenceAttachment) {
+    L.push('','## 附：Recipe 机制依据（带入时的固定快照）','',recipeEvidenceAttachment.markdown);
+  }
   return L.join('\n');
 }
 
@@ -1215,7 +1225,7 @@ function updateBriefPreview() {
 }
 
 function downloadBrief() {
-  if(!selectedCapabilities().length) return;
+  if(!hasBriefInputs()) return;
   var text = buildBriefMarkdown();
   var status = $('brief-status');
   try {

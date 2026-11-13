@@ -7,7 +7,7 @@ context, run native Claude Code, or duplicate case evaluation.
 from copy import deepcopy
 from pathlib import Path, PurePosixPath
 
-from context_lab import cases, observations
+from context_lab import cases, mechanisms, observations
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -205,6 +205,8 @@ def load_catalog(root=None):
     if tuple(ids) != RECIPE_IDS:
         _error(
             'recipes: expected exact ordered IDs ' + ', '.join(RECIPE_IDS))
+    mechanism_catalog = mechanisms.load_catalog(base)
+    mechanisms.validate_recipe_bindings(recipes, mechanism_catalog)
     for index, recipe in enumerate(recipes):
         label = f'recipes/{index}'
         case_path = _repo_file(

@@ -40,7 +40,11 @@ python3 scripts/build_context_atlas.py --recipe compact-resume --out .cache/cc-c
 
 整体 case 的 FAIL 不代表 fixed 阶段修复失败：它可能来自保留下来的反例。读报告时按 stage、pointer、expected、actual 与 scope reason 定位。结果不是 readiness 分数；请求结构满足，也不能替代工具实际执行、模型理解或用户收到结果的证据。
 
-机制旁的 source links 提供相关阅读依据；目前不是逐 claim 绑定的版本身份或 tracing 证明。合成阶段关系由作者声明，并非真实 Claude Code 生命周期。当前三条 recipe 的 native 层为 `NOT_ASSESSED`，下述采集协议为 `NOT_EXECUTED`；历史实测仍按原日期、build 与覆盖范围阅读。
+机制旁的相关阅读与 [机制证据表](mechanism-evidence.md) 分工不同：证据表把当前 recipe 的稳定 claim IDs 绑定到具体 source revision、locator、证据层与观察日期；相关阅读帮助解释更广的机制。Workbench 展开相同依据，可下载或显式固定到 brief；CLI 为 `python3 -m context_lab evidence --recipe owned-core --format json`。表格从 canonical catalog/renderer 生成，不手改。它不提供真实 tracing、跨阶段 receipt 或升级兼容性证明。
+
+合成阶段关系由作者声明，并非真实 Claude Code 生命周期。当前三条 recipe 的 native 层为 `NOT_ASSESSED`，下述采集协议为 `NOT_EXECUTED`；历史实测仍按原日期、build 与覆盖范围阅读。
+
+Source 的 `revision` 按 kind 阅读：自有源码、fixture 与官方文档的**项目研究记录**使用固定 Git revision；历史 target-artifact 条目保留 exact artifact/version，引用 URL 另行固定承载观察的报告。不能给官网当前页面捏造一个版本。离线 validator 检查当前 checkout 的 JSON pointer、Python AST symbol 或 Markdown heading，以及 pin/URL 的一致性和 artifact/date 与报告的对应；它不联网重取历史文件，也不自动认证 claim 语义。相关阅读和逐 claim 依据分别维护，不要求两套路径相等。
 
 ## Native acquisition protocol
 

@@ -22,6 +22,8 @@ python3 scripts/build_context_atlas.py --recipe owned-core --out .cache/cc-conte
 
 打开输出目录中的 `index.html`。三条 recipe 使用固定合成材料，既展示结构满足，也展示有意的 FAIL 和未评估项；它们不是已安装配置。Toolkit 的现有脚本负责可重跑的 case、study、请求观察与显式 CC run 导入，Workbench 展示同一 canonical 结果。详细操作见 [Workbench](workbench/README.md)。
 
+每个机制的「逐条判断与固定来源」连接稳定 claim ID、证据层级、具体 source locator、固定 revision 与观察日期。同一份 [机制证据表](docs/handbook/mechanism-evidence.md) 可在 Handbook 阅读，在 Workbench 下载 JSON/Markdown 或固定到 brief，也可运行 `python3 -m context_lab evidence --recipe owned-core --format json`。这些绑定让依据可追溯；历史 source、合成检查和 native 观察仍按各自范围阅读，不产生真实运行或兼容性结论。
+
 ## 证据与边界
 
 合成结构检查、公开 source inspection、指定 native build 的离线检查、真实 request 与模型行为是不同证据层。三条 recipe 的 native protocols 尚未执行（`NOT_EXECUTED`），真实生命周期与行为仍是 `NOT_ASSESSED`。已有历史 native 结果保留其原日期、版本和覆盖范围；[current state](docs/current-state.md) 记录当前状态，[research evidence](docs/research-evidence.md) 保留历史。
@@ -46,11 +48,15 @@ flowchart TB
     CASE["Context case<br/>阶段与检查"]
     ATLAS["CC Workbench<br/>比较与保存"]
     CC["CC-specific candidate<br/>Mods / offline"]
+    CLAIM["机制与 claim 依据<br/>固定来源、位置与证据层"]
     BRIEF["Change brief<br/>原值与条件"]
   end
   OWNER["原 runtime owner<br/>接入与恢复"]
   RECIPE --> CASE
   RECIPE --> ATLAS
+  REF --> CLAIM
+  RECIPE -->|"机制 IDs"| CLAIM
+  CLAIM -->|"逐机制依据"| ATLAS
   FIX --> ENGINE
   CAP --> OBS
   RAW --> RUN
@@ -83,7 +89,7 @@ Workbench 页眉藏着一颗会跳帧的小星星，配上 Claude Code 2.1.322 �
 
 | 内容 | 入口 |
 | --- | --- |
-| 三条完整离线学习路径 | [Handbook](docs/handbook/index.md) |
+| 三条完整离线学习路径与逐条依据 | [Handbook](docs/handbook/index.md)、[机制证据表](docs/handbook/mechanism-evidence.md) |
 | 本地交互、固定输入、比较与导出 | [Workbench](workbench/README.md)、[Context cases](docs/context-cases.md)、[CC runs](docs/cc-runs.md) |
 | 来源、开关与版本依据 | [Context map](docs/context-map.md)、[Official controls](docs/official-controls.md)、[Upstreams](docs/upstreams.md) |
 | 完整个人化与自主轮次 | [Companion context](docs/companion-context.md)、[Continuity and Memory](docs/continuity-and-memory.md) |

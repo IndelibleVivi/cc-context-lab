@@ -6,7 +6,7 @@
 
 新的 ambient state 可以作为本轮输入加入，旧值仍作为历史保留。这个例子先注入 revision 2，再保留用户纠正并加入 revision 3；另设 history_dropped 阶段，故意把 revision 1 改写掉。研究的是声明位置与原值，message role 本身不能证明来源或真实注入时机。
 
-机制相关阅读：[Context 保留](../context-retention.md)、[连续性与 Memory](../continuity-and-memory.md)、[请求观察](../request-observation.md) 与 [伴侣 context](../companion-context.md)。这些链接帮助理解输入面与边界，不是本 recipe 的逐 claim 版本绑定。
+机制相关阅读：[Context 保留](../context-retention.md)、[连续性与 Memory](../continuity-and-memory.md)、[请求观察](../request-observation.md) 与 [伴侣 context](../companion-context.md)。本 recipe 的逐 claim 版本、具体来源位置、证据层与限制见 [机制证据表](mechanism-evidence.md)；相关阅读仍负责更广的解释，不等于本轮真实运行。
 
 ## 重跑与阅读
 

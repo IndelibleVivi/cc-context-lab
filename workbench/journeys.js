@@ -23,8 +23,8 @@ function renderMechanismEvidence(mechanism,evidence) {
     (claim.limits||[]).forEach(limit=>row.appendChild(el('p',{cls:'field__note',text:limit})));
     claim.source_ids.forEach(id=>{
       var source=data.sources.find(s=>s.id===id);if(!source)return;
-      var sourceRow=el('section',{cls:'recipe-evidence-source'},[
-        el('strong',{text:source.title}),
+      var sourceRow=el('details',{cls:'recipe-evidence-source'},[
+        el('summary',{},[el('strong',{text:source.title}),el('span',{text:'观察 '+source.observed_on})]),
         el('p',{cls:'recipe-evidence-identity',text:[source.id,source.kind,source.revision,'观察 '+source.observed_on].filter(Boolean).join(' · ')}),
         el('p',{cls:'recipe-evidence-identity',text:[source.path,evidenceLocator(source.locator)].filter(Boolean).join(' · ')})]);
       (source.limits||[]).forEach(limit=>sourceRow.appendChild(el('p',{cls:'field__note',text:limit})));
@@ -102,6 +102,18 @@ function renderJourney() {
   detail.appendChild(el('span',{cls:'section-kicker',text:'QUESTION / '+selected.id}));
   detail.appendChild(el('h3',{text:selected.question}));
   detail.appendChild(el('p',{text:selected.summary}));
+  var example=d.recipe_examples&&d.recipe_examples[selected.id];
+  var actions=el('div',{cls:'journey-actions'});
+  actions.appendChild(el('button',{cls:'btn btn--primary',attrs:{type:'button'},text:'打开案例，检查每个阶段 →',on:{click:()=>{if(selectRecipe(selected.id))activateTab('case',true);}}}));
+  actions.appendChild(el('button',{cls:'btn',attrs:{type:'button'},text:'下载固定案例 JSON',on:{click:()=>{if(example)downloadLocalArtifact(example.context_case.case_json,'context-case.json','application/json');}}}));
+  detail.appendChild(actions);
+  if(example){
+    var summary=example.context_case.report.summary;
+    var result=el('div',{cls:'recipe-results'});
+    ['passed','failed','not_assessed'].forEach((k,i)=>result.appendChild(el('span',{},[el('strong',{text:summary[k]}),' '+['结构通过','反例失败','未评估'][i]])));
+    detail.appendChild(result);
+  }
+  detail.appendChild(el('p',{cls:'recipe-caveat',text:'案例有意包含失败反例。PASS 只覆盖指定结构；native 生命周期与模型行为尚未执行验收。'}));
   var evidence=recipeEvidenceById(selected.id);
   var mechanisms=el('div');
   (selected.mechanisms||[]).forEach(m=>{
@@ -121,18 +133,7 @@ function renderJourney() {
   }
   detail.appendChild(el('h4',{text:'按这条路径操作'}));
   var procedure=el('ol',{cls:'recipe-procedure'});(selected.procedure||[]).forEach(p=>procedure.appendChild(el('li',{text:p})));detail.appendChild(procedure);
-  var example=d.recipe_examples&&d.recipe_examples[selected.id];
-  if(example){
-    var summary=example.context_case.report.summary;
-    var result=el('div',{cls:'recipe-results'});
-    ['passed','failed','not_assessed'].forEach((k,i)=>result.appendChild(el('span',{},[el('strong',{text:summary[k]}),' '+['结构通过','反例失败','未评估'][i]])));
-    detail.appendChild(result);
-  }
-  detail.appendChild(el('p',{cls:'recipe-caveat',text:'案例有意包含失败反例。PASS 只覆盖指定结构；native 生命周期与模型行为尚未执行验收。'}));
-  var actions=el('div',{cls:'journey-actions'});
-  actions.appendChild(el('button',{cls:'btn btn--primary',attrs:{type:'button'},text:'打开案例，检查每个阶段 →',on:{click:()=>{if(selectRecipe(selected.id))activateTab('case',true);}}}));
-  actions.appendChild(el('button',{cls:'btn',attrs:{type:'button'},text:'下载固定案例 JSON',on:{click:()=>{if(example)downloadLocalArtifact(example.context_case.case_json,'context-case.json','application/json');}}}));
-  detail.appendChild(actions);detail.appendChild(sourceLink(selected.guide_path,'阅读完整做法、反例与恢复说明 ↗'));
+  detail.appendChild(sourceLink(selected.guide_path,'阅读完整做法、反例与恢复说明 ↗'));
   var cmd=el('details',{},[el('summary',{text:'在 CLI 重跑与重新打开'})]);
   cmd.appendChild(el('pre',{cls:'cmd',text:'python3 -m context_lab evidence --recipe '+selected.id+' --format json\npython3 scripts/run_context_case.py '+selected.case_path+' --out .cache/recipe-'+selected.id+'\npython3 scripts/build_context_atlas.py --recipe '+selected.id+' --out .cache/cc-context-workbench'}));
   detail.appendChild(cmd);

@@ -8,6 +8,8 @@
 
 Workbench 可展开判断与来源、下载依据，或在不勾选 capability 的情况下将它单独固定到 brief。切换/恢复其他材料不替换附件，移除后恢复相应空态；附件不表示当前 run 已通过这些判断。生成表由 `scripts/build_mechanism_evidence.py` 拥有，`--check` 拒绝漂移，`--write-handbook` 重建；统一 Toolkit 入口新增 `python3 -m context_lab evidence --recipe owned-core --format json`。页脚文档链接也已接到实际 `repo_base`，支持嵌套输出目录。
 
+2026-11-13 Workbench 沿既有暖纸、serif、陶土与苔绿方向完成一轮呈现调整：缩短页眉与首页展示区，将案例操作、结构结果与反例说明提前到问题之后；目录改为有序条目，来源以可展开的文献条目连续阅读，完整 revision/locator 与限制仍可访问。窄屏保留三输入面的横排和三项问题目录，学习链接移到正文之后；键盘焦点使用细线与下划线，forced-colors 保留系统 outline。未修改 canonical 数据或附件/下载合同。本轮统一 offline gate exit 0（仍为 355 项 tests 与 7 项 JS syntax）；最终构建经本地 HTTP 在 1440×1000 / 390×844 核对，九视图无页面横向溢出，三条 recipe 切换、来源键盘展开及案例 → FAIL → 显式比较 → brief 下载路径正常，console 无 warning/error。实际下载的案例与依据 JSON 逐字等于 Python canonical，brief 下载逐字等于固定内容预览。此轮审美调整尚未由 owner 确认，不代表部署或 native 验收。
+
 最终 `python3 scripts/check_offline.py` exit 0：275 项 Python + 80 项 Node tests，共 **355 项**，另有 7 项 JS syntax 与生成表一致性检查。机制的 19 项窄测试覆盖七个 binding、重复/缺失/越界 source、证据层与 artifact/date 错绑、pin/URL 不一致、quoted Python 假定义、错误限定 symbol 和 code fence 中的伪 heading；四项新增 UI 场景在旧实现失败、新实现通过。实际浏览器经本地 HTTP 核对三条 recipe 在 1440×1000 / 390×844 的折叠/展开、长 revision/locator、键盘焦点与固定附件；无页面横向溢出，console warning/error 为 0。六份真实下载的 JSON/Markdown 逐字等于 Python canonical，切换材料后的固定 JSON 与完整 brief 也保留同一依据。README Mermaid 已渲染核对。以上不是 file URL、物理设备、owner 审美接受或 native/runtime 行为证据。
 
 2026-11-11 新增 **✻ While Claude Works**：Workbench 页眉的小星星彩蛋可展开、抽词、暂停，Escape 返回 summary，点击外部关闭；独立 [分享页](../extras/spinner/index.html) 与 [Frontend reference](../extras/spinner/README.md) 复用同一份 CSS/JS/187词。词表为官方 Claude Code 2.1.322 的版本快照；六帧/1.2秒是独立网页复现，不声称 native 精确时序。生成 HTML 已内嵌数据、脚本、样式、来源与完整 SUL 正文；可下载逐行 TXT。canonical 与生成边界见 AGENTS，授权分类沿用既有 LICENSING。
